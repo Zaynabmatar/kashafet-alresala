@@ -1,0 +1,300 @@
+<!doctype html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>كشافة الرسالة الإسلامية</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+body {
+    background: #000;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+.page {
+    position: relative;
+    width: 100%;
+}
+
+/* الصورة الأصلية */
+.background-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+        /* نافذة المستخدمين */
+        .users-window {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(520px, 82vw);
+            height: 260px;
+            padding: 12px;
+            border-radius: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* منطقة التمرير */
+        .users-scroll {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 5px 8px 20px;
+        }
+
+        /* شكل شريط التمرير */
+        .users-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .users-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .users-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 20px;
+        }
+
+        /* قائمة المستخدمين */
+        .users-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* بطاقة المستخدم */
+        .user-card {
+            width: 100%;
+            min-height: 65px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            border-radius: 50px;
+            background: rgba(20, 45, 38, 0.88);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 7px 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .user-card:hover {
+            background: rgba(30, 65, 53, 0.95);
+            transform: scale(1.01);
+        }
+
+        /* دائرة المستخدم */
+        .avatar {
+            overflow: hidden;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: rgba(50, 80, 68, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* أيقونة الشخص */
+        .avatar svg {
+            width: 65%;
+            height: 65%;
+            fill: white;
+        }
+
+        /* اسم المستخدم */
+        .user-name {
+            flex: 1;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* للموبايل */
+        @media (max-width: 600px) {
+            .users-window {
+                top: 27%;
+                width: 90vw;
+                height: 230px;
+                padding: 9px;
+            }
+
+            .user-card {
+                min-height: 60px;
+            }
+
+            .avatar {
+                overflow: hidden;
+                width: 44px;
+                height: 44px;
+            }
+
+            .user-name {
+                font-size: 17px;
+            }
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+    .page::-webkit-scrollbar { display: none; }   body::-webkit-scrollbar { display: none; }   body::-webkit-scrollbar { display: none; }
+</style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- الصورة الأصلية -->
+        <img
+            src="login photo.jpeg"
+            class="background-image"
+            alt="كشافة الرسالة الإسلامية"
+        />
+
+        <!-- نافذة المستخدمين -->
+        <div class="users-window">
+
+            <div class="users-scroll">
+
+                <div class="users-list">
+
+                    <!-- المستخدم الأول -->
+                    <button
+                        class="user-card"
+                        onclick="openProfile(this)"
+                    >
+                        <span class="avatar" id="adminAvatarImage">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/>
+                            </svg>
+                        </span>
+
+                        <span class="user-name">
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function openProfile(button) {
+            const adminId = button.dataset.adminId;
+
+            if (!adminId) {
+                console.error("Admin ID not found");
+                return;
+            }
+
+            window.location.href =
+                "admin/admin.html?id=" + encodeURIComponent(adminId);
+        }
+    </script>
+
+    <script>
+        async function loadAdminName() {
+            const { data, error } = await supabaseClient
+                .from("profiles")
+                .select("id, full_name, profile_image")
+                .eq("role", "admin")
+                .single();
+
+            if (error) {
+                console.error("Error loading admin:", error);
+                return;
+            }
+
+            const avatarElement =
+                document.getElementById("adminAvatarImage");
+
+            if (avatarElement && data.profile_image) {
+                avatarElement.innerHTML =
+                    '<img src="' + data.profile_image + '" alt="Profile">';
+            }
+
+            const nameElement =
+                document.querySelector(".user-name");
+
+            if (nameElement) {
+                nameElement.textContent = data.full_name;
+            }
+
+            const adminButton =
+                document.querySelector(".user-card");
+
+            if (adminButton) {
+                adminButton.dataset.adminId = data.id;
+            }
+        }
+
+        loadAdminName();
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

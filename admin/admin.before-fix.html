@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة القادة</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase.js"></script>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="user-area">
+
+        <button class="menu-button" type="button">☰</button>
+
+        <div class="profile-image">
+            <span>👤</span>
+        </div>
+
+        <span class="user-name" id="userName"></span>
+
+    </div>
+
+    <button class="logout-button" type="button" onclick="logout()">
+        تسجيل الخروج
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <div class="page-header">
+
+        <div>
+            <h1>قائمة القادة</h1>
+            <p>إدارة القادة والفرق التابعة لهم</p>
+        </div>
+
+        <button class="add-leader" type="button" onclick="openAddLeaderForm()">
+            <span>+</span>
+            إضافة قائد
+        </button>
+
+    </div>
+
+
+    <section class="leaders-table-wrapper">
+
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">👥</div>
+            <h2>لا يوجد قادة بعد</h2>
+            <p>اضغط على «إضافة قائد» لإضافة أول قائد.</p>
+        </div>
+
+
+        <div class="leaders-table" id="leadersTable">
+
+            <!-- القادة سيظهرون هنا -->
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<!-- =========================
+     Add Leader Modal
+========================= -->
+
+<div class="modal-overlay" id="leaderModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>إضافة قائد</h2>
+                <p>أدخل معلومات القائد أو القائدة</p>
+            </div>
+
+            <button
+                class="close-button"
+                type="button"
+                onclick="closeAddLeaderForm()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="leaderForm">
+
+            <!-- الاسم -->
+
+            <div class="form-group">
+
+                <label for="leaderName">
+                    اسم القائد / القائدة
+                </label>
+
+                <input type="text" id="leaderName" placeholder="أدخل الاسم الكامل بالعربية" required lang="ar" dir="rtl" oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s]/g, '')">
+
+            </div>
+
+
+            <!-- الهاتف -->
+
+            <div class="form-group">
+
+                <label for="leaderPhone">
+                    رقم الهاتف
+                </label>
+
+                <div class="phone-input">
+
+                    <span class="country-code">
+                        +961
+                    </span>
+
+                    <input type="tel" id="leaderPhone" placeholder="أدخل رقم الهاتف" autocomplete="off">
+
+                </div>
+
+            </div>
+
+
+            <!-- تاريخ الميلاد -->
+
+            <div class="form-group">
+
+                <label>
+                    تاريخ الميلاد
+                </label>
+
+                <div class="birth-date">
+
+                    <select id="birthDay">
+
+                        <option value="">
+                            اليوم
+                        </option>
+
+                    </select>
+
+
+                    <select id="birthMonth">
+
+                        <option value="">
+                            الشهر
+                        </option>
+
+                    </select>
+
+
+                    <select id="birthYear">
+
+                        <option value="">
+                            السنة
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- الفرقة -->
+
+            <div class="form-group">
+
+                <label for="leaderBranch">
+                    الفرقة
+                </label>
+
+                <input type="text" id="leaderBranch" list="branchesList" placeholder="اختر أو اكتب اسم الفرقة" autocomplete="off">
+
+            </div>
+
+
+            <!-- البدلة -->
+
+            <div class="form-group">
+
+                <label>
+                    البدلة
+                </label>
+
+                <div class="uniform-options">
+
+                    <label class="radio-option">
+
+                        <input
+                            type="radio"
+                            name="hasUniform"
+                            value="true"
+                        >
+
+                        <span>نعم</span>
+
+                    </label>
+
+
+                    <label class="radio-option">
+
+                        <input
+                            type="radio"
+                            name="hasUniform"
+                            value="false"
+                            checked
+                        >
+
+                        <span>لا</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="cancel-button"
+                    onclick="closeAddLeaderForm()"
+                >
+                    إلغاء
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-button"
+                >
+                    حفظ
+                </button>
+
+            </div>
+
+        <datalist id="branchesList"><option value="براعم"><option value="زهرات"><option value="أشبال"><option value="كشافة"><option value="مرشدات"><option value="جوالة"><option value="دليلات"></datalist></form>
+
+    </div>
+
+</div>
+
+
+
+<script>
+    /* =========================
+       Admin Name
+    ========================= */
+
+    async function loadAdminName() {
+        const { data, error } = await supabaseClient
+            .from("profiles")
+            .select("full_name")
+            .eq("role", "admin")
+            .single();
+
+        if (error) {
+            console.error("Error loading admin:", error);
+            return;
+        }
+
+        if (data && data.full_name) {
+            document.getElementById("userName").textContent = data.full_name;
+        }
+    }
+
+
+    /* =========================
+       Date Selectors
+    ========================= */
+
+    function setupDateSelectors() {
+        const daySelect = document.getElementById("birthDay");
+        const monthSelect = document.getElementById("birthMonth");
+        const yearSelect = document.getElementById("birthYear");
+
+        if (!daySelect || !monthSelect || !yearSelect) {
+            return;
+        }
+
+        if (daySelect.options.length === 1) {
+            for (let day = 1; day <= 31; day++) {
+                const option = document.createElement("option");
+                option.value = day;
+                option.textContent = day;
+                daySelect.appendChild(option);
+            }
+        }
+
+        if (monthSelect.options.length === 1) {
+            const months = [
+                "كانون الثاني",
+                "شباط",
+                "آذار",
+                "نيسان",
+                "أيار",
+                "حزيران",
+                "تموز",
+                "آب",
+                "أيلول",
+                "تشرين الأول",
+                "تشرين الثاني",
+                "كانون الأول"
+            ];
+
+            months.forEach((month, index) => {
+                const option = document.createElement("option");
+                option.value = index + 1;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+        }
+
+        if (yearSelect.options.length === 1) {
+            const currentYear = new Date().getFullYear();
+
+            for (let year = currentYear; year >= 1940; year--) {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+    }
+
+
+    /* =========================
+       Modal
+    ========================= */
+
+    function openAddLeaderForm() {
+        const modal = document.getElementById("leaderModal");
+
+        if (modal) {
+            modal.classList.add("active");
+        }
+    }
+
+    function closeAddLeaderForm() {
+        const modal = document.getElementById("leaderModal");
+
+        if (modal) {
+            modal.classList.remove("active");
+        }
+    }
+
+
+    /* =========================
+       Age
+    ========================= */
+
+    function calculateAge(birthDate) {
+        if (!birthDate) {
+            return "غير محدد";
+        }
+
+        const birth = new Date(birthDate);
+
+        if (isNaN(birth.getTime())) {
+            return "غير محدد";
+        }
+
+        const today = new Date();
+
+        let age = today.getFullYear() - birth.getFullYear();
+
+        const monthDifference =
+            today.getMonth() - birth.getMonth();
+
+        if (
+            monthDifference < 0 ||
+            (
+                monthDifference === 0 &&
+                today.getDate() < birth.getDate()
+            )
+        ) {
+            age--;
+        }
+
+        return age >= 0 ? `${age} سنة` : "غير محدد";
+    }
+
+
+    /* =========================
+       Format Birth Date
+    ========================= */
+
+    function formatBirthDate(birthDate) {
+        if (!birthDate) {
+            return "غير محدد";
+        }
+
+        const date = new Date(birthDate);
+
+        if (isNaN(date.getTime())) {
+            return "غير محدد";
+        }
+
+        return date.toLocaleDateString("ar-LB");
+    }
+
+
+    /* =========================
+       Add Leader
+    ========================= */
+
+    const leaderForm = document.getElementById("leaderForm");
+
+    if (leaderForm) {
+        leaderForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const name =
+                document.getElementById("leaderName").value.trim();
+
+            const phone =
+                document.getElementById("leaderPhone").value.trim();
+
+            const day =
+                document.getElementById("birthDay").value;
+
+            const month =
+                document.getElementById("birthMonth").value;
+
+            const year =
+                document.getElementById("birthYear").value;
+
+            const branch =
+                document.getElementById("leaderBranch").value.trim();
+
+            const uniformInput =
+                document.querySelector(
+                    'input[name="hasUniform"]:checked'
+                );
+
+            const uniform =
+                uniformInput
+                    ? uniformInput.value === "true"
+                    : false;
+
+
+            /* Only name + branch are required */
+
+            if (!name || !branch) {
+                alert("يرجى إدخال اسم القائد/القائدة والفرقة.");
+                return;
+            }
+
+
+            /* Birth date is optional */
+
+            let birthDate = null;
+
+            if (day && month && year) {
+                birthDate =
+                    `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            }
+
+
+            const saveButton =
+                document.querySelector(".save-button");
+
+            if (saveButton) {
+                saveButton.disabled = true;
+                saveButton.textContent = "جارٍ الحفظ...";
+            }
+
+
+            const { data, error } =
+                await supabaseClient
+                    .from("leaders")
+                    .insert({
+                        full_name: name,
+                        phone: phone || null,
+                        birth_date: birthDate,
+                        branch: branch,
+                        has_uniform: uniform
+                    })
+                    .select()
+                    .single();
+
+
+            if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.textContent = "حفظ";
+            }
+
+
+            if (error) {
+                console.error("Error saving leader:", error);
+
+                alert(
+                    "خطأ الحفظ: " + error.message
+                );
+
+                return;
+            }
+
+
+            /* Reload leaders from Supabase */
+
+            await loadLeaders();
+
+
+            leaderForm.reset();
+
+
+            const defaultUniform =
+                document.querySelector(
+                    'input[name="hasUniform"][value="false"]'
+                );
+
+            if (defaultUniform) {
+                defaultUniform.checked = true;
+            }
+
+
+            closeAddLeaderForm();
+        });
+    }
+
+
+    /* =========================
+       Leader Card
+    ========================= */
+
+    function addLeaderToTable(leader) {
+        const table =
+            document.getElementById("leadersTable");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+        if (!table || !emptyState) {
+            return;
+        }
+
+
+        emptyState.style.display = "none";
+        table.style.display = "flex";
+
+
+        const card =
+            document.createElement("div");
+
+        card.className = "leader-row";
+
+
+        const uniformText =
+            leader.uniform
+                ? "نعم"
+                : "لا";
+
+
+        const age =
+            calculateAge(leader.birthDate);
+
+        const birthDateText =
+            formatBirthDate(leader.birthDate);
+
+
+        card.innerHTML = `
+            <div class="leader-main">
+
+                <div class="leader-profile">
+
+                    <div class="leader-avatar">
+                        👤
+                    </div>
+
+                    <div class="leader-identity">
+
+                        <h3>
+                            القائد/القائدة: ${escapeHtml(leader.name)}
+                        </h3>
+
+                        <p>
+                            ${leader.phone
+                                ? "+961 " + escapeHtml(leader.phone)
+                                : "رقم الهاتف: غير محدد"
+                            }
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="leader-info">
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            العمر
+                        </span>
+
+                        <strong>
+                            ${age}
+                        </strong>
+                    </div>
+
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            تاريخ الميلاد
+                        </span>
+
+                        <strong>
+                            ${birthDateText}
+                        </strong>
+                    </div>
+
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            الفرقة
+                        </span>
+
+                        <strong>
+                            ${escapeHtml(leader.branch || "غير محددة")}
+                        </strong>
+                    </div>
+
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            البدلة
+                        </span>
+
+                        <strong>
+                            ${uniformText}
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="activities-box">
+
+                    <span>
+                        عدد النشاطات
+                    </span>
+
+                    <strong>
+                        ${leader.activities || 0}
+                    </strong>
+
+                </div>
+
+            </div>
+        `;
+
+
+        table.appendChild(card);
+    }
+
+
+    /* =========================
+       Load Leaders From Supabase
+    ========================= */
+
+    async function loadLeaders() {
+        const { data, error } =
+            await supabaseClient
+                .from("leaders")
+                .select("*")
+                .order("created_at", {
+                    ascending: true
+                });
+
+
+        if (error) {
+            console.error(
+                "Error loading leaders:",
+                error
+            );
+
+            return;
+        }
+
+
+        const table =
+            document.getElementById("leadersTable");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+
+        table.innerHTML = "";
+
+
+        if (!data || data.length === 0) {
+            table.style.display = "none";
+            emptyState.style.display = "flex";
+            return;
+        }
+
+
+        emptyState.style.display = "none";
+        table.style.display = "flex";
+
+
+        data.forEach((leader) => {
+            addLeaderToTable({
+                id: leader.id,
+                name: leader.full_name,
+                phone: leader.phone,
+                birthDate: leader.birth_date,
+                branch: leader.branch,
+                uniform: leader.has_uniform,
+                activities: 0
+            });
+        });
+    }
+
+
+    /* =========================
+       Security Helper
+    ========================= */
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+
+    /* =========================
+       Logout
+    ========================= */
+
+    async function logout() {
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "../index.html";
+    }
+
+
+    /* =========================
+       Close Modal Outside
+    ========================= */
+
+    const leaderModal =
+        document.getElementById("leaderModal");
+
+    if (leaderModal) {
+        leaderModal.addEventListener(
+            "click",
+            function(event) {
+                if (event.target === this) {
+                    closeAddLeaderForm();
+                }
+            }
+        );
+    }
+
+
+    /* =========================
+       Start
+    ========================= */
+
+    setupDateSelectors();
+    loadAdminName();
+    loadLeaders();
+
+</script>
+</body>
+</html>
+
+

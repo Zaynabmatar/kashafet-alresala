@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>معلوماتي</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Tahoma, sans-serif;
+            background: #f4f7f5;
+            color: #1f2d25;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            width: 100%;
+            height: 76px;
+            background: #145c45;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .back-button {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(900px, calc(100% - 40px));
+            margin: 45px auto;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #68756e;
+            font-size: 15px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e5eae7;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            min-width: 70px;
+            border-radius: 50%;
+            background: #e8f3ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid #d7e8dc;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-header h2 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .profile-header span {
+            color: #176b3a;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .info-item {
+            background: #f7f9f8;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .info-label {
+            display: block;
+            color: #758079;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .message {
+            text-align: center;
+            padding: 35px;
+            color: #68756e;
+        }
+
+        @media (max-width: 650px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: min(100% - 24px, 900px);
+                margin: 25px auto;
+            }
+
+            .info-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <button
+        class="back-button"
+        type="button"
+        onclick="history.back()"
+    >
+        → رجوع
+    </button>
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+        <h1>معلوماتي</h1>
+        <p>معلومات الحساب الحالي</p>
+    </div>
+
+    <section class="info-card">
+
+        <div id="loadingMessage" class="message">
+            جارٍ تحميل معلوماتك...
+        </div>
+
+        <div id="profileContent" style="display:none;">
+
+            <div class="profile-header">
+
+                <div class="avatar-wrapper"><label class="avatar" for="profileImageInput" title="اختيار صورة شخصية"><img id="profileImagePreview" src="" alt="الصورة الشخصية" style="display:none;"><span id="avatarPlaceholder">👤</span></label><button type="button" id="deleteProfileImage" style="display:none;">حذف الصورة</button></div>
+
+                <input
+                    type="file"
+                    id="profileImageInput"
+                    accept="image/*"
+                    style="display:none;"
+                >
+
+                <div>
+                    <h2 id="fullName">-</h2>
+                    <span id="role">-</span>
+                </div>
+
+            </div>
+
+            <div class="info-grid">
+
+    <div class="info-item">
+        <span class="info-label">الاسم الكامل</span>
+        <div class="info-value" id="fullNameInfo">-</div>
+    </div>
+
+    <div class="info-item">
+        <span class="info-label">العمر</span>
+        <div class="info-value" id="ageInfo">-</div>
+    </div>
+
+    <div class="info-item">
+        <span class="info-label">رقم الهاتف</span>
+        <div class="info-value" id="phoneInfo" dir="ltr" style="direction:ltr !important; text-align:left !important; unicode-bidi:isolate !important;">-</div>
+    </div>
+
+    <div class="info-item">
+        <span class="info-label">الصلاحية</span>
+        <div class="info-value" id="roleInfo">قائدة الكشافة</div>
+    </div>
+
+</div>
+
+        </div>
+
+        <div id="errorMessage" class="message" style="display:none;">
+            ما قدرنا نجيب معلومات الحساب.
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+async function loadMyInfo() {
+    const loadingMessage = document.getElementById("loadingMessage");
+    const profileContent = document.getElementById("profileContent");
+    const errorMessage = document.getElementById("errorMessage");
+
+    try {
+        const { data: profileIdData, error: profileIdError } = await supabaseClient.from("profiles").select("id").eq("role", "admin").single(); if (profileIdError || !profileIdData) { throw new Error("لم يتم العثور على حساب الأدمن"); } const adminId = profileIdData.id;
+
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("id, full_name, phone, birth_date, profile_image, role")
+                .eq("id", adminId)
+                .single();
+
+        if (profileError || !profile) {
+            throw new Error(
+                profileError?.message || "Profile not found"
+            );
+        }
+
+        // الاسم
+        document.getElementById("fullName").textContent =
+            profile.full_name || "غير محدد";
+
+        document.getElementById("fullNameInfo").textContent =
+            profile.full_name || "غير محدد";
+
+        // الصلاحية
+        const roleText =
+            profile.role === "admin"
+                ? "قائدة الكشافة"
+                : profile.role === "leader"
+                    ? "قائدة الكشافة"
+                    : profile.role || "غير محدد";
+
+        document.getElementById("role").textContent = roleText;
+        document.getElementById("roleInfo").textContent = roleText;
+
+        // رقم الهاتف
+        document.getElementById("phoneInfo").textContent =
+            profile.phone || "غير محدد";
+
+        // العمر من تاريخ الميلاد
+        let ageText = "غير محدد";
+
+        window.currentProfileBirthDate = profile.birth_date || null;
+
+        if (profile.birth_date) {
+            const birthDate = new Date(profile.birth_date);
+            const today = new Date();
+
+            let age = today.getFullYear() - birthDate.getFullYear();
+
+            const monthDifference =
+                today.getMonth() - birthDate.getMonth();
+
+            if (
+                monthDifference < 0 ||
+                (
+                    monthDifference === 0 &&
+                    today.getDate() < birthDate.getDate()
+                )
+            ) {
+                age--;
+            }
+
+            if (age >= 0) {
+                ageText = age + " سنة";
+            }
+        }
+
+        document.getElementById("ageInfo").textContent = ageText;
+
+        // الصورة الحالية
+        const imagePreview =
+            document.getElementById("profileImagePreview");
+
+        const placeholder =
+            document.getElementById("avatarPlaceholder");
+
+        if (profile.profile_image) {
+            imagePreview.src = profile.profile_image;
+            imagePreview.style.display = "block";
+            placeholder.style.display = "none";
+        }
+
+        // إدارة صورة الملف الشخصي
+        const imageInput = document.getElementById("profileImageInput");
+        const deleteButton = document.getElementById("deleteProfileImage");
+
+        async function showProfileImage(imageUrl) {
+            const imagePreview = document.getElementById("profileImagePreview");
+            const placeholder = document.getElementById("avatarPlaceholder");
+
+            if (imageUrl) {
+                imagePreview.src = imageUrl;
+                imagePreview.style.display = "block";
+                placeholder.style.display = "none";
+                deleteButton.style.display = "block";
+            } else {
+                imagePreview.src = "";
+                imagePreview.style.display = "none";
+                placeholder.style.display = "inline";
+                deleteButton.style.display = "none";
+            }
+        }
+
+        if (profile.profile_image) {
+            await showProfileImage(profile.profile_image);
+        }
+
+        imageInput.addEventListener("change", async function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                alert("الرجاء اختيار صورة فقط.");
+                return;
+            }
+
+            try {
+                const filePath = adminId + "/profile." + file.name.split(".").pop().toLowerCase();
+
+                const { error: uploadError } = await supabaseClient
+                    .storage
+                    .from("profiles")
+                    .upload(filePath, file, {
+                        upsert: true,
+                        cacheControl: "3600"
+                    });
+
+                if (uploadError) throw uploadError;
+
+                const { data: urlData } = supabaseClient
+                    .storage
+                    .from("profiles")
+                    .getPublicUrl(filePath);
+
+                const imageUrl = urlData.publicUrl;
+
+                const { error: updateError } = await supabaseClient
+                    .from("profiles")
+                    .update({ profile_image: imageUrl })
+                    .eq("id", adminId);
+
+                if (updateError) throw updateError;
+
+                await showProfileImage(imageUrl);
+                alert("تم حفظ الصورة بنجاح.");
+
+            } catch (error) {
+                console.error("Error saving profile image:", error);
+                alert("لم نتمكن من حفظ الصورة.");
+            }
+        });
+
+        deleteButton.addEventListener("click", async function () {
+            if (!confirm("هل تريدين حذف الصورة الشخصية؟")) return;
+
+            try {
+                const { data: files, error: listError } =
+                    await supabaseClient
+                        .storage
+                        .from("profiles")
+                        .list(adminId);
+
+                if (listError) throw listError;
+
+                if (files && files.length > 0) {
+                    const filePaths = files.map(file => adminId + "/" + file.name);
+
+                    const { error: removeError } =
+                        await supabaseClient
+                            .storage
+                            .from("profiles")
+                            .remove(filePaths);
+
+                    if (removeError) throw removeError;
+                }
+
+                const { error: updateError } =
+                    await supabaseClient
+                        .from("profiles")
+                        .update({ profile_image: null })
+                        .eq("id", adminId);
+
+                if (updateError) throw updateError;
+
+                profile.profile_image = null;
+
+                await showProfileImage(null);
+
+                imageInput.value = "";
+
+                alert("تم حذف الصورة بنجاح.");
+
+            } catch (error) {
+                console.error("Error deleting profile image:", error);
+                alert("لم نتمكن من حذف الصورة.");
+            }
+        });
+        loadingMessage.style.display = "none";
+        profileContent.dataset.profileId = adminId;
+        profileContent.style.display = "block";
+
+    } catch (error) {
+        console.error("Error loading my info:", error);
+
+        loadingMessage.style.display = "none";
+        errorMessage.textContent =
+            "Error: " + error.message;
+        errorMessage.style.display = "block";
+    }
+}
+loadMyInfo();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+<style id="profile-edit-styles">
+.edit-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cfd8d2;
+    border-radius: 8px;
+    background: white;
+    color: #1f2d25;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.edit-input:focus {
+    outline: none;
+    border-color: #145c45;
+}
+
+#phoneInput {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: isolate !important;
+    writing-mode: horizontal-tb !important;
+    display: block !important;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.edit-actions button {
+    border: none;
+    border-radius: 9px;
+    padding: 11px 20px;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#editProfileButton,
+#saveProfileButton {
+    background: #145c45;
+    color: white;
+}
+
+#cancelEditButton {
+    background: #e8ece9;
+    color: #1f2d25;
+}
+
+#saveProfileButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+<script>
+(function () {
+    const grid = document.querySelector(".info-grid");
+
+    if (!grid) {
+        console.error("info-grid not found");
+        return;
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "edit-actions";
+    actions.innerHTML = `
+        <button type="button" id="editProfileButton">تعديل المعلومات</button>
+        <button type="button" id="saveProfileButton" style="display:none;">حفظ</button>
+        <button type="button" id="cancelEditButton" style="display:none;">إلغاء</button>
+    `;
+
+    grid.parentNode.appendChild(actions);
+
+    const items = grid.querySelectorAll(".info-item");
+
+    const nameItem = items[0];
+    const ageItem = items[1];
+    const phoneItem = items[2];
+
+    nameItem.insertAdjacentHTML(
+        "beforeend",
+        '<input type="text" id="fullNameInput" class="edit-input" style="display:none;">'
+    );
+
+    ageItem.insertAdjacentHTML(
+        "beforeend",
+        '<div id="birthDatePicker" style="display:none; width:100%; margin-top:8px;">' +
+            '<div style="display:flex; gap:8px; width:100%;">' +
+                '<select id="birthDay" class="edit-input" style="flex:1; cursor:pointer;">' +
+                    '<option value="">Day</option>' +
+                '</select>' +
+                '<select id="birthMonth" class="edit-input" style="flex:1; cursor:pointer;">' +
+                    '<option value="">Month</option>' +
+                '</select>' +
+                '<select id="birthYear" class="edit-input" style="flex:1.2; cursor:pointer;">' +
+                    '<option value="">Year</option>' +
+                '</select>' +
+            '</div>' +
+        '</div>' +
+        '<input type="hidden" id="birthDateInput">'
+    );
+
+    phoneItem.insertAdjacentHTML(
+        "beforeend",
+        '<input type="tel" id="phoneInput" class="edit-input" dir="ltr" style="display:none !important; direction:ltr !important; text-align:left !important; unicode-bidi:plaintext;" placeholder="+961 3XXXXXX" autocomplete="tel">'
+    );
+})();
+</script>
+<script>
+(function () {
+    const editButton = document.getElementById("editProfileButton");
+    const saveButton = document.getElementById("saveProfileButton");
+    const cancelButton = document.getElementById("cancelEditButton");
+
+    const nameInput = document.getElementById("fullNameInput");
+    const phoneInput = document.getElementById("phoneInput");
+    const birthDateInput = document.getElementById("birthDateInput");
+
+    const nameValue = document.getElementById("fullNameInfo");
+    const phoneValue = document.getElementById("phoneInfo");
+    const ageValue = document.getElementById("ageInfo");
+
+    if (!editButton || !saveButton || !cancelButton) {
+        console.error("Profile edit controls not found.");
+        return;
+    }
+
+    let originalName = "";
+    let originalPhone = "";
+    let originalBirthDate = "";
+
+    function calculateAge(birthDateValue) {
+        if (!birthDateValue) return "غير محدد";
+
+        const birthDate = new Date(birthDateValue);
+        const today = new Date();
+
+        let age = today.getFullYear() - birthDate.getFullYear();
+
+        const monthDifference =
+            today.getMonth() - birthDate.getMonth();
+
+        if (
+            monthDifference < 0 ||
+            (
+                monthDifference === 0 &&
+                today.getDate() < birthDate.getDate()
+            )
+        ) {
+            age--;
+        }
+
+        return age >= 0 ? age + " سنة" : "غير محدد";
+    }
+
+    function setupBirthDatePicker() {
+        const daySelect = document.getElementById("birthDay");
+        const monthSelect = document.getElementById("birthMonth");
+        const yearSelect = document.getElementById("birthYear");
+
+        if (!daySelect || !monthSelect || !yearSelect) return;
+
+        if (yearSelect.options.length === 1) {
+            const currentYear = new Date().getFullYear();
+
+            for (let year = currentYear; year >= 1900; year--) {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+
+            const months = [
+                "January", "February", "March", "April",
+                "May", "June", "July", "August",
+                "September", "October", "November", "December"
+            ];
+
+            months.forEach((month, index) => {
+                const option = document.createElement("option");
+                option.value = String(index + 1).padStart(2, "0");
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+
+            for (let day = 1; day <= 31; day++) {
+                const option = document.createElement("option");
+                option.value = String(day).padStart(2, "0");
+                option.textContent = day;
+                daySelect.appendChild(option);
+            }
+        }
+
+        function updateBirthDate() {
+            const day = daySelect.value;
+            const month = monthSelect.value;
+            const year = yearSelect.value;
+
+            if (day && month && year) {
+                const dateValue = year + "-" + month + "-" + day;
+                const selectedDate = new Date(dateValue + "T00:00:00");
+                const today = new Date();
+
+                if (selectedDate > today) {
+                    birthDateInput.value = "";
+                    return;
+                }
+
+                birthDateInput.value = dateValue;
+            }
+        }
+
+        daySelect.addEventListener("change", updateBirthDate);
+        monthSelect.addEventListener("change", updateBirthDate);
+        yearSelect.addEventListener("change", updateBirthDate);
+    }
+
+    function loadBirthDateIntoPicker(dateValue) {
+        const daySelect = document.getElementById("birthDay");
+        const monthSelect = document.getElementById("birthMonth");
+        const yearSelect = document.getElementById("birthYear");
+
+        if (!daySelect || !monthSelect || !yearSelect) return;
+
+        if (!dateValue) {
+            daySelect.value = "";
+            monthSelect.value = "";
+            yearSelect.value = "";
+            return;
+        }
+
+        const parts = dateValue.substring(0, 10).split("-");
+
+        if (parts.length === 3) {
+            yearSelect.value = parts[0];
+            monthSelect.value = parts[1];
+            daySelect.value = parts[2];
+        }
+    }
+
+    setupBirthDatePicker();
+
+    function enterEditMode() {
+        originalName = nameValue.textContent === "غير محدد"
+            ? ""
+            : nameValue.textContent;
+
+        originalPhone = phoneValue.textContent === "غير محدد"
+            ? ""
+            : phoneValue.textContent;
+
+        nameInput.value = originalName;
+
+        const savedPhone = originalPhone || "";
+        if (savedPhone) {
+            phoneInput.value = savedPhone.startsWith("+961")
+                ? savedPhone
+                : "+961 " + savedPhone.replace(/^0/, "");
+        } else {
+            phoneInput.value = "+961 ";
+        }
+
+        birthDateInput.value = window.currentProfileBirthDate || "";
+
+        nameInput.style.display = "block";
+        phoneInput.style.display = "block";
+
+        phoneInput.setAttribute("dir", "ltr");
+        phoneInput.style.setProperty("direction", "ltr", "important");
+        phoneInput.style.setProperty("text-align", "left", "important");
+        phoneInput.style.setProperty("unicode-bidi", "isolate", "important");
+        phoneInput.style.setProperty("writing-mode", "horizontal-tb", "important");
+
+        document.getElementById("birthDatePicker").style.display = "block";
+        loadBirthDateIntoPicker(birthDateInput.value);
+
+        nameValue.style.display = "none";
+        phoneValue.style.display = "none";
+        ageValue.style.display = "none";
+
+        editButton.style.display = "none";
+        saveButton.style.display = "inline-block";
+        cancelButton.style.display = "inline-block";
+    }
+
+    function exitEditMode() {
+        nameInput.style.display = "none";
+        phoneInput.style.display = "none";
+        document.getElementById("birthDatePicker").style.display = "none";
+        birthDateInput.style.display = "none";
+
+        nameValue.style.display = "block";
+        phoneValue.style.display = "block";
+        ageValue.style.display = "block";
+
+        editButton.style.display = "inline-block";
+        saveButton.style.display = "none";
+        cancelButton.style.display = "none";
+    }
+
+    editButton.addEventListener("click", enterEditMode);
+
+    cancelButton.addEventListener("click", function () {
+        nameInput.value = originalName;
+        phoneInput.value = originalPhone;
+        exitEditMode();
+    });
+
+    saveButton.addEventListener("click", async function () {
+        const newName = nameInput.value.trim();
+
+        let newPhone = phoneInput.value.trim();
+
+        newPhone = newPhone.replace(/\s+/g, " ");
+
+        if (newPhone.startsWith("03")) {
+            newPhone = "+961 " + newPhone.substring(1);
+        } else if (newPhone.startsWith("3") && !newPhone.startsWith("+961")) {
+            newPhone = "+961 " + newPhone;
+        } else if (newPhone && !newPhone.startsWith("+961")) {
+            newPhone = "+961 " + newPhone.replace(/^0/, "");
+        }
+
+        const newBirthDate = birthDateInput.value || null;
+
+        if (!newName) {
+            alert("الرجاء إدخال الاسم الكامل.");
+            nameInput.focus();
+            return;
+        }
+
+        saveButton.disabled = true;
+        saveButton.textContent = "جارٍ الحفظ...";
+
+        try {
+            const currentProfileId =
+                document.querySelector("#profileContent")
+                    ?.dataset.profileId;
+
+            if (!currentProfileId) {
+                throw new Error("لم يتم العثور على معرف الحساب.");
+            }
+
+            const { error: updateError } =
+                await supabaseClient
+                    .from("profiles")
+                    .update({
+                        full_name: newName,
+                        phone: newPhone || null,
+                        birth_date: newBirthDate
+                    })
+                    .eq("id", currentProfileId);
+
+            if (updateError) {
+                throw updateError;
+            }
+
+            nameValue.textContent = newName || "غير محدد";
+            phoneValue.textContent = newPhone || "غير محدد";
+            ageValue.textContent = calculateAge(newBirthDate);
+
+            document.getElementById("fullName").textContent =
+                newName || "غير محدد";
+
+
+
+            exitEditMode();
+
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("لم نتمكن من حفظ المعلومات: " + error.message);
+
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "حفظ";
+        }
+    });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
