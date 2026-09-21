@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase.js"></script>
 
-    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="../styles/admin.css" />
   <style>
 .task-combobox {
     position: relative;
@@ -196,35 +196,133 @@
     text-shadow: none !important;
 }
 </style>
-</head>
+<style id="leader-info-button-fix">
+.leader-info-button {
+    width: 100%;
+    min-height: 38px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border: 1px solid #cfded5;
+    border-radius: 10px;
+    background: #f7faf8;
+    color: #225d3c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    direction: rtl;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.leader-info-button:hover {
+    background: #eaf3ed;
+}
+
+.leader-info-arrow {
+    font-size: 20px;
+    line-height: 1;
+    direction: ltr;
+}
+
+@media (max-width: 600px) {
+    .leader-info-button {
+        width: 100%;
+        min-height: 34px;
+        margin-top: 4px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .leader-info-arrow {
+        font-size: 19px;
+    }
+}
+</style><style id="leader-info-button-size-fix">
+.leader-info-button {
+    width: 100% !important; min-width: 0 !important; max-width: none !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    margin-top: 0 !important;
+    padding: 6px 10px !important;
+    border: 1px solid #d7e1db !important;
+    border-radius: 8px !important;
+    background: #f7faf8 !important;
+    color: #225d3c !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 7px !important;
+    direction: rtl !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+}
+
+.leader-info-arrow {
+    font-size: 17px !important;
+    line-height: 1 !important;
+    direction: ltr !important;
+    flex-shrink: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .leader-info-button {
+        width: 100% !important; min-width: 0 !important; max-width: none !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 5px 9px !important;
+        font-size: 11px !important;
+    }
+
+    .leader-info-arrow {
+        font-size: 16px !important;
+    }
+}
+</style></head>
 
   <body>
     <header class="topbar">
-      <div class="user-area">
-        <button class="menu-button" type="button" onclick="document.getElementById('adminSidebar').classList.toggle('open')">☰</button>
+  <div class="user-area">
+    <button class="menu-button" type="button" onclick="document.getElementById('adminSidebar').classList.toggle('open')">☰</button>
 
-        <div class="profile-image" id="adminProfileImage">
-          <span>👤</span>
-        </div>
+    <div class="profile-image" id="adminProfileImage">
+      <span>👤</span>
+    </div>
 
-        <span class="user-name" id="userName"></span>
-      </div>
+    <span class="user-name" id="userName"></span>
+  </div>
+</header>
 
-      <div class="topbar-actions">
-        <button
-          class="trash-button"
-          type="button"
-          onclick="window.location.href='trash.html'"
-        >
-          🗑️ سلة المحذوفات
-          <span class="trash-count" id="trashCount">0</span>
-        </button>
+<aside class="admin-sidebar" id="adminSidebar">
+  <button class="sidebar-item" type="button" id="myInfoButton">👥 معلوماتي</button>
 
-        <button class="logout-button" type="button" onclick="logout()">
-          تسجيل الخروج
-        </button>
-      </div>
-    </header><aside class="admin-sidebar" id="adminSidebar"><button class="sidebar-item" type="button" id="myInfoButton">👥 معلوماتي</button><div class="sidebar-stat">👤 <span>عدد القادة: <strong id="leadersCount">0</strong></span></div><div class="sidebar-stat missing-uniform-stat">🔴 <span>عدد البدلات الناقصة: <strong id="missingUniformCount">0</strong></span></div></aside>
+  <div class="sidebar-stat">
+    👤 <span>عدد القادة: <strong id="leadersCount">0</strong></span>
+  </div>
+
+  <div class="sidebar-stat missing-uniform-stat">
+    🔴 <span>عدد البدلات الناقصة: <strong id="missingUniformCount">0</strong></span>
+  </div>
+
+  <div class="topbar-actions">
+    <button
+      class="trash-button"
+      type="button"
+      onclick="window.location.href='trash.html'"
+    >
+      🗑️ سلة المحذوفات
+      <span class="trash-count" id="trashCount">0</span>
+    </button>
+
+    <button class="logout-button" type="button" onclick="logout()">
+      تسجيل الخروج
+    </button>
+  </div>
+</aside>
 
     <main class="container">
       <div class="page-header">
@@ -401,8 +499,7 @@
 
       async function loadAdminName() {
         try {
-          const { data, error } = await supabaseClient
-            .from("profiles").select("full_name, profile_image").eq("role", "admin").single();
+          const { data, error } = await AppDb.getAdminSummary();
 
           if (error) {
             console.error("Error loading admin:", error);
@@ -550,13 +647,7 @@
         }
 
         try {
-          const { data, error } = await supabaseClient
-            .from("leaders")
-            .select("*")
-            .is("deleted_at", null)
-      .order("full_name", {
-              ascending: true,
-            });
+          const { data, error } = await AppDb.listActiveLeaders();
 
           if (error) {
             throw error;
@@ -686,25 +777,14 @@
                    STEP 1 — ACTUAL DATABASE INSERT
                 ================================================= */
 
-            const { data, error } = await supabaseClient
-              .from("leaders")
-              .insert([
-                {
-                  full_name: name,
-
-                  assistants: assistants || null,
-
-                  phone: phone || null,
-
-                  birth_date: birthDate,
-
-                  branch: branch,
-
-                  has_uniform: uniform,
-                },
-              ])
-              .select()
-              .single();
+            const { data, error } = await AppDb.createLeader({
+              full_name: name,
+              assistants: assistants || null,
+              phone: phone || null,
+              birth_date: birthDate,
+              branch: branch,
+              has_uniform: uniform,
+            });
 
             /*
              * إذا Supabase أعطى error،
@@ -899,16 +979,10 @@
 
 
             <div class="leader-actions">
-
-  <button
-    class="delete-leader-button"
-    type="button"
-    title="حذف القائد"
-    onclick="event.stopPropagation(); deleteLeader('${leader.id}')"
-  >
-    🗑️
+  <button type="button" class="leader-info-button" onclick="event.stopPropagation(); window.location.href='../leader/leader.html?id=${leader.id}'">
+    <span>معلومات القائد</span>
+    <span class="leader-info-arrow">←</span>
   </button>
-
 </div>
 
         </div>
@@ -966,12 +1040,7 @@
     return;
   }
 
-  const { error } = await supabaseClient
-    .from("leaders")
-    .update({
-      deleted_at: new Date().toISOString()
-    })
-    .eq("id", leaderId);
+  const { error } = await AppDb.softDeleteLeader(leaderId);
 
   if (error) {
     console.error("Delete error:", error);
@@ -987,13 +1056,7 @@
 }
 async function loadTrashCount() {
 
-  const { count, error } = await supabaseClient
-    .from("leaders")
-    .select("id", {
-      count: "exact",
-      head: true
-    })
-    .not("deleted_at", "is", null);
+  const { count, error } = await AppDb.countDeletedLeaders();
 
   if (error) {
     console.error("Trash count error:", error);
@@ -1007,7 +1070,7 @@ async function loadTrashCount() {
   }
 }
 async function logout() {
-        await supabaseClient.auth.signOut();
+        await AppDb.signOut();
 
         window.location.href = "../index.html";
       }
@@ -1069,10 +1132,7 @@ async function setupTasksComboBox() {
     let addingMode = false;
 
     async function loadTasks() {
-        const { data, error } = await supabaseClient
-            .from("tasks")
-            .select("id, name")
-            .order("name", { ascending: true });
+        const { data, error } = await AppDb.listTasks();
 
         if (error) {
             console.error("Error loading tasks:", error);
@@ -1197,11 +1257,7 @@ async function setupTasksComboBox() {
             return;
         }
 
-        const { data, error } = await supabaseClient
-            .from("tasks")
-            .insert([{ name: name }])
-            .select("id, name")
-            .single();
+        const { data, error } = await AppDb.createTask(name);
 
         if (error) {
             console.error("Error adding task:", error);
@@ -1302,33 +1358,4 @@ input.addEventListener("input", function () {
 setupTasksComboBox();
 </script>
 </body>
-</html>}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</html>

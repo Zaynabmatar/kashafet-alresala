@@ -8,8 +8,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase.js"></script>
 
-    <link rel="stylesheet" href="leader.css">
-</head>
+    <link rel="stylesheet" href="../styles/leader.css">
+<style id="delete-leader-style">
+.delete-leader-section {
+    margin-top: 24px;
+    padding: 0 0 24px;
+}
+.delete-leader-button {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid #225d3c;
+    border-radius: 10px;
+    background: #225d3c;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.delete-leader-button:hover {
+    background: #1b4d32;
+}
+</style></head>
 
 <body>
 
@@ -118,7 +137,11 @@
         </div>
 
     </section>
-</main>
+<section class="delete-leader-section">
+    <button type="button" id="deleteLeaderButton" class="delete-leader-button" onclick="deleteCurrentLeader()">
+        حذف القائد
+    </button>
+</section></main>
 
 <div class="modal-overlay" id="editModal">
 
@@ -337,11 +360,7 @@ async function loadLeader() {
 
     if (loadingState) loadingState.style.display = "none";
 
-    const { data, error } = await supabaseClient
-        .from("leaders")
-        .select("*")
-        .eq("id", leaderId)
-        .single();
+    const { data, error } = await AppDb.getLeaderById(leaderId);
 
     clearTimeout(loadingTimer);
 
@@ -473,19 +492,14 @@ document.getElementById("editForm").addEventListener("submit", async function(ev
 
     saveButton.disabled = true;
 
-    const { data, error } = await supabaseClient
-        .from("leaders")
-        .update({
-            full_name: name,
-            assistants: assistants || null,
-            phone: phone || null,
-            birth_date: birthDate,
-            branch: branch,
-            has_uniform: uniform
-        })
-        .eq("id", leaderId)
-        .select()
-        .single();
+    const { data, error } = await AppDb.updateLeader(leaderId, {
+        full_name: name,
+        assistants: assistants || null,
+        phone: phone || null,
+        birth_date: birthDate,
+        branch: branch,
+        has_uniform: uniform
+    });
 
     saveButton.disabled = false;
 
@@ -502,6 +516,21 @@ document.getElementById("editForm").addEventListener("submit", async function(ev
 loadLeader();
 });
 
+async function deleteCurrentLeader() {
+    if (!leaderId) return;
+    const confirmed = confirm("هل أنت متأكد أنك تريد حذف هذا القائد؟");
+    if (!confirmed) return;
+    const button = document.getElementById("deleteLeaderButton");
+    if (button) button.disabled = true;
+    const { error } = await AppDb.softDeleteLeader(leaderId);
+    if (error) {
+        console.error(error);
+        alert("تعذر حذف القائد: " + error.message);
+        if (button) button.disabled = false;
+        return;
+    }
+    window.location.href = "../admin/admin.html";
+}
 function goBack() {
     window.location.href = "../admin/admin.html";
 }
@@ -519,6 +548,7 @@ document.getElementById("editModal").addEventListener("click", function(event) {
 
 </body>
 </html>
+
 
 
 

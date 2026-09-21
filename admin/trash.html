@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase.js"></script>
 
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="../styles/admin.css">
 </head>
 
 <body>
@@ -27,33 +27,9 @@
       ‹
     </button>
 
-    <div class="profile-image" id="adminProfileImage">
-      <span>👤</span>
-    </div>
-
-    <span class="user-name" id="userName"></span>
-
   </div>
 
-  <div class="topbar-actions">
 
-    <button
-      class="back-to-leaders-button"
-      type="button"
-      onclick="window.location.href='admin.html'"
-    >
-      👥 قائمة القادة
-    </button>
-
-    <button
-      class="logout-button"
-      type="button"
-      onclick="logout()"
-    >
-      تسجيل الخروج
-    </button>
-
-  </div>
 
 </header>
 
@@ -116,12 +92,7 @@ async function loadAdminName() {
     return;
   }
 
-  const { data, error } = await supabaseClient
-    .from("profiles")
-    .select("full_name, profile_image")
-    .eq("id", currentAdminId)
-    .eq("role", "admin")
-    .maybeSingle();
+  const { data, error } = await AppDb.getAdminProfileById(currentAdminId);
 
   if (error) {
     console.error("Admin profile error:", error);
@@ -132,15 +103,6 @@ async function loadAdminName() {
 
     document.getElementById("userName").textContent =
       data.full_name || "";
-
-    if (data.profile_image) {
-
-      document.getElementById("adminProfileImage").innerHTML =
-        '<img src="' +
-        data.profile_image +
-        '" alt="Admin">';
-
-    }
 
   }
 
@@ -181,17 +143,7 @@ function formatDeletedDate(dateValue) {
 
 async function loadTrash() {
 
-  const { data, error } = await supabaseClient
-
-    .from("leaders")
-
-    .select("*")
-
-    .not("deleted_at", "is", null)
-
-    .order("deleted_at", {
-      ascending: false
-    });
+  const { data, error } = await AppDb.listDeletedLeaders();
 
 
   if (error) {
@@ -325,15 +277,7 @@ async function restoreLeader(leaderId) {
   }
 
 
-  const { error } = await supabaseClient
-
-    .from("leaders")
-
-    .update({
-      deleted_at: null
-    })
-
-    .eq("id", leaderId);
+  const { error } = await AppDb.restoreLeader(leaderId);
 
 
   if (error) {
@@ -358,7 +302,7 @@ async function restoreLeader(leaderId) {
 
 async function logout() {
 
-  await supabaseClient.auth.signOut();
+  await AppDb.signOut();
 
   window.location.href = "../index.html";
 
@@ -373,3 +317,6 @@ loadTrash();
 
 </body>
 </html>
+
+
+

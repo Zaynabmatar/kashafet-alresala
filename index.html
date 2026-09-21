@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="ar" dir="rtl">
 
 <head>
@@ -18,29 +17,37 @@
         }
 
         html,
-body {
-    background: #000;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    font-family: Tahoma, Arial, sans-serif;
-}
+        body {
+            background: #000;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            font-family: Tahoma, Arial, sans-serif;
+        }
 
-.page {
-    position: relative;
-    width: 100%;
-}
+        body::-webkit-scrollbar {
+            display: none;
+        }
 
-/* الصورة الأصلية */
-.background-image {
-    display: block;
-    width: 100%;
-    height: auto;
-}
+        .page {
+            position: relative;
+            width: 100%;
+        }
+
+        /* الصورة الأصلية */
+        .background-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
 
         /* نافذة المستخدمين */
         .users-window {
+            
+            height: 350px !important;
+            width: 70vw !important;
+            top: 60% !important;
             position: absolute;
             top: 45%;
             left: 50%;
@@ -118,6 +125,15 @@ body {
             justify-content: center;
         }
 
+        /* صورة المستخدم */
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
         /* أيقونة الشخص */
         .avatar svg {
             width: 65%;
@@ -133,39 +149,64 @@ body {
             font-weight: bold;
         }
 
-        /* للموبايل */
+        /* Responsive للموبايل */
         @media (max-width: 600px) {
+            .page {
+                width: 100%;
+                min-height: 100vh;
+            }
+
+            .background-image {
+                width: 100%;
+                height: auto;
+                min-height: 100vh;
+                object-fit: cover;
+                object-position: top center;
+            }
+
+            /* مكان نافذة المستخدمين */
             .users-window {
-                top: 27%;
+            
+            height: 350px !important;
+            width: 70vw !important;
+            top: 60% !important;
+                top: 50% !important;
+                bottom: auto !important;
+                left: 50%;
+                transform: translateX(-50%);
                 width: 90vw;
-                height: 230px;
-                padding: 9px;
+                height: 290px;
+                padding: 8px;
+                border-radius: 22px;
+                background: rgba(0, 0, 0, 0.18);
+            }
+
+            .users-scroll {
+                padding: 4px 6px 14px;
+            }
+
+            .users-list {
+                gap: 10px;
             }
 
             .user-card {
-                min-height: 60px;
+                min-height: 58px;
+                padding: 6px 10px;
+                border-radius: 40px;
+                border-width: 1.5px;
             }
 
             .avatar {
-                overflow: hidden;
-                width: 44px;
-                height: 44px;
+                width: 42px;
+                height: 42px;
             }
 
             .user-name {
-                font-size: 17px;
+                font-size: 16px;
+                line-height: 1.2;
             }
         }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-            display: block;
-        }
-    .page::-webkit-scrollbar { display: none; }   body::-webkit-scrollbar { display: none; }   body::-webkit-scrollbar { display: none; }
-</style>
+    </style>
 </head>
 
 <body>
@@ -174,7 +215,7 @@ body {
 
         <!-- الصورة الأصلية -->
         <img
-            src="login photo.jpeg"
+            src="assets/images/phone login.jpeg"
             class="background-image"
             alt="كشافة الرسالة الإسلامية"
         />
@@ -189,6 +230,7 @@ body {
                     <!-- المستخدم الأول -->
                     <button
                         class="user-card"
+                        type="button"
                         onclick="openProfile(this)"
                     >
                         <span class="avatar" id="adminAvatarImage">
@@ -197,8 +239,7 @@ body {
                             </svg>
                         </span>
 
-                        <span class="user-name">
-                        </span>
+                        <span class="user-name"></span>
                     </button>
 
                     <div id="leadersList"></div>
@@ -227,11 +268,7 @@ body {
 
     <script>
         async function loadAdminName() {
-            const { data, error } = await supabaseClient
-                .from("profiles")
-                .select("id, full_name, profile_image")
-                .eq("role", "admin")
-                .single();
+            const { data, error } = await AppDb.getAdminSummary();
 
             if (error) {
                 console.error("Error loading admin:", error);
@@ -266,15 +303,12 @@ body {
 
     <script>
         async function loadLeaders() {
-            const leadersList = document.getElementById("leadersList");
+            const leadersList =
+                document.getElementById("leadersList");
 
             if (!leadersList) return;
 
-            const { data, error } = await supabaseClient
-                .from("leaders")
-                .select("id, full_name")
-                .is("deleted_at", null)
-                .order("full_name", { ascending: true });
+            const { data, error } = await AppDb.listActiveLeaderDirectory();
 
             if (error) {
                 console.error("Error loading leaders:", error);
@@ -286,7 +320,9 @@ body {
             if (!data || data.length === 0) return;
 
             data.forEach(function (leader) {
-                const button = document.createElement("button");
+                const button =
+                    document.createElement("button");
+
                 button.className = "user-card";
                 button.type = "button";
 
@@ -296,14 +332,17 @@ body {
                             <path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/>
                         </svg>
                     </span>
+
                     <span class="user-name"></span>
                 `;
 
-                button.querySelector(".user-name").textContent = leader.full_name;
+                button.querySelector(".user-name").textContent =
+                    leader.full_name;
 
                 button.addEventListener("click", function () {
                     window.location.href =
-                        "leader/leader.html?id=" + encodeURIComponent(leader.id);
+                        "leader/leader.html?id=" +
+                        encodeURIComponent(leader.id);
                 });
 
                 leadersList.appendChild(button);
@@ -316,30 +355,6 @@ body {
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
