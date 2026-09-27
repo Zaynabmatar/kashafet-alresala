@@ -44,16 +44,12 @@
 
         /* نافذة المستخدمين */
         .users-window {
-            
             height: 350px !important;
             width: 70vw !important;
             top: 60% !important;
             position: absolute;
-            top: 45%;
             left: 50%;
             transform: translateX(-50%);
-            width: min(520px, 82vw);
-            height: 600px;
             padding: 12px;
             border-radius: 25px;
             background: rgba(0, 0, 0, 0.2);
@@ -166,16 +162,10 @@
 
             /* مكان نافذة المستخدمين */
             .users-window {
-            
-            height: 350px !important;
-            width: 70vw !important;
-            top: 60% !important;
                 top: 50% !important;
                 bottom: auto !important;
                 left: 50%;
                 transform: translateX(-50%);
-                width: 90vw;
-                height: 290px;
                 padding: 8px;
                 border-radius: 22px;
                 background: rgba(0, 0, 0, 0.18);
@@ -233,13 +223,7 @@
                         type="button"
                         onclick="openProfile(this)"
                     >
-                        <span class="avatar" id="adminAvatarImage">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/>
-                            </svg>
-                        </span>
-
-                        <span class="user-name"></span>
+<span class="avatar" id="adminAvatarImage"><svg viewBox="0 0 24 24"><path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/></svg></span><span class="user-name"></span>
                     </button>
 
                     <div id="leadersList"></div>
@@ -274,20 +258,17 @@
                 console.error("Error loading admin:", error);
                 return;
             }
-
-            const avatarElement =
-                document.getElementById("adminAvatarImage");
-
-            if (avatarElement && data.profile_image) {
-                avatarElement.innerHTML =
-                    '<img src="' + data.profile_image + '" alt="Profile">';
-            }
-
-            const nameElement =
+const nameElement =
                 document.querySelector(".user-name");
 
             if (nameElement) {
                 nameElement.textContent = data.full_name;
+            }
+
+            const adminAvatar = document.getElementById("adminAvatarImage");
+
+            if (adminAvatar && data.profile_image) {
+                adminAvatar.innerHTML = `<img src="${data.profile_image}" alt="">`;
             }
 
             const adminButton =
@@ -308,30 +289,45 @@
 
             if (!leadersList) return;
 
-            const { data, error } = await AppDb.listActiveLeaderDirectory();
+            const [leadersResult, tasksResult] = await Promise.all([
+                AppDb.listActiveLeaderDirectory(),
+                AppDb.listTasks()
+            ]);
+
+            const { data, error } = leadersResult;
 
             if (error) {
                 console.error("Error loading leaders:", error);
                 return;
             }
 
+            if (tasksResult.error) {
+                console.error("Error loading tasks:", tasksResult.error);
+                return;
+            }
+
             leadersList.innerHTML = "";
 
-            if (!data || data.length === 0) return;
+            const teamTaskIds = new Set(
+                (tasksResult.data || [])
+                    .filter(function (task) { return task.has_team === true; })
+                    .map(function (task) { return String(task.id); })
+            );
 
-            data.forEach(function (leader) {
+            const teamLeaders = (data || []).filter(function (leader) {
+                return teamTaskIds.has(String(leader.task_id));
+            });
+
+            if (teamLeaders.length === 0) return;
+
+            teamLeaders.forEach(function (leader) {
                 const button =
                     document.createElement("button");
 
                 button.className = "user-card";
                 button.type = "button";
 
-                button.innerHTML = `
-                    <span class="avatar">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/>
-                        </svg>
-                    </span>
+                button.innerHTML = `<span class="avatar">${leader.profile_image ? `<img src="${leader.profile_image}" alt="">` : `<svg viewBox="0 0 24 24"><path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/></svg>`}</span>
 
                     <span class="user-name"></span>
                 `;
@@ -341,7 +337,7 @@
 
                 button.addEventListener("click", function () {
                     window.location.href =
-                        "leader/leader.html?id=" +
+                        "leader-dashboard.html?id=" +
                         encodeURIComponent(leader.id);
                 });
 
@@ -355,6 +351,14 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
 
 
 

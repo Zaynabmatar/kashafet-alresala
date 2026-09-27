@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Activity Attendance Check</title>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+(async function () {
+    const result = await supabaseClient
+        .from("activity_attendance")
+        .select("*")
+        .limit(1);
+
+    console.log("RESULT:", result);
+
+    document.body.innerText =
+        JSON.stringify(
+            {
+                data: result.data,
+                error: result.error
+            },
+            null,
+            2
+        );
+})();
+</script>
+</body>
+</html>

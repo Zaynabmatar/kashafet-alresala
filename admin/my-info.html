@@ -9,163 +9,34 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase.js"></script>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    <link rel="stylesheet" href="../styles/my-info.css">
+<style>
+/* ===== PROFILE IMAGE: KEEP ORIGINAL PROPORTIONS ===== */
+.avatar {
+    overflow: hidden;
+}
 
-        body {
-            font-family: Arial, Tahoma, sans-serif;
-            background: #f4f7f5;
-            color: #1f2d25;
-            min-height: 100vh;
-        }
-
-        .topbar {
-            width: 100%;
-            height: 76px;
-            background: #145c45;
-            display: flex;
-            align-items: center;
-            padding: 0 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        }
-
-        .back-button {
-            border: none;
-            background: transparent;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .container {
-            width: min(900px, calc(100% - 40px));
-            margin: 45px auto;
-        }
-
-        .page-header {
-            margin-bottom: 25px;
-        }
-
-        .page-header h1 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
-
-        .page-header p {
-            color: #68756e;
-            font-size: 15px;
-        }
-
-        .info-card {
-            background: white;
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            padding-bottom: 25px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #e5eae7;
-        }
-
-        .avatar {
-            width: 70px;
-            height: 70px;
-            min-width: 70px;
-            border-radius: 50%;
-            background: #e8f3ec;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid #d7e8dc;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-header h2 {
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-
-        .profile-header span {
-            color: #176b3a;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        .info-item {
-            background: #f7f9f8;
-            border-radius: 12px;
-            padding: 18px;
-        }
-
-        .info-label {
-            display: block;
-            color: #758079;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .info-value {
-            font-size: 16px;
-            font-weight: 600;
-            word-break: break-word;
-        }
-
-        .message {
-            text-align: center;
-            padding: 35px;
-            color: #68756e;
-        }
-
-        @media (max-width: 650px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .container {
-                width: min(100% - 24px, 900px);
-                margin: 25px auto;
-            }
-
-            .info-card {
-                padding: 20px;
-            }
-        }
-    </style>
+.avatar img,</style>
 </head>
 
 <body>
 
 <header class="topbar">
-    <button
-        class="back-button"
-        type="button"
-        onclick="history.back()"
-    >
-        → رجوع
-    </button>
+    <div class="user-area">
+
+        <button
+            class="menu-button"
+            type="button"
+            onclick="window.location.href='admin.html?sidebar=open'"
+            title="العودة إلى قائمة القادة"
+            aria-label="العودة إلى قائمة القادة"
+        >
+            ‹
+        </button>
+
+        <div class="page-topbar-title">معلوماتي</div>
+
+    </div>
 </header>
 
 <main class="container">
@@ -183,19 +54,14 @@
 
         <div id="profileContent" style="display:none;">
 
-            <div class="profile-header">
+            <div class="avatar-wrapper">
+    <div class="avatar" aria-hidden="true">
+        <span>👤</span>
+    </div>
+</div>
 
-                <div class="avatar-wrapper"><label class="avatar" for="profileImageInput" title="اختيار صورة شخصية"><img id="profileImagePreview" src="" alt="الصورة الشخصية" style="display:none;"><span id="avatarPlaceholder">👤</span></label><button type="button" id="deleteProfileImage" style="display:none;">حذف الصورة</button></div>
-
-                <input
-                    type="file"
-                    id="profileImageInput"
-                    accept="image/*"
-                    style="display:none;"
-                >
-
-                <div>
-                    <h2 id="fullName">-</h2>
+<div>
+    <h2 id="fullName">-</h2>
                     <span id="role">-</span>
                 </div>
 
@@ -299,108 +165,6 @@ async function loadMyInfo() {
 
         document.getElementById("ageInfo").textContent = ageText;
 
-        // الصورة الحالية
-        const imagePreview =
-            document.getElementById("profileImagePreview");
-
-        const placeholder =
-            document.getElementById("avatarPlaceholder");
-
-        if (profile.profile_image) {
-            imagePreview.src = profile.profile_image;
-            imagePreview.style.display = "block";
-            placeholder.style.display = "none";
-        }
-
-        // إدارة صورة الملف الشخصي
-        const imageInput = document.getElementById("profileImageInput");
-        const deleteButton = document.getElementById("deleteProfileImage");
-
-        async function showProfileImage(imageUrl) {
-            const imagePreview = document.getElementById("profileImagePreview");
-            const placeholder = document.getElementById("avatarPlaceholder");
-
-            if (imageUrl) {
-                imagePreview.src = imageUrl;
-                imagePreview.style.display = "block";
-                placeholder.style.display = "none";
-                deleteButton.style.display = "block";
-            } else {
-                imagePreview.src = "";
-                imagePreview.style.display = "none";
-                placeholder.style.display = "inline";
-                deleteButton.style.display = "none";
-            }
-        }
-
-        if (profile.profile_image) {
-            await showProfileImage(profile.profile_image);
-        }
-
-        imageInput.addEventListener("change", async function () {
-            const file = this.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith("image/")) {
-                alert("الرجاء اختيار صورة فقط.");
-                return;
-            }
-
-            try {
-                const { error: uploadError } = await AppDb.uploadProfileImage(adminId, file);
-
-                if (uploadError) throw uploadError;
-
-                const { data: urlData } = AppDb.getProfileImagePublicUrl(adminId, file);
-
-                const imageUrl = urlData.publicUrl;
-
-                const { error: updateError } = await AppDb.updateProfile(adminId, { profile_image: imageUrl });
-
-                if (updateError) throw updateError;
-
-                await showProfileImage(imageUrl);
-                alert("تم حفظ الصورة بنجاح.");
-
-            } catch (error) {
-                console.error("Error saving profile image:", error);
-                alert("لم نتمكن من حفظ الصورة.");
-            }
-        });
-
-        deleteButton.addEventListener("click", async function () {
-            if (!confirm("هل تريدين حذف الصورة الشخصية؟")) return;
-
-            try {
-                const { data: files, error: listError } = await AppDb.listProfileFiles(adminId);
-
-                if (listError) throw listError;
-
-                if (files && files.length > 0) {
-                    const filePaths = files.map(file => adminId + "/" + file.name);
-
-                    const { error: removeError } = await AppDb.removeProfileFiles(filePaths);
-
-                    if (removeError) throw removeError;
-                }
-
-                const { error: updateError } = await AppDb.updateProfile(adminId, { profile_image: null });
-
-                if (updateError) throw updateError;
-
-                profile.profile_image = null;
-
-                await showProfileImage(null);
-
-                imageInput.value = "";
-
-                alert("تم حذف الصورة بنجاح.");
-
-            } catch (error) {
-                console.error("Error deleting profile image:", error);
-                alert("لم نتمكن من حذف الصورة.");
-            }
-        });
         loadingMessage.style.display = "none";
         profileContent.dataset.profileId = adminId;
         profileContent.style.display = "block";
@@ -425,62 +189,6 @@ loadMyInfo();
 
 
 
-<style id="profile-edit-styles">
-.edit-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #cfd8d2;
-    border-radius: 8px;
-    background: white;
-    color: #1f2d25;
-    font-size: 16px;
-    font-family: inherit;
-}
-
-.edit-input:focus {
-    outline: none;
-    border-color: #145c45;
-}
-
-#phoneInput {
-    direction: ltr !important;
-    text-align: left !important;
-    unicode-bidi: isolate !important;
-    writing-mode: horizontal-tb !important;
-    display: block !important;
-}
-
-.edit-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 22px;
-}
-
-.edit-actions button {
-    border: none;
-    border-radius: 9px;
-    padding: 11px 20px;
-    font-size: 15px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-#editProfileButton,
-#saveProfileButton {
-    background: #145c45;
-    color: white;
-}
-
-#cancelEditButton {
-    background: #e8ece9;
-    color: #1f2d25;
-}
-
-#saveProfileButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-</style>
 <script>
 (function () {
     const grid = document.querySelector(".info-grid");
@@ -802,6 +510,15 @@ loadMyInfo();
     });
 })();
 </script>
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>كشافة الرسالة الإسلامية</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            background: #000;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .page {
+            position: relative;
+            width: 100%;
+        }
+
+        /* الصورة الأصلية */
+        .background-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* نافذة المستخدمين */
+        .users-window {
+            height: 350px !important;
+            width: 70vw !important;
+            top: 60% !important;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px;
+            border-radius: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* منطقة التمرير */
+        .users-scroll {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 5px 8px 20px;
+        }
+
+        /* شكل شريط التمرير */
+        .users-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .users-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .users-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 20px;
+        }
+
+        /* قائمة المستخدمين */
+        .users-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* بطاقة المستخدم */
+        .user-card {
+            width: 100%;
+            min-height: 65px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            border-radius: 50px;
+            background: rgba(20, 45, 38, 0.88);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 7px 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .user-card:hover {
+            background: rgba(30, 65, 53, 0.95);
+            transform: scale(1.01);
+        }
+
+        /* دائرة المستخدم */
+        .avatar {
+            overflow: hidden;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: rgba(50, 80, 68, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* صورة المستخدم */
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
+        /* أيقونة الشخص */
+        .avatar svg {
+            width: 65%;
+            height: 65%;
+            fill: white;
+        }
+
+        /* اسم المستخدم */
+        .user-name {
+            flex: 1;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Responsive للموبايل */
+        @media (max-width: 600px) {
+            .page {
+                width: 100%;
+                min-height: 100vh;
+            }
+
+            .background-image {
+                width: 100%;
+                height: auto;
+                min-height: 100vh;
+                object-fit: cover;
+                object-position: top center;
+            }
+
+            /* مكان نافذة المستخدمين */
+            .users-window {
+                top: 50% !important;
+                bottom: auto !important;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 8px;
+                border-radius: 22px;
+                background: rgba(0, 0, 0, 0.18);
+            }
+
+            .users-scroll {
+                padding: 4px 6px 14px;
+            }
+
+            .users-list {
+                gap: 10px;
+            }
+
+            .user-card {
+                min-height: 58px;
+                padding: 6px 10px;
+                border-radius: 40px;
+                border-width: 1.5px;
+            }
+
+            .avatar {
+                width: 42px;
+                height: 42px;
+            }
+
+            .user-name {
+                font-size: 16px;
+                line-height: 1.2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- الصورة الأصلية -->
+        <img
+            src="assets/images/phone login.jpeg"
+            class="background-image"
+            alt="كشافة الرسالة الإسلامية"
+        />
+
+        <!-- نافذة المستخدمين -->
+        <div class="users-window">
+
+            <div class="users-scroll">
+
+                <div class="users-list">
+
+                    <!-- المستخدم الأول -->
+                    <button
+                        class="user-card"
+                        type="button"
+                        onclick="openProfile(this)"
+                    >
+<span class="user-name"></span>
+                    </button>
+
+                    <div id="leadersList"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function openProfile(button) {
+            const adminId = button.dataset.adminId;
+
+            if (!adminId) {
+                console.error("Admin ID not found");
+                return;
+            }
+
+            window.location.href =
+                "admin/admin.html?id=" + encodeURIComponent(adminId);
+        }
+    </script>
+
+    <script>
+        async function loadAdminName() {
+            const { data, error } = await AppDb.getAdminSummary();
+
+            if (error) {
+                console.error("Error loading admin:", error);
+                return;
+            }
+const nameElement =
+                document.querySelector(".user-name");
+
+            if (nameElement) {
+                nameElement.textContent = data.full_name;
+            }
+
+            const adminButton =
+                document.querySelector(".user-card");
+
+            if (adminButton) {
+                adminButton.dataset.adminId = data.id;
+            }
+        }
+
+        loadAdminName();
+    </script>
+
+    <script>
+        async function loadLeaders() {
+            const leadersList =
+                document.getElementById("leadersList");
+
+            if (!leadersList) return;
+
+            const [leadersResult, tasksResult] = await Promise.all([
+                AppDb.listActiveLeaderDirectory(),
+                AppDb.listTasks()
+            ]);
+
+            const { data, error } = leadersResult;
+
+            if (error) {
+                console.error("Error loading leaders:", error);
+                return;
+            }
+
+            if (tasksResult.error) {
+                console.error("Error loading tasks:", tasksResult.error);
+                return;
+            }
+
+            leadersList.innerHTML = "";
+
+            const teamTaskIds = new Set(
+                (tasksResult.data || [])
+                    .filter(function (task) { return task.has_team === true; })
+                    .map(function (task) { return String(task.id); })
+            );
+
+            const teamLeaders = (data || []).filter(function (leader) {
+                return teamTaskIds.has(String(leader.task_id));
+            });
+
+            if (teamLeaders.length === 0) return;
+
+            teamLeaders.forEach(function (leader) {
+                const button =
+                    document.createElement("button");
+
+                button.className = "user-card";
+                button.type = "button";
+
+                button.innerHTML = `<span class="avatar">${leader.profile_image ? `<img src="${leader.profile_image}" alt="">` : `<svg viewBox="0 0 24 24"><path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/></svg>`}</span>
+
+                    <span class="avatar" id="adminAvatarImage">
+    <svg viewBox="0 0 24 24">
+        <path d="M12 12 a4 4 0 1 0 0-8 a4 4 0 0 0 0 8 M4 21 c0-4.4 3.6-7 8-7 s8 2.6 8 7 Z"/>
+    </svg>
+</span>
+<span class="user-name"></span>
+                `;
+
+                button.querySelector(".user-name").textContent =
+                    leader.full_name;
+
+                button.addEventListener("click", function () {
+                    window.location.href =
+                        "leader-dashboard.html?id=" +
+                        encodeURIComponent(leader.id);
+                });
+
+                leadersList.appendChild(button);
+            });
+        }
+
+        loadLeaders();
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

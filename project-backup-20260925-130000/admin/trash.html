@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>سلة المحذوفات</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase.js"></script>
+
+  <link rel="stylesheet" href="../styles/admin.css">
+  <link rel="stylesheet" href="../styles/trash.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <div class="user-area">
+
+    <button
+      class="menu-button"
+      type="button"
+      onclick="window.location.href='admin.html'"
+      title="العودة إلى قائمة القادة"
+    >
+      ‹
+    </button>
+
+  </div>
+
+
+
+</header>
+
+
+<main class="trash-container">
+
+  <div class="trash-header">
+
+    <div>
+      <h1>سلة المحذوفات</h1>
+
+      <p>
+        القادة الذين تم حذفهم مؤقتًا. يمكنك استعادة أي قائد في أي وقت.
+      </p>
+    </div>
+
+    <div class="trash-total">
+
+      <span>عدد المحذوفات</span>
+
+      <strong id="trashTotal">0</strong>
+
+    </div>
+
+  </div>
+
+
+  <section
+    id="trashList"
+    class="trash-list"
+  ></section>
+
+
+  <div
+    id="trashEmpty"
+    class="trash-empty"
+  >
+
+    🗑️
+
+    <h2>سلة المحذوفات فارغة</h2>
+
+    <p>
+      لا يوجد قادة محذوفون حاليًا.
+    </p>
+
+  </div>
+
+</main>
+
+
+<script>
+
+async function loadAdminName() {
+
+  const currentAdminId =
+    new URLSearchParams(window.location.search).get("id");
+
+  if (!currentAdminId) {
+    return;
+  }
+
+  const { data, error } = await AppDb.getAdminProfileById(currentAdminId);
+
+  if (error) {
+    console.error("Admin profile error:", error);
+    return;
+  }
+
+  if (data) {
+
+    document.getElementById("userName").textContent =
+      data.full_name || "";
+
+  }
+
+}
+
+
+function escapeHtml(value) {
+
+  const div = document.createElement("div");
+
+  div.textContent = value ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+function formatDeletedDate(dateValue) {
+
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(dateValue);
+
+  return date.toLocaleString("ar-LB", {
+
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+
+  });
+
+}
+
+
+async function loadTrash() {
+
+  const { data, error } = await AppDb.listDeletedLeaders();
+
+
+  if (error) {
+
+    console.error(
+      "Trash loading error:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء تحميل سلة المحذوفات."
+    );
+
+    return;
+  }
+
+
+  const list =
+    document.getElementById("trashList");
+
+  const empty =
+    document.getElementById("trashEmpty");
+
+  const total =
+    document.getElementById("trashTotal");
+
+
+  list.innerHTML = "";
+
+  total.textContent = data.length;
+
+
+  if (!data.length) {
+
+    empty.style.display = "block";
+
+    return;
+  }
+
+
+  empty.style.display = "none";
+
+
+  data.forEach((leader) => {
+
+    const card =
+      document.createElement("article");
+
+    card.className = "trash-card";
+
+
+    const imageHtml = leader.image
+      ? `<img src="${escapeHtml(leader.image)}" alt="">`
+      : "👤";
+
+
+    card.innerHTML = `
+
+      <div class="trash-card-info">
+
+        <div class="trash-avatar">
+          ${imageHtml}
+        </div>
+
+
+        <div class="trash-details">
+
+          <h3>
+            ${escapeHtml(
+              leader.full_name || "بدون اسم"
+            )}
+          </h3>
+
+
+          <div class="trash-meta">
+
+            <span>
+              📞 ${escapeHtml(
+                leader.phone || "غير محدد"
+              )}
+            </span>
+
+            <span>
+              📍 ${escapeHtml(
+                leader.branch || "غير محدد"
+              )}
+            </span>
+
+          </div>
+
+
+          <p class="deleted-date">
+            تم الحذف:
+            ${formatDeletedDate(
+              leader.deleted_at
+            )}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="restore-button"
+        type="button"
+        onclick="restoreLeader('${leader.id}')"
+      >
+        ↩️ استعادة
+      </button>
+
+    `;
+
+
+    list.appendChild(card);
+
+  });
+
+}
+
+
+async function restoreLeader(leaderId) {
+
+  const confirmed = confirm(
+    "هل تريد استعادة هذا القائد إلى قائمة القادة؟"
+  );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const { error } = await AppDb.restoreLeader(leaderId);
+
+
+  if (error) {
+
+    console.error(
+      "Restore error:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء استعادة القائد."
+    );
+
+    return;
+  }
+
+
+  await loadTrash();
+
+}
+
+
+async function logout() {
+
+  await AppDb.signOut();
+
+  window.location.href = "../index.html";
+
+}
+
+
+loadAdminName();
+
+loadTrash();
+
+</script>
+
+</body>
+</html>
+
+
+

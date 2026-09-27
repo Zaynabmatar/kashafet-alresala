@@ -1,0 +1,37 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Tahoma,sans-serif;background:#f4f7f5;color:#1f2d25;min-height:100vh}
+.trash-topbar{height:76px;background:#145c45;color:#fff;display:flex;align-items:center}
+.trash-topbar-inner{width:100%;max-width:1100px;margin:auto;padding:0 22px;display:flex;align-items:center;gap:14px}
+.trash-topbar h1{font-size:21px;font-weight:700}
+.back-button{width:42px;height:42px;border:0;background:transparent;color:#fff;font-size:25px;cursor:pointer;border-radius:50%}
+.back-button:hover{background:rgba(255,255,255,.12)}
+.trash-container{width:calc(100% - 32px);max-width:1000px;margin:0 auto;padding:28px 0 40px}
+.trash-header{background:#fff;border:1px solid #e1e9e5;border-radius:18px;padding:20px;margin-bottom:18px}
+.trash-header h2{font-size:20px;margin-bottom:6px}
+.trash-header p{font-size:14px;color:#718078}
+.trash-list{display:flex;flex-direction:column;gap:12px}
+.trash-card{background:#fff;border:1px solid #e1e9e5;border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.trash-card-info{display:flex;align-items:center;gap:12px;min-width:0}
+.trash-avatar{width:52px;height:52px;flex:0 0 52px;border-radius:50%;background:#e7eeeb;display:grid;place-items:center;font-size:23px}
+.trash-details{min-width:0}
+.trash-details h3{font-size:17px;margin-bottom:5px}
+.trash-details p{font-size:14px;color:#718078}
+.trash-actions{display:flex;gap:8px;flex-shrink:0}
+.trash-actions button{border:0;border-radius:9px;padding:9px 13px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.restore-button{background:#e4f1e8;color:#145c45}
+.delete-button{background:#fbe7e7;color:#a52b2b}
+.empty-trash{background:#fff;border:1px solid #e1e9e5;border-radius:18px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px}
+.empty-trash-icon{font-size:38px;margin-bottom:10px}
+.empty-trash h3{font-size:18px;margin-bottom:6px}
+.empty-trash p{color:#718078;font-size:14px}
+.trash-error{background:#fff;border:1px solid #ead4d4;color:#a52b2b;border-radius:14px;padding:18px;text-align:center}
+@media(max-width:600px){
+  .trash-topbar{height:68px}
+  .trash-topbar-inner{padding:0 15px}
+  .trash-topbar h1{font-size:18px}
+  .trash-container{width:calc(100% - 24px);padding-top:20px}
+  .trash-header{padding:16px}
+  .trash-card{align-items:stretch;flex-direction:column;padding:14px}
+  .trash-actions{width:100%}
+  .trash-actions button{flex:1;min-height:40px}
+}

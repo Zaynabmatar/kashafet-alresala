@@ -1,0 +1,2728 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, "Tahoma", sans-serif;
+    background: #f7f9f8;
+    color: #222;
+}
+
+body {
+    min-height: 100vh;
+}
+
+body.activity-modal-open {
+    overflow: hidden;
+}
+
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 64px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e9e7;
+    z-index: 100;
+}
+
+.user-area {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 18px;
+}
+
+.menu-button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #145c45;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* =========================
+   PAGE
+========================= */
+
+.activity-details-page {
+    min-height: 100vh;
+    padding: 94px 20px 35px;
+}
+
+.activity-details-content {
+    width: min(760px, 100%);
+    margin: 0 auto;
+}
+
+
+/* =========================
+   ACTIVITY HEADING
+========================= */
+
+.activity-heading {
+    background: #ffffff;
+    border: 1px solid #e3e9e5;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.activity-number {
+    color: #198754;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.activity-heading h1 {
+    margin: 0;
+    font-size: 23px;
+    color: #198754;
+    line-height: 1.5;
+}
+
+.activity-date {
+    margin-top: 9px;
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* =========================
+   ATTENDEES
+========================= */
+
+.attendees-section {
+    background: #ffffff;
+    border: 1px solid #e3e9e5;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.attendees-section h2 {
+    margin: 0 0 5px;
+    color: #198754;
+    font-size: 20px;
+}
+
+.attendance-summary {
+    margin: 0 0 16px;
+    color: #777;
+    font-size: 14px;
+}
+
+.present-members-list {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(190px, 1fr)
+    );
+    gap: 10px;
+}
+
+.present-member-card {
+    min-height: 56px;
+    border: 1px solid #e3e9e5;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+}
+
+.member-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f0f4f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+/* =========================
+   EDIT BUTTON
+========================= */
+
+.details-edit-button {
+    width: 100%;
+    min-height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: #198754;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 12px 18px;
+}
+
+.details-edit-button:hover {
+    background: #157347;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+    padding: 35px 20px;
+    text-align: center;
+    color: #888;
+    background: #ffffff;
+    border: 1px dashed #d8dfdb;
+    border-radius: 12px;
+}
+
+
+/* =========================
+   EDIT MODAL
+========================= */
+
+.activity-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.48);
+}
+
+.activity-modal.active {
+    display: flex;
+}
+
+.activity-modal-box {
+    width: min(620px, 100%);
+    height: 88vh;
+    background: #ffffff;
+    border-radius: 18px 18px 0 0;
+    overflow-y: auto;
+    padding: 0 18px 22px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.activity-modal-header {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #edf0ee;
+    margin-bottom: 18px;
+}
+
+.activity-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #198754;
+}
+
+.close-modal-button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #666;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+
+/* =========================
+   TITLE
+========================= */
+
+.edit-field {
+    margin-bottom: 18px;
+}
+
+.edit-field label,
+.edit-date-section > label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+}
+
+.edit-field input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d8dfdb;
+    border-radius: 10px;
+    padding: 0 13px;
+    font-size: 15px;
+    outline: none;
+    direction: rtl;
+}
+
+.edit-field input:focus {
+    border-color: #198754;
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+.edit-date-section {
+    margin-bottom: 18px;
+}
+
+.custom-date-picker {
+    position: relative;
+}
+
+.typed-date-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d8dfdb;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.typed-date-input {
+    flex: 1;
+    height: 100%;
+    border: 0;
+    outline: none;
+    padding: 0 13px;
+    font-size: 15px;
+    direction: rtl;
+}
+
+.calendar-icon-button {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 19px;
+}
+
+.custom-date-popover {
+    display: none;
+    margin-top: 8px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #dfe5e1;
+    border-radius: 10px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.09);
+}
+
+.custom-date-popover.open {
+    display: block;
+}
+
+.date-picker-selects {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 8px;
+}
+
+.date-picker-selects select {
+    height: 44px;
+    border: 1px solid #d8dfdb;
+    border-radius: 9px;
+    background: #fff;
+    padding: 0 8px;
+    font-size: 14px;
+}
+
+
+/* =========================
+   MEMBER SEARCH
+========================= */
+
+.member-search {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d8dfdb;
+    border-radius: 10px;
+    padding: 0 12px;
+    margin-bottom: 10px;
+    background: #ffffff;
+}
+
+.member-search span {
+    color: #777;
+    font-size: 20px;
+}
+
+.member-search input {
+    flex: 1;
+    border: 0;
+    outline: none;
+    height: 100%;
+    font-size: 15px;
+    direction: rtl;
+}
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 310px;
+    overflow-y: auto;
+    margin-bottom: 18px;
+}
+
+.member-row {
+    min-height: 56px;
+    border: 1px solid #e1e6e3;
+    border-radius: 10px;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    background: #fff;
+}
+
+.member-row:hover {
+    border-color: #198754;
+}
+
+.member-row-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.member-row input {
+    width: 19px;
+    height: 19px;
+    accent-color: #198754;
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+.save-activity-button {
+    width: 100%;
+    height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: #198754;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.save-activity-button:hover {
+    background: #157347;
+}
+
+.save-activity-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .activity-details-page {
+        padding: 84px 12px 25px;
+    }
+
+    .activity-details-content {
+        width: 100%;
+    }
+
+    .activity-heading {
+        padding: 18px;
+    }
+
+    .activity-heading h1 {
+        font-size: 20px;
+    }
+
+    .attendees-section {
+        padding: 16px;
+    }
+
+    .present-members-list {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-modal-box {
+        width: 100%;
+        height: 88vh;
+        border-radius: 18px 18px 0 0;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .date-picker-selects {
+        grid-template-columns: 1fr;
+    }
+
+    .members-list {
+        max-height: 270px;
+    }
+}
+
+/* =========================================================
+   ACTIVITY DETAILS FINAL PATCH
+========================================================= */
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    box-sizing: border-box;
+}
+
+/* Green topbar */
+.topbar {
+    background: #145c45 !important;
+}
+
+/* Page structure */
+.activity-details-page {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    padding-bottom: 92px;
+}
+
+.activity-details-content {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Attendees area */
+.attendees-section {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 22px;
+}
+
+.present-members-list {
+    max-height: 46vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+    padding-right: 3px;
+}
+
+.present-member-card {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Fixed bottom edit button */
+.details-edit-button {
+    position: fixed !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 400 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 58px;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-top: 1px solid #dfe5e1;
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.07);
+}
+
+/* Make the separation from attendees obvious */
+.attendees-section {
+    padding-bottom: 4px;
+}
+
+/* Clean edit member search */
+#editMemberSearch {
+    width: 100%;
+    min-height: 48px;
+    height: 48px;
+    box-sizing: border-box;
+    border: 1px solid #dfe5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    padding: 0 14px;
+    font-size: 15px;
+}
+
+#editMemberSearch:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.08);
+}
+
+/* Prevent modal contents from creating horizontal scroll */
+.activity-modal,
+.activity-modal-box,
+.activity-modal-body,
+.members-list,
+.member-row {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.activity-modal {
+    overflow-x: hidden;
+}
+
+.activity-modal-box {
+    overflow-x: hidden;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .activity-details-page {
+        padding-bottom: 84px;
+    }
+
+    .present-members-list {
+        max-height: 42vh;
+    }
+
+    .details-edit-button {
+        min-height: 56px;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+}
+
+/* ============================================================
+   ACTIVITY DETAILS - FINAL DETAILS LAYOUT
+   Match the visual language of Meeting Details
+   ============================================================ */
+
+/* ---------- Topbar ---------- */
+
+.activity-details-page {
+    padding-top: 94px;
+}
+
+.topbar {
+    height: 76px !important;
+    min-height: 76px !important;
+    background: #145c45 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 24px !important;
+    direction: rtl !important;
+}
+
+.topbar .user-area {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    position: relative !important;
+}
+
+.topbar .menu-button {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    font-size: 34px !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.topbar .menu-button:hover {
+    background: rgba(255,255,255,.12) !important;
+    border-radius: 50% !important;
+}
+
+.topbar /* ---------- Page content ---------- */
+
+.activity-details-content {
+    width: min(760px, 100%) !important;
+    max-width: 760px !important;
+    margin: 0 auto !important;
+}
+
+
+/* ---------- Activity information ---------- */
+
+.activity-heading {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 4px 18px !important;
+    margin: 0 !important;
+}
+
+.activity-number {
+    color: #222222 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin-bottom: 7px !important;
+}
+
+.activity-heading h1 {
+    margin: 0 !important;
+    color: #222222 !important;
+    font-size: 23px !important;
+    font-weight: 700 !important;
+}
+
+.activity-date {
+    margin-top: 9px !important;
+    color: #666666 !important;
+    font-size: 14px !important;
+}
+
+
+/* ---------- Attendees card ---------- */
+
+.attendees-section {
+    background: #ffffff !important;
+    border: 1px solid #e3e9e5 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 10px rgba(20,70,45,.04) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 20px !important;
+    margin: 0 !important;
+}
+
+.attendees-section h2 {
+    margin: 0 0 5px !important;
+    color: #222222 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+}
+
+.attendance-summary {
+    color: #748078 !important;
+    font-size: 14px !important;
+    margin: 5px 0 16px !important;
+}
+
+
+/* ---------- Edit button ---------- */
+
+/* IMPORTANT:
+   Do NOT keep it fixed at the bottom of the screen. */
+
+.details-edit-button {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    display: block !important;
+
+    width: auto !important;
+    min-width: 150px !important;
+    min-height: 42px !important;
+
+    margin: 14px 0 0 auto !important;
+
+    padding: 0 18px !important;
+
+    border: 1px solid #176b3a !important;
+    border-radius: 9px !important;
+
+    background: #176b3a !important;
+    color: #ffffff !important;
+
+    font-size: 14px !important;
+    font-weight: 600 !important;
+
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+
+.details-edit-button:hover {
+    background: #12552e !important;
+}
+
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 640px) {
+
+    .topbar {
+        height: 76px !important;
+        min-height: 76px !important;
+        padding: 0 14px !important;
+    }
+
+    .topbar .topbar .menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        font-size: 32px !important;
+    }
+
+    .activity-details-page {
+        padding: 94px 15px 30px !important;
+        box-sizing: border-box !important;
+    }
+
+    .activity-details-content {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .activity-heading {
+        padding: 0 3px 16px !important;
+    }
+
+    .activity-heading h1 {
+        font-size: 20px !important;
+    }
+
+    .attendees-section {
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
+
+    .details-edit-button {
+        min-width: 140px !important;
+        min-height: 42px !important;
+        margin-top: 14px !important;
+        margin-right: 0 !important;
+        margin-left: auto !important;
+        font-size: 14px !important;
+    }
+}
+
+
+/* ============================================================
+   ACTIVITY DETAILS
+   MATCH MEETING EDIT MODAL EXACTLY
+   ============================================================ */
+
+/* ---------- TOPBAR: SAME GREEN AS MEETINGS ---------- */
+
+.topbar {
+    height: 76px !important;
+    min-height: 76px !important;
+    background: #145c45 !important;
+    border-bottom: 1px solid #145c45 !important;
+    box-sizing: border-box !important;
+}
+
+.topbar .user-area {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    position: relative !important;
+}
+
+.topbar .menu-button {
+    width: 42px !important;
+    height: 42px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    font-size: 28px !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.topbar /* ============================================================
+   ACTIVITY EDIT MODAL
+   SAME STRUCTURE AS MEETING MODAL
+   ============================================================ */
+
+.activity-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    display: none !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    z-index: 9999 !important;
+}
+
+.activity-modal.active {
+    display: flex !important;
+}
+
+
+/* ---------- Modal box ---------- */
+
+.activity-modal-box {
+    width: min(620px, 100%) !important;
+    height: 88vh !important;
+    max-height: 88vh !important;
+
+    background: #ffffff !important;
+
+    border-radius: 20px 20px 0 0 !important;
+
+    overflow: hidden !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    padding: 0 !important;
+
+    box-shadow: 0 -8px 35px rgba(0, 0, 0, 0.18) !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* ---------- Modal header ---------- */
+
+.activity-modal-header {
+    position: relative !important;
+
+    min-height: 58px !important;
+
+    padding: 14px 22px !important;
+
+    border-bottom: 1px solid #eee !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    direction: rtl !important;
+
+    box-sizing: border-box !important;
+
+    flex-shrink: 0 !important;
+
+    margin-bottom: 0 !important;
+
+    gap: 0 !important;
+}
+
+.activity-modal-header h2 {
+    margin: 0 !important;
+
+    font-size: 21px !important;
+
+    text-align: center !important;
+
+    color: #222222 !important;
+}
+
+
+/* ---------- Close button ---------- */
+
+.activity-modal .close-modal-button {
+    position: absolute !important;
+
+    left: 18px !important;
+    top: 50% !important;
+
+    transform: translateY(-50%) !important;
+
+    width: 36px !important;
+    height: 36px !important;
+
+    border: none !important;
+
+    background: #f4f4f4 !important;
+
+    border-radius: 50% !important;
+
+    font-size: 25px !important;
+
+    cursor: pointer !important;
+
+    color: #555 !important;
+
+    z-index: 2 !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.activity-modal .close-modal-button:hover {
+    background: #e9e9e9 !important;
+}
+
+
+/* ============================================================
+   MODAL CONTENT
+   ============================================================ */
+
+.activity-modal-box > .edit-field,
+.activity-modal-box > .edit-date-section,
+.activity-modal-box > .member-search,
+.activity-modal-box > .members-list,
+.activity-modal-box > .save-activity-button {
+    flex-shrink: 0 !important;
+}
+
+
+/* ---------- Title ---------- */
+
+.activity-modal-box > .edit-field {
+    margin: 0 !important;
+    padding: 14px 22px 10px !important;
+    box-sizing: border-box !important;
+}
+
+.activity-modal-box .edit-field label,
+.activity-modal-box .edit-date-section > label {
+    display: block !important;
+
+    margin-bottom: 8px !important;
+
+    font-size: 14px !important;
+
+    font-weight: 400 !important;
+
+    color: #444 !important;
+}
+
+.activity-modal-box .edit-field input {
+    width: 100% !important;
+    height: 48px !important;
+
+    border: 1px solid #ddd !important;
+
+    border-radius: 10px !important;
+
+    padding: 0 12px !important;
+
+    font-size: 15px !important;
+
+    outline: none !important;
+
+    direction: rtl !important;
+
+    background: white !important;
+
+    color: #333 !important;
+
+    box-sizing: border-box !important;
+}
+
+.activity-modal-box .edit-field input:focus {
+    border-color: #176b3a !important;
+}
+
+
+/* ---------- Date ---------- */
+
+.activity-modal-box .edit-date-section {
+    margin: 0 !important;
+    padding: 14px 22px 10px !important;
+    box-sizing: border-box !important;
+}
+
+.activity-modal-box .typed-date-wrapper {
+    height: 48px !important;
+
+    border: 1px solid #ddd !important;
+
+    border-radius: 10px !important;
+
+    background: white !important;
+
+    box-sizing: border-box !important;
+}
+
+.activity-modal-box .typed-date-input {
+    height: 100% !important;
+
+    font-size: 15px !important;
+
+    padding: 0 12px !important;
+
+    direction: rtl !important;
+}
+
+.activity-modal-box .calendar-icon-button {
+    width: 48px !important;
+    height: 48px !important;
+}
+
+
+/* ---------- Member search ---------- */
+
+.activity-modal-box .member-search {
+    width: auto !important;
+
+    height: 45px !important;
+
+    border: 1px solid #ddd !important;
+
+    border-radius: 10px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 8px !important;
+
+    padding: 0 12px !important;
+
+    margin: 8px 22px 10px !important;
+
+    background: white !important;
+
+    box-sizing: border-box !important;
+}
+
+.activity-modal-box .member-search span {
+    font-size: 22px !important;
+    color: #777 !important;
+}
+
+.activity-modal-box .member-search input {
+    border: none !important;
+    outline: none !important;
+
+    width: 100% !important;
+
+    font-size: 14px !important;
+
+    background: transparent !important;
+
+    direction: rtl !important;
+}
+
+
+/* ---------- Members list ---------- */
+
+.activity-modal-box .members-list {
+    flex: 1 1 auto !important;
+
+    min-height: 0 !important;
+
+    max-height: none !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    border: 1px solid #eee !important;
+
+    border-radius: 10px !important;
+
+    margin: 0 22px 0 !important;
+
+    box-sizing: border-box !important;
+
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.activity-modal-box .member-row {
+    min-height: 58px !important;
+
+    padding: 9px 13px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: space-between !important;
+
+    cursor: pointer !important;
+
+    border-bottom: 1px solid #f0f0f0 !important;
+
+    border-radius: 0 !important;
+
+    background: white !important;
+
+    box-sizing: border-box !important;
+}
+
+.activity-modal-box .member-row:last-child {
+    border-bottom: none !important;
+}
+
+.activity-modal-box .member-row:hover {
+    background: #fafafa !important;
+}
+
+.activity-modal-box .member-row-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.activity-modal-box .member-row input {
+    width: 19px !important;
+    height: 19px !important;
+
+    accent-color: #176b3a !important;
+}
+
+
+/* ============================================================
+   SAVE BUTTON
+   SAME AS MEETING
+   ============================================================ */
+
+.activity-modal-box .save-activity-button {
+    width: auto !important;
+
+    margin: 14px 22px 20px !important;
+
+    height: 50px !important;
+
+    border: none !important;
+
+    border-radius: 10px !important;
+
+    background: #176b3a !important;
+
+    color: white !important;
+
+    font-size: 16px !important;
+
+    font-weight: 400 !important;
+
+    cursor: pointer !important;
+
+    flex-shrink: 0 !important;
+}
+
+.activity-modal-box .save-activity-button:hover {
+    background: #12552e !important;
+}
+
+.activity-modal-box .save-activity-button:disabled {
+    opacity: 0.6 !important;
+    cursor: wait !important;
+}
+
+
+/* ============================================================
+   MOBILE
+   SAME AS MEETING
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+    .topbar {
+        height: 76px !important;
+        min-height: 76px !important;
+        padding: 0 24px !important;
+    }
+
+    .topbar .topbar .menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 28px !important;
+    }
+
+    .activity-modal {
+        align-items: flex-end !important;
+    }
+
+    .activity-modal-box {
+        width: 100% !important;
+
+        height: 88vh !important;
+        max-height: 88vh !important;
+
+        border-radius: 20px 20px 0 0 !important;
+    }
+
+    .activity-modal-header {
+        padding: 14px 18px !important;
+    }
+
+    .activity-modal .close-modal-button {
+        left: 18px !important;
+    }
+
+    .activity-modal-box > .edit-field {
+        padding: 14px 18px 10px !important;
+    }
+
+    .activity-modal-box .edit-date-section {
+        padding: 12px 18px 8px !important;
+    }
+
+    .activity-modal-box .member-search {
+        margin-left: 18px !important;
+        margin-right: 18px !important;
+    }
+
+    .activity-modal-box .members-list {
+        margin-left: 18px !important;
+        margin-right: 18px !important;
+    }
+
+    .activity-modal-box .save-activity-button {
+        margin: 12px 18px 18px !important;
+    }
+}
+
+
+/* ============================================================
+   ACTIVITY DETAILS
+   ATTENDEES WINDOW — MATCH MEETING DETAILS STYLE
+   ============================================================ */
+
+/* صندوق الحاضرين */
+.activity-details-content > .attendees-section {
+    display: flex !important;
+    flex-direction: column !important;
+
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+    border: 1px solid #e3e9e5 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,.05) !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+}
+
+/* عنوان الحاضرين والعدد */
+.activity-details-content > .attendees-section h2 {
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+    padding: 18px 20px 5px !important;
+
+    color: #202820 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+}
+
+.activity-details-content > .attendees-section .attendance-summary {
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+    padding: 0 20px 14px !important;
+
+    color: #747b74 !important;
+    font-size: 14px !important;
+}
+
+/* قائمة الأشخاص فقط هي التي تعمل Scroll */
+.activity-details-content > .attendees-section .present-members-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+
+    max-height: 46vh !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    padding: 0 15px 12px !important;
+    box-sizing: border-box !important;
+
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+}
+
+/* بطاقات الحاضرين — نفس روح بطاقات الاجتماع */
+.activity-details-content > .attendees-section .present-member-card {
+    flex: 0 0 auto !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    min-height: 56px !important;
+
+    padding: 10px 12px !important;
+
+    background: #f7f8f6 !important;
+    border: 0 !important;
+    border-radius: 13px !important;
+
+    box-sizing: border-box !important;
+}
+
+/* صورة/أيقونة الشخص */
+.activity-details-content > .attendees-section .present-member-card .member-avatar {
+    flex-shrink: 0 !important;
+}
+
+/* اسم الشخص */
+.activity-details-content > .attendees-section .present-member-card span {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #273027 !important;
+}
+
+/* زر تعديل النشاط — نفس زر تعديل الاجتماع */
+.activity-details-content > .details-edit-button {
+    position: static !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    z-index: auto !important;
+
+    display: block !important;
+    flex: 0 0 auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+
+    margin: 12px 0 0 0 !important;
+    padding: 0 18px !important;
+
+    box-sizing: border-box !important;
+
+    border: 0 !important;
+    border-radius: 13px !important;
+
+    background: #2f7d4a !important;
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+    font-weight: 700 !important;
+
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+
+.activity-details-content > .details-edit-button:hover {
+    background: #2f7d4a !important;
+}
+
+.activity-details-content > .details-edit-button:active {
+    transform: scale(.99) !important;
+}
+
+
+/* ---------- Mobile ---------- */
+@media (max-width: 640px) {
+
+    .activity-details-content > .attendees-section {
+        border-radius: 16px !important;
+    }
+
+    .activity-details-content > .attendees-section h2 {
+        padding: 15px 15px 4px !important;
+        font-size: 20px !important;
+    }
+
+    .activity-details-content > .attendees-section .attendance-summary {
+        padding: 0 15px 12px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list {
+        max-height: 42vh !important;
+        padding: 0 15px 12px !important;
+        gap: 10px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-member-card {
+        min-height: 56px !important;
+        padding: 10px 12px !important;
+        border-radius: 13px !important;
+    }
+
+    .activity-details-content > .details-edit-button {
+        position: static !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        min-height: 50px !important;
+
+        margin-top: 12px !important;
+        margin-bottom: 0 !important;
+
+        padding: 0 16px !important;
+
+        border-radius: 13px !important;
+
+        font-size: 16px !important;
+    }
+}
+
+
+/* ============================================================
+   ACTIVITY DETAILS
+   ATTENDEES WINDOW — MATCH MEETING DETAILS STYLE
+   ============================================================ */
+
+/* صندوق الحاضرين */
+.activity-details-content > .attendees-section {
+    display: flex !important;
+    flex-direction: column !important;
+
+    width: 100% !important;
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+    border: 1px solid #e3e9e5 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,.05) !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden !important;
+}
+
+/* عنوان الحاضرين والعدد */
+.activity-details-content > .attendees-section h2 {
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+    padding: 18px 20px 5px !important;
+
+    color: #202820 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+}
+
+.activity-details-content > .attendees-section .attendance-summary {
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+    padding: 0 20px 14px !important;
+
+    color: #747b74 !important;
+    font-size: 14px !important;
+}
+
+/* قائمة الأشخاص فقط هي التي تعمل Scroll */
+.activity-details-content > .attendees-section .present-members-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+
+    max-height: 46vh !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    padding: 0 15px 12px !important;
+    box-sizing: border-box !important;
+
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+}
+
+/* بطاقات الحاضرين — نفس روح بطاقات الاجتماع */
+.activity-details-content > .attendees-section .present-member-card {
+    flex: 0 0 auto !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    min-height: 56px !important;
+
+    padding: 10px 12px !important;
+
+    background: #f7f8f6 !important;
+    border: 0 !important;
+    border-radius: 13px !important;
+
+    box-sizing: border-box !important;
+}
+
+/* صورة/أيقونة الشخص */
+.activity-details-content > .attendees-section .present-member-card .member-avatar {
+    flex-shrink: 0 !important;
+}
+
+/* اسم الشخص */
+.activity-details-content > .attendees-section .present-member-card span {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #273027 !important;
+}
+
+/* زر تعديل النشاط — نفس زر تعديل الاجتماع */
+.activity-details-content > .details-edit-button {
+    position: static !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    z-index: auto !important;
+
+    display: block !important;
+    flex: 0 0 auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+
+    margin: 12px 0 0 0 !important;
+    padding: 0 18px !important;
+
+    box-sizing: border-box !important;
+
+    border: 0 !important;
+    border-radius: 13px !important;
+
+    background: #2f7d4a !important;
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+    font-weight: 700 !important;
+
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+
+.activity-details-content > .details-edit-button:hover {
+    background: #2f7d4a !important;
+}
+
+.activity-details-content > .details-edit-button:active {
+    transform: scale(.99) !important;
+}
+
+
+/* ---------- Mobile ---------- */
+@media (max-width: 640px) {
+
+    .activity-details-content > .attendees-section {
+        border-radius: 16px !important;
+    }
+
+    .activity-details-content > .attendees-section h2 {
+        padding: 15px 15px 4px !important;
+        font-size: 20px !important;
+    }
+
+    .activity-details-content > .attendees-section .attendance-summary {
+        padding: 0 15px 12px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list {
+        max-height: 42vh !important;
+        padding: 0 15px 12px !important;
+        gap: 10px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-member-card {
+        min-height: 56px !important;
+        padding: 10px 12px !important;
+        border-radius: 13px !important;
+    }
+
+    .activity-details-content > .details-edit-button {
+        position: static !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        min-height: 50px !important;
+
+        margin-top: 12px !important;
+        margin-bottom: 0 !important;
+
+        padding: 0 16px !important;
+
+        border-radius: 13px !important;
+
+        font-size: 16px !important;
+    }
+}
+
+
+/* =========================================================
+   FINAL ACTIVITY DETAILS — SAME LAYOUT AS MEETING DETAILS
+   الصندوق يأخذ المساحة المتبقية، والأشخاص فقط يعملون Scroll
+========================================================= */
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.activity-details-page {
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    padding: 14px 12px 12px;
+}
+
+/* المحتوى الداخلي كله Flex */
+.activity-details-content {
+    height: 100%;
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+/* معلومات النشاط */
+.activity-details-content .activity-heading {
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+}
+
+/* صندوق الحاضرون */
+.activity-details-content .attendees-section {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    overflow: hidden !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+
+    background: #ffffff !important;
+    border: 1px solid #e3e9e5 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,.05) !important;
+
+    padding: 20px !important;
+}
+
+/* عنوان الحاضرون + العدد ثابتين */
+.activity-details-content .attendees-section h2,
+.activity-details-content .attendees-section .attendance-summary {
+    flex: 0 0 auto !important;
+}
+
+/* الأشخاص فقط يعملون Scroll */
+.activity-details-content .attendees-section .present-members-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    max-height: none !important;
+
+    padding: 0 2px 10px !important;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+/* بطاقات الأشخاص لا تتمدد */
+.activity-details-content .attendees-section .present-member-card {
+    flex: 0 0 auto !important;
+}
+
+/* =========================================================
+   زر تعديل النشاط
+   نفس سلوك زر تعديل الاجتماع
+========================================================= */
+
+.activity-details-content > .details-edit-button {
+    position: static !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    z-index: auto !important;
+
+    flex: 0 0 auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+
+    margin: 12px 0 0 0 !important;
+
+    box-sizing: border-box !important;
+
+    border: 0 !important;
+    border-radius: 13px !important;
+
+    background: #2f7d4a !important;
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+    font-weight: 700 !important;
+
+    box-shadow: none !important;
+}
+
+/* Mobile — نفس قياسات Meeting Details */
+@media (max-width: 640px) {
+
+    .activity-details-page {
+        height: calc(100vh - 64px);
+        max-height: calc(100vh - 64px);
+
+        padding: 14px 12px 12px;
+
+        overflow: hidden;
+    }
+
+    .activity-details-content {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .activity-details-content .activity-heading {
+        flex: 0 0 auto;
+        margin-bottom: 12px;
+    }
+
+    .activity-details-content .attendees-section {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+
+        overflow: hidden !important;
+
+        border-radius: 16px !important;
+    }
+
+    .activity-details-content .attendees-section .present-members-list {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+
+        max-height: none !important;
+
+        padding: 0 2px 10px !important;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .activity-details-content > .details-edit-button {
+        position: static !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 50px !important;
+
+        margin-top: 12px !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+
+/* =========================================================
+   ACTIVITY DETAILS — FINAL CLEAN LAYOUT
+   فقط: ارتفاع الصفحة + صندوق الحاضرين + زر التعديل
+   لا يلمس JavaScript / attendance / modal
+========================================================= */
+
+/* الصفحة نفسها ثابتة */
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+/* نفس منطق Meeting Details */
+.activity-details-page {
+    height: calc(100vh - 64px) !important;
+    max-height: calc(100vh - 64px) !important;
+    min-height: 0 !important;
+
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+
+    padding: 14px 12px 12px !important;
+}
+
+/* المحتوى يأخذ كامل المساحة المتاحة */
+.activity-details-content {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+
+    margin: 0 auto !important;
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    overflow: hidden !important;
+}
+
+/* معلومات النشاط فوق صندوق الحاضرين */
+.activity-details-content .activity-heading {
+    flex: 0 0 auto !important;
+    margin-bottom: 12px !important;
+}
+
+/* =========================================================
+   صندوق الحاضرين
+   يأخذ كل المساحة المتبقية مثل Meeting Details
+========================================================= */
+
+.activity-details-content > .attendees-section {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    overflow: hidden !important;
+
+    margin: 0 !important;
+
+    background: #ffffff !important;
+    border: 1px solid #e3e9e5 !important;
+    border-radius: 18px !important;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,.05) !important;
+
+    padding: 20px !important;
+}
+
+/* عنوان الحاضرين والعدد لا يتحركان */
+.activity-details-content > .attendees-section h2 {
+    flex: 0 0 auto !important;
+
+    margin: 0 0 5px !important;
+
+    color: #202820 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+}
+
+.activity-details-content > .attendees-section .attendance-summary {
+    flex: 0 0 auto !important;
+
+    margin: 0 0 18px !important;
+
+    color: #747b74 !important;
+    font-size: 14px !important;
+}
+
+/* =========================================================
+   الأشخاص فقط يعملون Scroll
+========================================================= */
+
+.activity-details-content > .attendees-section .present-members-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    gap: 10px !important;
+
+    max-height: none !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    padding: 0 2px 10px !important;
+
+    box-sizing: border-box !important;
+
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+}
+
+/* بطاقات الحاضرين */
+.activity-details-content > .attendees-section .present-member-card {
+    flex: 0 0 auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    min-height: 56px !important;
+
+    box-sizing: border-box !important;
+
+    padding: 10px 12px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    background: #f7f8f6 !important;
+
+    border: 0 !important;
+    border-radius: 13px !important;
+}
+
+/* =========================================================
+   تعديل النشاط — تحت الصندوق مباشرة
+========================================================= */
+
+.activity-details-content > .details-edit-button {
+    position: static !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    z-index: auto !important;
+
+    flex: 0 0 auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    min-height: 50px !important;
+
+    margin: 12px 0 0 0 !important;
+
+    box-sizing: border-box !important;
+
+    border: 0 !important;
+    border-radius: 13px !important;
+
+    background: #2f7d4a !important;
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+    font-weight: 700 !important;
+
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   Mobile
+========================================================= */
+
+@media (max-width: 640px) {
+
+    .activity-details-page {
+        height: calc(100vh - 64px) !important;
+        max-height: calc(100vh - 64px) !important;
+
+        padding: 14px 12px 12px !important;
+
+        overflow: hidden !important;
+    }
+
+    .activity-details-content {
+        height: 100% !important;
+        min-height: 0 !important;
+    }
+
+    .activity-details-content .activity-heading {
+        flex: 0 0 auto !important;
+        margin-bottom: 12px !important;
+    }
+
+    .activity-details-content > .attendees-section {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+
+        overflow: hidden !important;
+
+        border-radius: 16px !important;
+
+        padding: 15px !important;
+    }
+
+    .activity-details-content > .attendees-section h2 {
+        margin-bottom: 5px !important;
+    }
+
+    .activity-details-content > .attendees-section .attendance-summary {
+        margin-bottom: 12px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+
+        max-height: none !important;
+
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+
+        padding: 0 2px 10px !important;
+    }
+
+    .activity-details-content > .details-edit-button {
+        position: static !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        min-height: 50px !important;
+
+        margin-top: 12px !important;
+        margin-bottom: 0 !important;
+
+        border-radius: 13px !important;
+    }
+}
+
+
+/* ============================================================
+   FINAL SAFE PATCH - ACTIVITY DETAILS
+   Keep topbar stable, keep activity info visible,
+   scroll attendees only.
+   CSS ONLY - DO NOT TOUCH JS / ATTENDANCE / MODAL
+   ============================================================ */
+
+html,
+body {
+    height: 100% !important;
+}
+
+body {
+    overflow: hidden !important;
+}
+
+.activity-details-page {
+    height: calc(100vh - 76px) !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    padding: 18px 15px 24px !important;
+    overflow: hidden !important;
+}
+
+.activity-details-content {
+    width: min(760px, 100%) !important;
+    max-width: 760px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+.activity-heading {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    padding: 0 3px 16px !important;
+    margin: 0 !important;
+}
+
+.activity-heading h1 {
+    margin: 0 !important;
+}
+
+.attendees-section,
+.activity-details-content > .attendees-section {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+.activity-details-content > .attendees-section h2 {
+    flex: 0 0 auto !important;
+}
+
+.activity-details-content > .attendees-section .attendance-summary {
+    flex: 0 0 auto !important;
+}
+
+.activity-details-content > .attendees-section .present-members-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
+}
+
+.activity-details-content > .details-edit-button {
+    flex: 0 0 auto !important;
+    position: static !important;
+    margin-top: 14px !important;
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 640px) {
+
+    .topbar {
+        height: 76px !important;
+        min-height: 76px !important;
+        padding: 0 24px !important;
+    }
+
+    .topbar .menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+    }
+
+    .topbar .activity-details-page {
+        height: calc(100vh - 76px) !important;
+        min-height: 0 !important;
+        padding: 16px 15px 20px !important;
+        overflow: hidden !important;
+    }
+
+    .activity-details-content {
+        height: 100% !important;
+        min-height: 0 !important;
+    }
+
+    .activity-heading {
+        flex: 0 0 auto !important;
+        padding: 0 3px 14px !important;
+    }
+
+    .activity-details-content > .attendees-section {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: hidden !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    .activity-details-content > .details-edit-button {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 14px !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+/* ============================================================
+   ACTIVITY DETAILS - MATCH MEETING DETAILS LAYOUT
+   Layout only. Do NOT touch JS / attendance / modal.
+   ============================================================ */
+
+html,
+body {
+    min-height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+body {
+    padding-top: 64px !important;
+    overflow: hidden !important;
+}
+
+/* ===== SAME TOP BAR FEEL AS MEETING DETAILS ===== */
+
+.topbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 24px !important;
+    background: #225d3c !important;
+    border-bottom: 1px solid #225d3c !important;
+    direction: rtl !important;
+    z-index: 1000 !important;
+}
+
+.topbar .user-area {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    position: relative !important;
+}
+
+.topbar .menu-button {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+}
+
+.topbar .menu-button:hover {
+    background: rgba(255,255,255,.12) !important;
+    border-radius: 50% !important;
+}
+
+.topbar /* ===== PAGE — SAME RHYTHM AS MEETING DETAILS ===== */
+
+.activity-details-page {
+    width: 100% !important;
+    max-width: 1100px !important;
+    height: calc(100vh - 64px) !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 18px 18px 32px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* ===== CONTENT COLUMN ===== */
+
+.activity-details-content {
+    width: 100% !important;
+    max-width: 760px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+/* ===== ACTIVITY INFO MUST ALWAYS STAY VISIBLE ===== */
+
+.activity-heading {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 0 22px !important;
+    padding: 0 !important;
+    text-align: right !important;
+}
+
+.activity-number {
+    margin: 0 0 8px !important;
+    font-size: 28px !important;
+    line-height: 1.25 !important;
+    font-weight: 800 !important;
+    color: #222 !important;
+}
+
+.activity-heading h1 {
+    margin: 0 0 8px !important;
+    font-size: 22px !important;
+    line-height: 1.35 !important;
+    font-weight: 700 !important;
+    color: #222 !important;
+}
+
+.activity-date {
+    margin: 0 !important;
+    color: #666 !important;
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+}
+
+/* ===== ATTENDEES CARD — SAME IDEA AS MEETINGS ===== */
+
+.activity-details-content > .attendees-section {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    background: #f7f7f7 !important;
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+.activity-details-content > .attendees-section h2 {
+    flex: 0 0 auto !important;
+    margin: 0 0 5px !important;
+    padding: 0 !important;
+    font-size: 20px !important;
+    line-height: 1.35 !important;
+    color: #222 !important;
+}
+
+.activity-details-content > .attendees-section .attendance-summary {
+    flex: 0 0 auto !important;
+    margin: 0 0 16px !important;
+    padding: 0 !important;
+    color: #777 !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+}
+
+/* ===== ONLY THE ATTENDEES SCROLL ===== */
+
+.activity-details-content > .attendees-section .present-members-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
+}
+
+/* ===== EDIT BUTTON STAYS BELOW ATTENDEES ===== */
+
+.activity-details-content > .details-edit-button {
+    flex: 0 0 auto !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+    margin: 14px 0 0 !important;
+    padding: 12px 18px !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-sizing: border-box !important;
+}
+
+/* ===== MOBILE — SAME MEETING SPACING ===== */
+
+@media (max-width: 640px) {
+
+    body {
+        padding-top: 64px !important;
+    }
+
+    .topbar {
+        height: 64px !important;
+        min-height: 64px !important;
+        padding: 0 14px !important;
+    }
+
+    .topbar .menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        font-size: 30px !important;
+    }
+
+    .topbar .activity-details-page {
+        height: calc(100vh - 64px) !important;
+        min-height: 0 !important;
+        padding: 18px 12px 32px !important;
+        overflow: hidden !important;
+    }
+
+    .activity-details-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+    }
+
+    .activity-heading {
+        flex: 0 0 auto !important;
+        margin-bottom: 18px !important;
+        padding: 0 !important;
+    }
+
+    .activity-number {
+        margin-bottom: 7px !important;
+        font-size: 22px !important;
+    }
+
+    .activity-heading h1 {
+        margin-bottom: 7px !important;
+        font-size: 22px !important;
+    }
+
+    .activity-date {
+        font-size: 15px !important;
+    }
+
+    .activity-details-content > .attendees-section {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding: 15px !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+    }
+
+    .activity-details-content > .attendees-section h2 {
+        font-size: 20px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    .activity-details-content > .details-edit-button {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        min-height: 50px !important;
+        margin-top: 14px !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+
+/* ============================================================
+   ATTENDEES CARD VISUAL FIX
+   White section + soft individual attendee cards.
+   CSS ONLY - NO JS / ATTENDANCE / MODAL CHANGES
+   ============================================================ */
+
+.activity-details-content > .attendees-section {
+    background: #ffffff !important;
+    border: 1px solid #e7ebe8 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 10px rgba(20,70,45,.04) !important;
+    padding: 20px !important;
+    overflow: hidden !important;
+}
+
+.activity-details-content > .attendees-section h2 {
+    color: #222 !important;
+    margin: 0 0 5px !important;
+}
+
+.activity-details-content > .attendees-section .attendance-summary {
+    color: #777 !important;
+    margin: 0 0 16px !important;
+}
+
+/* القائمة نفسها هي التي تعمل scroll */
+.activity-details-content > .attendees-section .present-members-list {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    gap: 10px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* بطاقة كل حاضر */
+.activity-details-content > .attendees-section .present-members-list > * {
+    flex: 0 0 auto !important;
+    min-height: 56px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    background: #f6f7f7 !important;
+    border: 1px solid #edf0ee !important;
+    border-radius: 14px !important;
+    padding: 10px 14px !important;
+}
+
+/* لا تجعل الاسم يبدو كزر */
+.activity-details-content > .attendees-section .present-members-list > button,
+.activity-details-content > .attendees-section .present-members-list > .present-member-card {
+    width: 100% !important;
+    text-align: right !important;
+    color: #222 !important;
+    font: inherit !important;
+    cursor: default !important;
+}
+
+/* الموبايل */
+@media (max-width: 640px) {
+
+    .activity-details-content > .attendees-section {
+        padding: 16px !important;
+        background: #ffffff !important;
+        border-radius: 16px !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list {
+        gap: 10px !important;
+        padding: 0 !important;
+    }
+
+    .activity-details-content > .attendees-section .present-members-list > * {
+        min-height: 56px !important;
+        padding: 10px 14px !important;
+        border-radius: 14px !important;
+        background: #f6f7f7 !important;
+    }
+}
+
+
+/* ============================================================
+   FINAL TOPBAR SYNC WITH ACTIVITIES PAGE
+   Same position / size / back button / title placement.
+   TOPBAR ONLY - DO NOT TOUCH CONTENT / JS / ATTENDANCE / MODAL
+   ============================================================ */
+
+.topbar {
+    width: 100% !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 24px !important;
+    background: #225d3c !important;
+    border-bottom: 1px solid #225d3c !important;
+    direction: rtl !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+}
+
+.topbar .user-area {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    position: relative !important;
+}
+
+.topbar .menu-button {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+}
+
+.topbar .menu-button:hover {
+    background: rgba(255,255,255,.12) !important;
+    border-radius: 50% !important;
+}
+
+.topbar /* Mobile: same horizontal placement as activities topbar */
+@media (max-width: 640px) {
+
+    .topbar {
+        height: 64px !important;
+        min-height: 64px !important;
+        padding: 0 14px !important;
+    }
+
+    .topbar .menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        font-size: 30px !important;
+    }
+
+    .topbar }

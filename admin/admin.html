@@ -7,323 +7,91 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase.js"></script>
-
     <link rel="stylesheet" href="../styles/admin.css" />
-  <style>
-.task-combobox {
-    position: relative;
-    width: 100%;
-}
-
-.task-combobox input {
-    width: 100%;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 14px;
-    border: 1px solid rgba(0, 0, 0, 0.14);
-    border-radius: 10px;
-    background: #fff;
-    font: inherit;
-    color: #222;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.task-combobox input:focus {
-    border-color: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-}
-
-.tasks-dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    z-index: 10000;
-    display: none;
-    max-height: 210px;
-    overflow-y: auto;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-    scroll-behavior: smooth;
-}
-
-.tasks-dropdown.open {
-    display: block;
-}
-
-.task-option,
-.add-task-option {
-    min-height: 42px;
-    padding: 10px 14px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    text-align: right;
-    transition: background 0.15s ease;
-}
-
-.task-option:hover,
-.add-task-option:hover {
-    background: rgba(0, 0, 0, 0.045);
-}
-
-.add-task-option {
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    font-weight: 600;
-}
-
-.task-action-buttons {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-}
-
-.task-action-buttons button {
-    flex: 1;
-    min-height: 40px;
-    border: 0;
-    border-radius: 8px;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-    transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.task-action-buttons button:active {
-    transform: scale(0.98);
-}
-
-.save-task-button {
-    background: #f2f2f2;
-    color: #222;
-}
-
-.save-task-button:hover {
-    background: #e8e8e8;
-}
-
-.cancel-task-button {
-    background: #f5f5f5;
-    color: #666;
-}
-
-.cancel-task-button:hover {
-    background: #e9e9e9;
-}
-.save-task-button {
-    width: calc(100% - 20px);
-    margin: 10px;
-    min-height: 40px;
-    border: 0;
-    border-radius: 8px;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-    background: #f2f2f2;
-    color: #222;
-    transition: background 0.15s ease;
-}
-
-.save-task-button:hover {
-    background: #e8e8e8;
-}
-
-.tasks-dropdown::-webkit-scrollbar {
-    width: 6px;
-}
-
-.tasks-dropdown::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.18);
-    border-radius: 10px;
-}
-
-.tasks-dropdown::-webkit-scrollbar-track {
-    background: transparent;
-}
-</style>
-<style id="task-buttons-fix">
-.task-action-buttons {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: stretch !important;
-    gap: 8px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 10px !important;
-}
-
-.task-action-buttons button {
-    flex: 1 1 0 !important;
-    width: 0 !important;
-    min-width: 0 !important;
-    height: 40px !important;
-    margin: 0 !important;
-    padding: 0 12px !important;
-    border: 0 !important;
-    border-radius: 8px !important;
-    box-sizing: border-box !important;
-    font-family: inherit !important;
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    line-height: 40px !important;
-    text-align: center !important;
-    cursor: pointer !important;
-}
-
-.task-action-buttons .save-task-button,
-.task-action-buttons .cancel-task-button {
-    background: #f5f5f5 !important;
-    color: #222 !important;
-}
-
-.task-action-buttons button:hover {
-    background: #e9e9e9 !important;
-}
-</style>
-<style id="task-buttons-font-fix">
-.task-action-buttons button,
-.task-action-buttons button.save-task-button,
-.task-action-buttons button.cancel-task-button {
-    font-family: inherit !important;
-    font-size: 14px !important;
-    font-weight: 700 !important; line-height: 40px !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-    text-shadow: none !important;
-}
-</style>
-<style id="leader-info-button-fix">
-.leader-info-button {
-    width: 100%;
-    min-height: 38px;
-    margin-top: 8px;
-    padding: 8px 12px;
-    border: 1px solid #cfded5;
-    border-radius: 10px;
-    background: #f7faf8;
-    color: #225d3c;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    direction: rtl;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.leader-info-button:hover {
-    background: #eaf3ed;
-}
-
-.leader-info-arrow {
-    font-size: 20px;
-    line-height: 1;
-    direction: ltr;
-}
-
-@media (max-width: 600px) {
-    .leader-info-button {
-        width: 100%;
-        min-height: 34px;
-        margin-top: 4px;
-        padding: 6px 10px;
-        font-size: 12px;
-    }
-
-    .leader-info-arrow {
-        font-size: 19px;
-    }
-}
-</style><style id="leader-info-button-size-fix">
-.leader-info-button {
-    width: 100% !important; min-width: 0 !important; max-width: none !important;
-    min-height: 34px !important;
-    height: 34px !important;
-    margin-top: 0 !important;
-    padding: 6px 10px !important;
-    border: 1px solid #d7e1db !important;
-    border-radius: 8px !important;
-    background: #f7faf8 !important;
-    color: #225d3c !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 7px !important;
-    direction: rtl !important;
-    font-family: inherit !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    cursor: pointer !important;
-    flex-shrink: 0 !important;
-}
-
-.leader-info-arrow {
-    font-size: 17px !important;
-    line-height: 1 !important;
-    direction: ltr !important;
-    flex-shrink: 0 !important;
-}
-
-@media (max-width: 600px) {
-    .leader-info-button {
-        width: 100% !important; min-width: 0 !important; max-width: none !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        padding: 5px 9px !important;
-        font-size: 11px !important;
-    }
-
-    .leader-info-arrow {
-        font-size: 16px !important;
-    }
-}
-</style></head>
+  </head>
 
   <body>
+    <!-- =========================
+       TOPBAR
+  ========================= -->
     <header class="topbar">
-  <div class="user-area">
-    <button class="menu-button" type="button" onclick="document.getElementById('adminSidebar').classList.toggle('open')">☰</button>
+      <div class="user-area">
+        <button
+          class="menu-button"
+          type="button"
+          onclick="
+            document.getElementById('adminSidebar').classList.toggle('open')
+          "
+        >
+          ☰
+        </button>
+<div class="profile-image" id="adminProfileImage">
+  <span>👤</span>
+</div>
+<span class="user-name" id="userName"></span>
+      </div>
+    </header>
 
-    <div class="profile-image" id="adminProfileImage">
-      <span>👤</span>
-    </div>
+    <script>
+      document.addEventListener("click", function (event) {
+        const sidebar = document.getElementById("adminSidebar");
+        const menuButton = document.querySelector(".menu-button");
 
-    <span class="user-name" id="userName"></span>
-  </div>
-</header>
+        if (!sidebar || !sidebar.classList.contains("open")) {
+          return;
+        }
 
-<aside class="admin-sidebar" id="adminSidebar">
-  <button class="sidebar-item" type="button" id="myInfoButton">👥 معلوماتي</button>
+        if (
+          !sidebar.contains(event.target) &&
+          !menuButton.contains(event.target)
+        ) {
+          sidebar.classList.remove("open");
+        }
+      });
+    </script>
+    <!-- =========================
+       SIDEBAR
+  ========================= -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <button class="sidebar-item" type="button" id="myInfoButton">
+        👤 معلوماتي
+      </button>
 
-  <div class="sidebar-stat">
-    👤 <span>عدد القادة: <strong id="leadersCount">0</strong></span>
-  </div>
+      <div class="sidebar-stat">
+        <span class="sidebar-people-icon" aria-hidden="true">👥</span>
+        <span>
+          عدد القادة:
+          <strong id="leadersCount">0</strong>
+        </span>
+      </div>
 
-  <div class="sidebar-stat missing-uniform-stat">
-    🔴 <span>عدد البدلات الناقصة: <strong id="missingUniformCount">0</strong></span>
-  </div>
+      <div class="sidebar-stat missing-uniform-stat">
+        🔴
+        <span>
+          عدد البدلات الناقصة:
+          <strong id="missingUniformCount">0</strong>
+        </span>
+      </div>
 
-  <div class="topbar-actions">
-    <button
-      class="trash-button"
-      type="button"
-      onclick="window.location.href='trash.html'"
-    >
-      🗑️ سلة المحذوفات
-      <span class="trash-count" id="trashCount">0</span>
-    </button>
+      <div class="topbar-actions">
+        <button
+          class="trash-button"
+          type="button"
+          onclick="window.location.href = 'trash.html'"
+        >
+          🗑️ سلة المحذوفات
+          <span class="trash-count" id="trashCount">0</span>
+        </button>
 
-    <button class="logout-button" type="button" onclick="logout()">
-      تسجيل الخروج
-    </button>
-  </div>
-</aside>
+        <button class="logout-button" type="button" onclick="logout()">
+          تسجيل الخروج
+        </button>
+      </div>
+    </aside>
 
+    <!-- =========================
+       MAIN
+  ========================= -->
     <main class="container">
       <div class="page-header">
         <div>
@@ -331,12 +99,29 @@
           <p>إدارة القادة والفرق التابعة لهم</p>
         </div>
 
-        <button class="add-leader" type="button" onclick="openAddLeaderForm()">
-          <span>+</span>
-          إضافة قائد
-        </button>
+        <div class="header-actions">
+          <button
+            class="add-leader"
+            type="button"
+            onclick="openAddLeaderForm()"
+          >
+            <span>+</span>
+            إضافة قائد
+          </button>
+
+          <button
+            class="add-meetings"
+            type="button"
+            onclick="window.location.href = 'meetings.html'"
+          >
+            الاجتماعات
+          </button>
+        </div>
       </div>
 
+      <!-- =========================
+         LEADERS LIST
+    ========================= -->
       <section class="leaders-table-wrapper">
         <div class="empty-state" id="emptyState">
           <div class="empty-icon">👥</div>
@@ -351,15 +136,13 @@
     </main>
 
     <!-- =========================
-     Add Leader Modal
-========================= -->
-
+       ADD LEADER MODAL
+  ========================= -->
     <div class="modal-overlay" id="leaderModal">
       <div class="modal">
         <div class="modal-header">
           <div>
             <h2>إضافة قائد</h2>
-
             <p>أدخل معلومات القائد أو القائدة</p>
           </div>
 
@@ -374,7 +157,6 @@
 
         <form id="leaderForm">
           <!-- الاسم -->
-
           <div class="form-group">
             <label for="leaderName"> اسم القائد / القائدة </label>
 
@@ -393,9 +175,8 @@
           </div>
 
           <!-- المساعدون -->
-
           <div class="form-group">
-            <label for="leaderAssistants">أسماء المساعدين</label>
+            <label for="leaderAssistants"> أسماء المساعدين </label>
 
             <input
               type="text"
@@ -404,12 +185,13 @@
               autocomplete="off"
               lang="ar"
               dir="rtl"
-              oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s\/]/g, '')"
+              oninput="
+                this.value = this.value.replace(/[^\u0600-\u06FF\s\/]/g, '')
+              "
             />
           </div>
 
           <!-- الهاتف -->
-
           <div class="form-group">
             <label for="leaderPhone"> رقم الهاتف </label>
 
@@ -426,27 +208,18 @@
           </div>
 
           <!-- تاريخ الميلاد -->
-
           <div class="form-group">
-            <label> تاريخ الميلاد </label>
+            <label>تاريخ الميلاد</label>
 
-            <div class="birth-date">
-              <select id="birthDay">
-                <option value="">اليوم</option>
-              </select>
-
-              <select id="birthMonth">
-                <option value="">الشهر</option>
-              </select>
-
-              <select id="birthYear">
-                <option value="">السنة</option>
-              </select>
+            <div class="birth-date-inputs">
+              <input type="text" id="birthDay" inputmode="numeric" placeholder="اليوم" autocomplete="off" />
+              <input type="text" id="birthMonth" placeholder="الشهر" autocomplete="off" />
+              <input type="text" id="birthYear" inputmode="numeric" placeholder="السنة" autocomplete="off" />
             </div>
+
+            <input type="hidden" id="birthDateInput" />
           </div>
-
           <!-- المهمة -->
-
           <div class="form-group">
             <label for="leaderBranch"> المهمة </label>
 
@@ -457,24 +230,31 @@
                 placeholder="ابحث أو اختر المهمة"
                 autocomplete="off"
               />
+
               <div id="tasksDropdown" class="tasks-dropdown"></div>
             </div>
           </div>
 
           <!-- البدلة -->
-
           <div class="form-group">
             <label> البدلة </label>
 
             <div class="uniform-options">
-              <label class="radio-option has-uniform-option"><input type="radio" name="hasUniform" value="true" /><span>✓ 👕 البدلة موجودة</span></label>
+              <label class="radio-option has-uniform-option">
+                <input type="radio" name="hasUniform" value="true" />
 
-              <label class="radio-option no-uniform-option"><input type="radio" name="hasUniform" value="false" checked /><span>✕ 👕 لا توجد بدلة</span></label>
+                <span> ✓ 👕 البدلة موجودة </span>
+              </label>
+
+              <label class="radio-option no-uniform-option">
+                <input type="radio" name="hasUniform" value="false" checked />
+
+                <span> ✕ 👕 لا توجد بدلة </span>
+              </label>
             </div>
           </div>
 
           <!-- Buttons -->
-
           <div class="form-actions">
             <button
               type="button"
@@ -492,100 +272,152 @@
       </div>
     </div>
 
+    <!-- =====================================================
+       ADMIN NAME / PROFILE
+  ===================================================== -->
     <script>
-      /* =====================================================
-   ADMIN NAME
-===================================================== */
-
       async function loadAdminName() {
         try {
           const { data, error } = await AppDb.getAdminSummary();
 
           if (error) {
             console.error("Error loading admin:", error);
-
             return;
           }
+const userName = document.getElementById("userName");
 
-          const profileImage = document.getElementById("adminProfileImage"); if (profileImage) { profileImage.innerHTML = data && data.profile_image ? "<img src=\"" + data.profile_image + "\" alt=\"صورة البروفايل\">" : "<span>👤</span>"; } if (data && data.full_name) {
-            document.getElementById("userName").textContent = data.full_name;
+          if (userName && data && data.full_name) {
+            userName.textContent = data.full_name;
           }
         } catch (error) {
           console.error("Admin loading error:", error);
         }
       }
+    </script>
 
-      /* =====================================================
-   DATE SELECTORS
-===================================================== */
-
+    <!-- =====================================================
+       DATE SELECTORS
+  ===================================================== -->
+    <script>
       function setupDateSelectors() {
-        const daySelect = document.getElementById("birthDay");
+        const dayInput = document.getElementById("birthDay");
+        const monthInput = document.getElementById("birthMonth");
+        const yearInput = document.getElementById("birthYear");
+        const birthDateInput = document.getElementById("birthDateInput");
 
-        const monthSelect = document.getElementById("birthMonth");
-
-        const yearSelect = document.getElementById("birthYear");
-
-        if (!daySelect || !monthSelect || !yearSelect) {
+        if (!dayInput || !monthInput || !yearInput || !birthDateInput) {
           return;
         }
 
-        if (daySelect.options.length === 1) {
-          for (let day = 1; day <= 31; day++) {
-            const option = document.createElement("option");
-
-            option.value = day;
-            option.textContent = day;
-
-            daySelect.appendChild(option);
-          }
-        }
-
-        if (monthSelect.options.length === 1) {
-          const months = [
-            "كانون الثاني",
-            "شباط",
-            "آذار",
-            "نيسان",
-            "أيار",
-            "حزيران",
-            "تموز",
-            "آب",
-            "أيلول",
-            "تشرين الأول",
-            "تشرين الثاني",
-            "كانون الأول",
-          ];
-
-          months.forEach(function (month, index) {
-            const option = document.createElement("option");
-
-            option.value = index + 1;
-
-            option.textContent = month;
-
-            monthSelect.appendChild(option);
+        function normalizeArabicDigits(value) {
+          return String(value || "").replace(/[٠-٩]/g, function (digit) {
+            return "٠١٢٣٤٥٦٧٨٩".indexOf(digit);
           });
         }
 
-        if (yearSelect.options.length === 1) {
-          const currentYear = new Date().getFullYear();
+        function normalizeMonth(value) {
+          const text = normalizeArabicDigits(value).trim();
 
-          for (let year = currentYear; year >= 1940; year--) {
-            const option = document.createElement("option");
+          const months = {
+            "كانون الثاني": 1,
+            "شباط": 2,
+            "آذار": 3,
+            "نيسان": 4,
+            "أيار": 5,
+            "حزيران": 6,
+            "تموز": 7,
+            "آب": 8,
+            "أيلول": 9,
+            "تشرين الأول": 10,
+            "تشرين الثاني": 11,
+            "كانون الأول": 12,
 
-            option.value = year;
-            option.textContent = year;
+            "january": 1,
+            "jan": 1,
+            "february": 2,
+            "feb": 2,
+            "march": 3,
+            "mar": 3,
+            "april": 4,
+            "apr": 4,
+            "may": 5,
+            "june": 6,
+            "jun": 6,
+            "july": 7,
+            "jul": 7,
+            "august": 8,
+            "aug": 8,
+            "september": 9,
+            "sep": 9,
+            "sept": 9,
+            "october": 10,
+            "oct": 10,
+            "november": 11,
+            "nov": 11,
+            "december": 12,
+            "dec": 12
+          };
 
-            yearSelect.appendChild(option);
+          if (months[text]) {
+            return months[text];
           }
+
+          const numericMonth = parseInt(text, 10);
+          return numericMonth >= 1 && numericMonth <= 12
+            ? numericMonth
+            : null;
         }
+
+        function updateBirthDate() {
+          const dayText = normalizeArabicDigits(dayInput.value).trim();
+          const yearText = normalizeArabicDigits(yearInput.value).trim();
+          const month = normalizeMonth(monthInput.value);
+
+          const day = parseInt(dayText, 10);
+          const year = parseInt(yearText, 10);
+
+          if (!dayText || !yearText || !month || !day || !year) {
+            birthDateInput.value = "";
+            return;
+          }
+
+          const date = new Date(year, month - 1, day);
+
+          if (
+            date.getFullYear() !== year ||
+            date.getMonth() !== month - 1 ||
+            date.getDate() !== day
+          ) {
+            birthDateInput.value = "";
+            return;
+          }
+
+          const formattedMonth = String(month).padStart(2, "0");
+          const formattedDay = String(day).padStart(2, "0");
+
+          birthDateInput.value =
+            year + "-" + formattedMonth + "-" + formattedDay;
+        }
+
+        function allowNumbersOnly(event) {
+          const value = normalizeArabicDigits(event.target.value);
+          event.target.value = value.replace(/[^0-9]/g, "");
+          updateBirthDate();
+        }
+
+        dayInput.addEventListener("input", allowNumbersOnly);
+        monthInput.addEventListener("input", allowNumbersOnly);
+        yearInput.addEventListener("input", allowNumbersOnly);
+        dayInput.addEventListener("input", updateBirthDate);
+        monthInput.addEventListener("input", updateBirthDate);
+        yearInput.addEventListener("input", updateBirthDate);
       }
+    </script>
 
-      /* =====================================================
-   MODAL
-===================================================== */
-
+    <!-- =====================================================
+       MODAL
+  ===================================================== -->
+    <script>
       function openAddLeaderForm() {
         const modal = document.getElementById("leaderModal");
 
@@ -601,11 +433,12 @@
           modal.classList.remove("active");
         }
       }
+    </script>
 
-      /* =====================================================
-   AGE
-===================================================== */
-
+    <!-- =====================================================
+       AGE
+  ===================================================== -->
+    <script>
       function calculateAge(birthDate) {
         if (!birthDate) {
           return "غير محدد";
@@ -630,16 +463,36 @@
           age--;
         }
 
-        return age >= 0 ? `${age} سنة` : "غير محدد";
+                if (age < 0) {
+          return "غير محدد";
+        }
+
+        const arabicAge = String(age).replace(/\d/g, function (digit) {
+          return "٠١٢٣٤٥٦٧٨٩"[digit];
+        });
+
+        if (age === 1) {
+          return "سنة واحدة";
+        }
+
+        if (age === 2) {
+          return "سنتان";
+        }
+
+        if (age >= 3 && age <= 10) {
+          return arabicAge + " سنوات";
+        }
+
+        return arabicAge + " سنة";
       }
+    </script>
 
-      /* =====================================================
-   LOAD LEADERS FROM SUPABASE
-===================================================== */
-
+    <!-- =====================================================
+       LOAD LEADERS FROM SUPABASE
+  ===================================================== -->
+    <script>
       async function loadLeaders() {
         const table = document.getElementById("leadersTable");
-
         const emptyState = document.getElementById("emptyState");
 
         if (!table || !emptyState) {
@@ -656,38 +509,168 @@
           table.innerHTML = "";
 
           const leadersCount = document.getElementById("leadersCount");
-    const missingUniformCount = document.getElementById("missingUniformCount");
-    if (leadersCount) leadersCount.textContent = data ? data.length : 0;
-    if (missingUniformCount) missingUniformCount.textContent = data ? data.filter(function(leader) { return leader.has_uniform === false; }).length : 0;
 
-    if (!data || data.length === 0) {
+          const missingUniformCount = document.getElementById(
+            "missingUniformCount",
+          );
+
+          if (leadersCount) {
+            leadersCount.textContent = data ? data.length : 0;
+          }
+
+          if (missingUniformCount) {
+            missingUniformCount.textContent = data
+              ? data.filter(function (leader) {
+                  return leader.has_uniform === false;
+                }).length
+              : 0;
+          }
+
+          if (!data || data.length === 0) {
             table.style.display = "none";
-
             emptyState.style.display = "block";
-
             return true;
           }
 
           emptyState.style.display = "none";
-
           table.style.display = "flex";
 
+          /*
+           * Get the tasks used by the active leaders.
+           * has_team tells us whether this leader should have
+           * activities/members on the system.
+           */
+          const taskIds = [
+            ...new Set(
+              data
+                .map(function (leader) {
+                  return leader.task_id;
+                })
+                .filter(Boolean)
+                .map(String),
+            ),
+          ];
+
+          const tasksById = {};
+
+          if (taskIds.length > 0) {
+            const taskResult = await supabaseClient
+              .from("tasks")
+              .select("id, has_team")
+              .in("id", taskIds);
+
+            if (taskResult.error) {
+              throw taskResult.error;
+            }
+
+            (taskResult.data || []).forEach(function (task) {
+              tasksById[String(task.id)] = task.has_team === true;
+            });
+          }
+
+          /*
+           * Get real activity counts for these leaders.
+           */
+          const leaderIds = data
+            .map(function (leader) {
+              return leader.id;
+            })
+            .filter(Boolean)
+            .map(String);
+
+          const activityCountsByLeader = {};
+
+          if (leaderIds.length > 0) {
+            const activityResult = await supabaseClient
+              .from("activities")
+              .select("id, leader_id")
+              .in("leader_id", leaderIds);
+
+            if (activityResult.error) {
+              throw activityResult.error;
+            }
+
+            (activityResult.data || []).forEach(function (activity) {
+              const leaderId = String(activity.leader_id);
+
+              activityCountsByLeader[leaderId] =
+                (activityCountsByLeader[leaderId] || 0) + 1;
+            });
+          }
+
+          // ===== CURRENT YEAR MEETING ATTENDANCE =====
+          const currentYear = new Date().getFullYear();
+          const yearStart = `${currentYear}-01-01`;
+          const nextYearStart = `${currentYear + 1}-01-01`;
+
+          const { data: currentYearMeetings = [], error: meetingsError } =
+            await supabaseClient
+              .from("meetings")
+              .select("id, meeting_date")
+              .gte("meeting_date", yearStart)
+              .lt("meeting_date", nextYearStart);
+
+          if (meetingsError) {
+            throw meetingsError;
+          }
+
+          const meetingIds = currentYearMeetings.map(function (meeting) {
+            return meeting.id;
+          });
+
+          let attendanceRows = [];
+
+          if (meetingIds.length > 0) {
+            const { data: attendanceData, error: attendanceError } =
+              await supabaseClient
+                .from("meeting_attendance")
+                .select("meeting_id, leader_id, status")
+                .in("meeting_id", meetingIds);
+
+            if (attendanceError) {
+              throw attendanceError;
+            }
+
+            attendanceRows = attendanceData || [];
+          }
+
+          const attendanceCountsByLeader = {};
+
+          attendanceRows.forEach(function (row) {
+            if (row.status === "present") {
+              const leaderId = String(row.leader_id);
+
+              attendanceCountsByLeader[leaderId] =
+                (attendanceCountsByLeader[leaderId] || 0) + 1;
+            }
+          });
+
+          const attendanceTotal = currentYearMeetings.length;
+
+          // ===== END CURRENT YEAR MEETING ATTENDANCE =====
+
           data.forEach(function (leader) {
+            const hasTeam = leader.task_id
+              ? tasksById[String(leader.task_id)] === true
+              : false;
+
+            const activityCount = hasTeam
+              ? activityCountsByLeader[String(leader.id)] || 0
+              : 0;
+
             addLeaderToTable({
               id: leader.id,
-
               name: leader.full_name,
               assistants: leader.assistants,
-
               phone: leader.phone,
-
               birthDate: leader.birth_date,
-
               branch: leader.branch,
-
               uniform: leader.has_uniform,
-
-              activities: leader.activities || 0,
+              hasTeam: hasTeam,
+              activities: activityCount,
+              attendancePresent:
+                attendanceCountsByLeader[String(leader.id)] || 0,
+              attendanceTotal: attendanceTotal,
             });
           });
 
@@ -696,25 +679,18 @@
           console.error("Error loading leaders:", error);
 
           table.innerHTML = "";
-
           table.style.display = "none";
-
           emptyState.style.display = "block";
-
-          /*
-           * مهم:
-           * loadLeaders ترجع false فقط.
-           * ما رح ترمي error للحفظ.
-           */
 
           return false;
         }
       }
+    </script>
 
-      /* =====================================================
-   SAVE NEW LEADER
-===================================================== */
-
+    <!-- =====================================================
+       SAVE NEW LEADER
+  ===================================================== -->
+    <script>
       const leaderForm = document.getElementById("leaderForm");
 
       if (leaderForm) {
@@ -722,17 +698,25 @@
           event.preventDefault();
 
           const name = document.getElementById("leaderName").value.trim();
-          const assistants = document.getElementById("leaderAssistants").value.trim();
+
+          const assistants = document
+            .getElementById("leaderAssistants")
+            .value.trim();
 
           const phone = document.getElementById("leaderPhone").value.trim();
 
-          const day = document.getElementById("birthDay").value;
+          const birthDate =
+            document.getElementById("birthDateInput").value || null;
 
-          const month = document.getElementById("birthMonth").value;
+          const taskInput = document.getElementById("leaderBranch");
 
-          const year = document.getElementById("birthYear").value;
+          const branch = taskInput.value.trim();
 
-          const branch = document.getElementById("leaderBranch").value.trim();
+          const selectedTaskId = taskInput.dataset.selectedTaskId || null;
+
+          const selectedTaskName = taskInput.dataset.selectedTask
+            ? taskInput.dataset.selectedTask.trim()
+            : "";
 
           const uniformInput = document.querySelector(
             'input[name="hasUniform"]:checked',
@@ -740,78 +724,159 @@
 
           const uniform = uniformInput ? uniformInput.value === "true" : false;
 
-          /* Validation */
+          // VALIDATION
 
           if (!name) {
             alert("يرجى إدخال اسم القائد.");
-
             return;
           }
 
           if (!branch) {
             alert("يرجى اختيار المهمة.");
+            return;
+          }
+
+          if (!selectedTaskId) {
+            alert("يرجى اختيار مهمة موجودة من القائمة.");
+            return;
+          }
+
+          // LOAD SELECTED TASK
+
+          let selectedTask = null;
+
+          try {
+            const { data, error } = await AppDb.getTaskById(selectedTaskId);
+
+            if (error) {
+              console.error("Could not load selected task:", error);
+
+              alert("تعذّر التحقق من المهمة. لم يتم حفظ القائد.");
+
+              return;
+            }
+
+            selectedTask = data;
+          } catch (error) {
+            console.error("Selected task loading error:", error);
+
+            alert("تعذّر التحقق من المهمة. لم يتم حفظ القائد.");
 
             return;
           }
 
-          /* Birth date */
-
-          let birthDate = null;
-
-          if (day && month && year) {
-            birthDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          if (!selectedTask) {
+            alert("المهمة المحددة غير موجودة.");
+            return;
           }
 
-          /* Save button */
+          // VERIFY SELECTED TASK
+
+          if (
+            selectedTaskName &&
+            selectedTask.name.trim() !== selectedTaskName
+          ) {
+            alert("يرجى اختيار المهمة من القائمة من جديد.");
+
+            return;
+          }
+
+          const { data: activeLeaders, error: activeLeadersError } =
+            await supabaseClient
+              .from("leaders")
+              .select("id, full_name")
+              .eq("task_id", selectedTask.id)
+              .is("deleted_at", null)
+              .limit(1);
+
+          if (activeLeadersError) {
+            console.error("Task availability check error:", activeLeadersError);
+
+            alert(
+              "تعذّر التحقق من توفر المهمة. السبب: " +
+                (activeLeadersError.message || "خطأ غير معروف."),
+            );
+
+            return;
+          }
+
+          if (activeLeaders && activeLeaders.length > 0) {
+            alert(
+              "هذه المهمة مخصصة حاليًا للقائد " +
+                (activeLeaders[0].full_name || "آخر") +
+                "، لذلك لا يمكن إسنادها لقائد آخر.",
+            );
+
+            return;
+          }
+
+          // SAVE BUTTON
 
           const saveButton = document.getElementById("saveLeaderButton");
 
           if (saveButton) {
             saveButton.disabled = true;
-
             saveButton.textContent = "جارٍ الحفظ...";
           }
 
-          try {
-            /* =================================================
-                   STEP 1 — ACTUAL DATABASE INSERT
-                ================================================= */
+          let newTeamId = null;
+          let leaderCreated = false;
 
-            const { data, error } = await AppDb.createLeader({
+          try {
+            if (selectedTask.has_team === true) {
+              const teamName = selectedTask.name.replace("فرقة", "").trim();
+
+              if (!teamName) {
+                throw new Error("اسم المهمة غير صالح لإنشاء الفريق.");
+              }
+
+              const { data: teamData, error: teamError } =
+                await AppDb.createTeam({
+                  task_id: selectedTask.id,
+                  name: teamName,
+                });
+
+              if (teamError) {
+                throw teamError;
+              }
+
+              if (!teamData) {
+                throw new Error("لم يتم إنشاء الفريق.");
+              }
+
+              newTeamId = teamData.id;
+            }
+
+            // STEP 1:
+            // CREATE LEADER
+
+            const leaderPayload = {
               full_name: name,
               assistants: assistants || null,
               phone: phone || null,
               birth_date: birthDate,
               branch: branch,
+              task_id: selectedTask.id,
               has_uniform: uniform,
-            });
+              team_id: newTeamId,
+            };
 
-            /*
-             * إذا Supabase أعطى error،
-             * الحفظ فشل فعلًا.
-             */
+            const { data, error } = await AppDb.createLeader(leaderPayload);
 
             if (error) {
               throw error;
             }
 
-            /*
-             * إذا وصلنا لهون:
-             * القائد انحفظ فعليًا في Database.
-             */
+            leaderCreated = true;
 
             console.log("Leader saved successfully:", data);
 
-            /* =================================================
-                   STEP 2 — UPDATE THE LIST
-                ================================================= */
+            // STEP 2:
+            // REFRESH LIST
 
-            const listLoaded = await loadLeaders(); loadTrashCount();
+            const listLoaded = await loadLeaders();
 
-            /*
-             * حتى لو صار مشكلة بتحديث القائمة،
-             * ما منعتبر عملية الحفظ فاشلة.
-             */
+            await loadTrashCount();
 
             if (!listLoaded) {
               console.warn(
@@ -819,9 +884,8 @@
               );
             }
 
-            /* =================================================
-                   STEP 3 — RESET FORM
-                ================================================= */
+            // STEP 3:
+            // RESET FORM
 
             leaderForm.reset();
 
@@ -833,36 +897,78 @@
               defaultUniform.checked = true;
             }
 
+            const taskInputAfterSave = document.getElementById("leaderBranch");
+
+            if (taskInputAfterSave) {
+              delete taskInputAfterSave.dataset.selectedTask;
+              delete taskInputAfterSave.dataset.selectedTaskId;
+              delete taskInputAfterSave.dataset.addingTask;
+
+              taskInputAfterSave.value = "";
+
+              taskInputAfterSave.placeholder = "ابحث أو اختر المهمة";
+            }
+
             closeAddLeaderForm();
-
-            /* =================================================
-                   STEP 4 — SUCCESS
-                ================================================= */
-
-            alert("تم حفظ القائد بنجاح.");
           } catch (error) {
+            if (newTeamId && !leaderCreated) {
+              const { error: cleanupError } = await supabaseClient
+                .from("teams")
+                .update({
+                  deleted_at: new Date().toISOString(),
+                })
+                .eq("id", newTeamId);
+
+              if (cleanupError) {
+                console.error("New team cleanup failed:", cleanupError);
+
+                alert(
+                  "تعذّر تنظيف الفريق الجديد:\n" +
+                    "Message: " +
+                    (cleanupError.message || "غير متوفر") +
+                    "\nCode: " +
+                    (cleanupError.code || "غير متوفر") +
+                    "\nDetails: " +
+                    (cleanupError.details || "غير متوفر") +
+                    "\nHint: " +
+                    (cleanupError.hint || "غير متوفر"),
+                );
+              }
+            }
+
             console.error("Error saving leader:", error);
 
             alert(
-              "تعذّر حفظ القائد:" + (error.message || "حدث خطأ غير معروف."),
+              "تعذّر حفظ القائد. السبب: " +
+                (error.message || "غير متوفر") +
+                "\nرمز الخطأ: " +
+                (error.code || "غير متوفر") +
+                "\nالتفاصيل: " +
+                (error.details || "غير متوفر") +
+                "\nملاحظة قاعدة البيانات: " +
+                (error.hint || "غير متوفر"),
             );
           } finally {
             if (saveButton) {
               saveButton.disabled = false;
-
               saveButton.textContent = "حفظ";
             }
           }
         });
       }
+    </script>
 
-      /* =====================================================
-   LEADER CARD
-===================================================== */
-
-      function addLeaderToTable(leader) {
+    <!-- =====================================================
+       LEADER CARD
+  ===================================================== -->
+    <script>
+            function toArabicDigits(value) {
+        return String(value ?? 0).replace(/\d/g, function (digit) {
+          return "٠١٢٣٤٥٦٧٨٩"[digit];
+        });
+      }
+function addLeaderToTable(leader) {
         const table = document.getElementById("leadersTable");
-
         const emptyState = document.getElementById("emptyState");
 
         if (!table || !emptyState) {
@@ -870,492 +976,676 @@
         }
 
         emptyState.style.display = "none";
-
         table.style.display = "flex";
 
         const card = document.createElement("div");
-
         card.className = "leader-row";
-
-        card.setAttribute("role", "link");
-
-        card.setAttribute("tabindex", "0");
         card.dataset.leaderId = leader.id;
 
-        const age = calculateAge(leader.birthDate);
+        const ageText = leader.birthDate
+          ? calculateAge(leader.birthDate)
+          : "غير محدد العمر";
 
         const phone = leader.phone
           ? String(leader.phone).replace(/^\+961\s*/, "")
           : "غير محدد";
 
-        const uniformIcon = leader.uniform
-          ? '<span class="uniform-check has-uniform">✓</span><span class="uniform-clothes">👕</span><span class="uniform-text has-uniform">البدلة موجودة</span>'
-          : '<span class="uniform-check no-uniform">✕</span><span class="uniform-clothes">👕</span><span class="uniform-text no-uniform">لا توجد بدلة</span>';
+        const uniformHtml = leader.uniform
+          ? `
+              <span class="leader-detail-icon">👕</span>
+              <span class="uniform-text has-uniform">البدلة موجودة</span>
+            `
+          : `
+              <span class="leader-detail-icon">👕</span>
+              <span class="uniform-text no-uniform">لا توجد بدلة</span>
+            `;
+
+        const activitiesHtml =
+          leader.hasTeam === true
+            ? `
+                <div class="leader-stat">
+                  <span class="leader-stat-label">النشاطات</span>
+                  <strong>${toArabicDigits(leader.activities || 0)}</strong>
+                </div>
+              `
+            : "";
 
         card.innerHTML = `
-
-        <div class="leader-main">
+          <div class="leader-main">
 
             <div class="leader-profile">
 
-                <div class="leader-avatar">
-                    👤
+              <div class="leader-avatar">
+                👤
+              </div>
+
+              <div class="leader-identity">
+
+                <h3 class="leader-name">
+                  ${escapeHtml(leader.name || "غير محدد")}
+                </h3>
+
+                <div class="leader-phone">
+                  <span class="phone-icon">📞</span>
+                  ${
+                    phone === "غير محدد"
+                      ? "غير محدد"
+                      : "+961 " + escapeHtml(phone)
+                  }
                 </div>
 
-                <div class="leader-identity">
+                ${
+                  leader.assistants
+                    ? `
+                      <div class="leader-assistants">
+                        <span class="assistants-label">المساعدون:</span>
+                        <span>${escapeHtml(leader.assistants)}</span>
+                      </div>
+                    `
+                    : ""
+                }
 
-                    <div class="leader-name-phone">
-                        <h3>${escapeHtml(leader.name)}</h3>
-                        <span class="leader-phone">${phone === "غير محدد📞" ? "غير محدد" : "📞 +961 " + escapeHtml(phone)}</span>
-                    </div>
-
-                    ${
-                      leader.assistants
-                        ? `<p class="leader-assistants">أسماء المساعدين: ${escapeHtml(leader.assistants)}</p>`
-                        : ""
-                    }
-
-                    <p style="display:none;">
-
-                        ${phone === "غير محدد📞" ? "غير محدد📞" : "📞 +961 " + escapeHtml(phone)}
-
-                    </p>
-
-                </div>
+              </div>
 
             </div>
 
+            <div class="leader-details">
 
-            <div class="leader-info">
+              <div class="leader-detail">
+                <span class="leader-detail-icon">📅</span>
+                <span>${escapeHtml(ageText)}</span>
+              </div>
 
-                <div class="compact-info">
+              <div class="leader-detail">
+                <span class="leader-detail-icon">👥</span>
+                <span>${escapeHtml(leader.branch || "غير محددة")}</span>
+              </div>
 
-                    <span class="compact-icon">
-                        📅
-                    </span>
-
-                    <strong>
-                        ${leader.birthDate ? escapeHtml(age) + " سنة" : "غير محدد العمر"}
-                    </strong>
-
-                </div>
-
-
-                <div class="compact-info">
-
-                    <span class="compact-icon">
-                        👥
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(leader.branch || "غير محددة")}
-                    </strong>
-
-                </div>
-
-
-                <div class="compact-info">
-
-                    <strong>
-                        ${uniformIcon}
-                    </strong>
-
-                </div>
+              <div class="leader-detail">
+                ${uniformHtml}
+              </div>
 
             </div>
 
+            <div class="leader-stats">
 
-            <div class="activities-box">
+              ${activitiesHtml}
 
-                <span>
-                    عدد النشاطات
-                </span>
-
+              <div class="leader-stat">
+                <span class="leader-stat-label">الحضور</span>
                 <strong>
-                    ${leader.activities || 0}
+                  ${toArabicDigits(leader.attendancePresent || 0)}
+                  /
+                  ${toArabicDigits(leader.attendanceTotal || 0)}
                 </strong>
+              </div>
 
             </div>
-
 
             <div class="leader-actions">
-  <button type="button" class="leader-info-button" onclick="event.stopPropagation(); window.location.href='../leader/leader.html?id=${leader.id}'">
-    <span>معلومات القائد</span>
-    <span class="leader-info-arrow">←</span>
-  </button>
-</div>
 
-        </div>
+              <button
+                type="button"
+                class="leader-info-button"
+                onclick="event.stopPropagation(); window.location.href='leader-admin.html?id=${encodeURIComponent(leader.id)}'"
+              >
+                <span>معلومات القائد</span>
+                <span class="leader-info-arrow">←</span>
+              </button>
 
-    `;
+            </div>
 
-        function openLeaderPage() {
-          if (!leader.id) return;
-
-          window.location.href =
-            "../leader/leader.html?id=" + encodeURIComponent(leader.id);
-        }
-
-        card.addEventListener("click", openLeaderPage);
-
-        card.addEventListener("keydown", function (event) {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-
-            openLeaderPage();
-          }
-        });
+          </div>
+        `;
 
         table.appendChild(card);
       }
+      </script>
 
-      /* =====================================================
-   ESCAPE HTML
-===================================================== */
-
+    <!-- =====================================================
+       ESCAPE HTML
+  ===================================================== -->
+    <script>
       function escapeHtml(value) {
         return String(value)
           .replaceAll("&", "&amp;")
-
           .replaceAll("<", "&lt;")
-
           .replaceAll(">", "&gt;")
-
           .replaceAll('"', "&quot;")
-
           .replaceAll("'", "&#039;");
       }
-
-      /* =====================================================
-   LOGOUT
-===================================================== */
-
-      async function deleteLeader(leaderId) {
-
-  const confirmed = confirm(
-    "هل أنت متأكد من حذف هذا القائد؟\nيمكنك استعادته لاحقًا من سلة المحذوفات."
-  );
-
-  if (!confirmed) {
-    return;
-  }
-
-  const { error } = await AppDb.softDeleteLeader(leaderId);
-
-  if (error) {
-    console.error("Delete error:", error);
-    alert("حدث خطأ أثناء حذف القائد.");
-    return;
-  }
-
-  await loadLeaders(); loadTrashCount();
-
-  if (typeof loadTrashCount === "function") {
-    await loadTrashCount();
-  }
-}
-async function loadTrashCount() {
-
-  const { count, error } = await AppDb.countDeletedLeaders();
-
-  if (error) {
-    console.error("Trash count error:", error);
-    return;
-  }
-
-  const trashCount = document.getElementById("trashCount");
-
-  if (trashCount) {
-    trashCount.textContent = count || 0;
-  }
-}
-async function logout() {
-        await AppDb.signOut();
-
-        window.location.href = "../index.html";
-      }
-
-      /* =====================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-===================================================== */
-
-      const leaderModal = document.getElementById("leaderModal");
-
-      if (leaderModal) {
-        leaderModal.addEventListener("click", function (event) {
-          if (event.target === this) {
-            closeAddLeaderForm();
-          }
-        });
-      }
-
-      /* =====================================================
-   START PAGE
-===================================================== */
-
-      setupDateSelectors();
-
-      loadAdminName();
-
-      loadLeaders(); loadTrashCount();
     </script>
-  <script>
-const currentAdminId = new URLSearchParams(window.location.search).get("id");
 
-const myInfoLink = document.getElementById("myInfoLink");
+    <!-- =====================================================
+       DELETE LEADER
+  ===================================================== -->
+    <script>
+      async function deleteLeader(leaderId) {
+        const confirmed = confirm(
+          "هل أنت متأكد من حذف هذا القائد؟ يمكنك استعادته لاحقًا من سلة المحذوفات.",
+        );
 
-if (myInfoLink && currentAdminId) {
-    myInfoLink.href = "my-info.html?id=" + encodeURIComponent(currentAdminId);
-}
-</script>
-
-<script>
-const myInfoButton = document.getElementById("myInfoButton");
-
-if (myInfoButton) {
-    myInfoButton.addEventListener("click", function () {
-        window.location.href = "my-info.html";
-    });
-}
-</script>
-
-
-<script>
-async function setupTasksComboBox() {
-    const input = document.getElementById("leaderBranch");
-    const dropdown = document.getElementById("tasksDropdown");
-    const combo = document.getElementById("taskComboBox");
-
-    if (!input || !dropdown || !combo) return;
-
-    let tasks = [];
-    let addingMode = false;
-
-    async function loadTasks() {
-        const { data, error } = await AppDb.listTasks();
-
-        if (error) {
-            console.error("Error loading tasks:", error);
-            return;
+        if (!confirmed) {
+          return;
         }
 
-        tasks = data || [];
-    }
+        const { error } = await AppDb.softDeleteLeader(leaderId);
 
-    function closeDropdown() {
-        dropdown.classList.remove("open");
-        dropdown.innerHTML = "";
-    }
+        if (error) {
+          console.error("Delete error:", error);
 
-    function openTaskList() {
-        addingMode = false;
-        input.dataset.addingTask = "false";
-        input.placeholder = "ابحث أو اختر المهمة";
+          alert("حدث خطأ أثناء حذف القائد.");
 
-        dropdown.innerHTML = "";
+          return;
+        }
 
-        const search = input.value.trim().toLowerCase();
+        await loadLeaders();
+        await loadTrashCount();
+      }
+    </script>
 
-        const filteredTasks = tasks.filter(function (task) {
-            return task.name.toLowerCase().includes(search);
+    <!-- =====================================================
+       TRASH COUNT
+  ===================================================== -->
+    <script>
+      async function loadTrashCount() {
+        const { data: deletedLeaders, error: leadersError } =
+          await AppDb.listDeletedLeaders();
+
+        const { data: deletedMembers, error: membersError } =
+          await AppDb.listDeletedMembers();
+
+        if (leadersError || membersError) {
+          console.error("Trash count error:", leadersError || membersError);
+          return;
+        }
+
+        const totalDeleted =
+          (deletedLeaders || []).length + (deletedMembers || []).length;
+
+        const trashCount = document.getElementById("trashCount");
+
+        if (trashCount) {
+          trashCount.textContent = totalDeleted;
+        }
+      }
+      async function logout() {
+        await AppDb.signOut();
+        window.location.href = "../index.html";
+      }
+      loadAdminName();
+      loadLeaders();
+      loadTrashCount();
+    </script>
+
+    <!-- =====================================================
+       MY INFO / SIDEBAR
+  ===================================================== -->
+    <script>
+      const myInfoButton = document.getElementById("myInfoButton");
+
+      const adminSidebar = document.getElementById("adminSidebar");
+
+      const sidebarState = new URLSearchParams(window.location.search).get(
+        "sidebar",
+      );
+
+      if (adminSidebar && sidebarState === "open") {
+        adminSidebar.classList.add("open");
+      }
+
+      if (myInfoButton) {
+        myInfoButton.addEventListener("click", function () {
+          window.location.href = "my-info.html?sidebar=open";
         });
+      }
+    </script>
 
-        filteredTasks.forEach(function (task) {
+    <!-- =====================================================
+       TASK COMBOBOX
+  ===================================================== -->
+    <script>
+      async function setupTasksComboBox() {
+        const input = document.getElementById("leaderBranch");
+
+        const dropdown = document.getElementById("tasksDropdown");
+
+        const combo = document.getElementById("taskComboBox");
+
+        if (!input || !dropdown || !combo) {
+          return;
+        }
+
+        let tasks = [];
+        let addingMode = false;
+
+        // LOAD TASKS
+
+        async function loadTasks() {
+          const { data, error } = await AppDb.listTasks();
+
+          if (error) {
+            console.error("Error loading tasks:", error);
+
+            return;
+          }
+
+          tasks = data || [];
+        }
+
+        // CLOSE DROPDOWN
+
+        function closeDropdown() {
+          dropdown.classList.remove("open");
+          dropdown.innerHTML = "";
+        }
+
+        // OPEN TASK LIST
+
+        function openTaskList() {
+          addingMode = false;
+
+          input.dataset.addingTask = "false";
+
+          input.placeholder = "ابحث أو اختر المهمة";
+
+          dropdown.innerHTML = "";
+
+          const currentTask = input.dataset.selectedTask
+            ? input.dataset.selectedTask.trim().toLowerCase()
+            : "";
+
+          const search = input.value.trim().toLowerCase();
+
+          // إضافة مهمة دائمًا أول عنصر
+
+          const addOption = document.createElement("div");
+
+          addOption.className = "add-task-option";
+
+          addOption.textContent = "＋ إضافة مهمة";
+
+          addOption.addEventListener("click", function (event) {
+            event.stopPropagation();
+            startAddingTask();
+          });
+
+          dropdown.appendChild(addOption);
+
+          const filteredTasks = tasks.filter(function (task) {
+            const taskName = task.name.trim().toLowerCase();
+
+            // لا نعرض المهمة المختارة حاليًا
+
+            if (currentTask && taskName === currentTask) {
+              return false;
+            }
+
+            // إذا في بحث، نفلتر
+
+            if (search && search !== currentTask) {
+              return taskName.includes(search);
+            }
+
+            return true;
+          });
+
+          filteredTasks.forEach(function (task) {
             const option = document.createElement("div");
+
             option.className = "task-option";
+
             option.textContent = task.name;
 
             option.addEventListener("click", function () {
-                input.value = task.name;
-                closeDropdown();
+              input.value = task.name;
+
+              input.dataset.selectedTask = task.name;
+
+              input.dataset.selectedTaskId = task.id;
+
+              input.dataset.addingTask = "false";
+
+              closeDropdown();
             });
 
             dropdown.appendChild(option);
-        });
+          });
 
-        const addOption = document.createElement("div");
-        addOption.className = "add-task-option";
-        addOption.textContent = "＋ إضافة مهمة";
+          dropdown.classList.add("open");
+        }
 
-        addOption.addEventListener("click", function (event) {
-            event.stopPropagation();
-            startAddingTask();
-        });
+        // START ADDING TASK
 
-        dropdown.appendChild(addOption);
+        function startAddingTask() {
+          addingMode = true;
 
-        dropdown.classList.add("open");
-    }
+          input.dataset.addingTask = "true";
 
-    function startAddingTask() {
-        addingMode = true;
-        input.dataset.addingTask = "true";
+          delete input.dataset.selectedTask;
+          delete input.dataset.selectedTaskId;
 
-        input.value = "";
-        input.placeholder = "اكتب اسم المهمة";
+          input.value = "";
 
-        dropdown.innerHTML = "";
+          input.placeholder = "اكتب اسم المهمة";
 
-        const buttonsArea = document.createElement("div");
-        buttonsArea.className = "task-action-buttons";
+          dropdown.innerHTML = "";
 
-        const saveButton = document.createElement("button");
-        saveButton.type = "button";
-        saveButton.className = "save-task-button";
-        saveButton.textContent = "حفظ المهمة";
+          const buttonsArea = document.createElement("div");
 
-        saveButton.addEventListener("click", async function (event) {
+          buttonsArea.className = "task-action-buttons";
+
+          const saveButton = document.createElement("button");
+
+          saveButton.type = "button";
+
+          saveButton.className = "save-task-button";
+
+          saveButton.textContent = "حفظ المهمة";
+
+          saveButton.addEventListener("click", async function (event) {
             event.stopPropagation();
             await saveNewTask();
-        });
+          });
 
-        const cancelButton = document.createElement("button");
-        cancelButton.type = "button";
-        cancelButton.className = "cancel-task-button";
-        cancelButton.textContent = "إلغاء";
+          const cancelButton = document.createElement("button");
 
-        cancelButton.addEventListener("click", function (event) {
+          cancelButton.type = "button";
+
+          cancelButton.className = "cancel-task-button";
+
+          cancelButton.textContent = "إلغاء";
+
+          cancelButton.addEventListener("click", function (event) {
             event.stopPropagation();
 
             addingMode = false;
+
             input.dataset.addingTask = "false";
+
             input.value = "";
+
             input.placeholder = "ابحث أو اختر المهمة";
 
             closeDropdown();
-        });
+          });
 
-        buttonsArea.appendChild(saveButton);
-        buttonsArea.appendChild(cancelButton);
-        dropdown.appendChild(buttonsArea);
+          buttonsArea.appendChild(saveButton);
+          buttonsArea.appendChild(cancelButton);
 
-        dropdown.classList.add("open");
+          dropdown.appendChild(buttonsArea);
 
-        input.focus();
-    }
+          dropdown.classList.add("open");
 
-    async function saveNewTask() {
-        const name = input.value.trim();
+          input.focus();
+        }
 
-        if (!name) {
+        // SAVE NEW TASK
+
+        async function saveNewTask() {
+          const name = input.value.trim();
+
+          if (!name) {
             input.focus();
             return;
-        }
+          }
 
-        const normalizedName = name.toLowerCase();
+          const normalizedName = name.toLowerCase();
 
-        const existingTask = tasks.find(function (task) {
+          const existingTask = tasks.find(function (task) {
             return task.name.trim().toLowerCase() === normalizedName;
-        });
+          });
 
-        if (existingTask) {
+          if (existingTask) {
             input.value = existingTask.name;
+
+            input.dataset.selectedTask = existingTask.name;
+
+            input.dataset.selectedTaskId = existingTask.id;
+
             addingMode = false;
+
             input.dataset.addingTask = "false";
+
             input.placeholder = "ابحث أو اختر المهمة";
+
             closeDropdown();
+
             return;
-        }
+          }
 
-        const { data, error } = await AppDb.createTask(name);
+          const { data, error } = await AppDb.createTask(name);
 
-        if (error) {
+          if (error) {
             console.error("Error adding task:", error);
 
             if (error.code === "23505") {
-                await loadTasks();
+              await loadTasks();
 
-                const duplicateTask = tasks.find(function (task) {
-                    return task.name.trim().toLowerCase() === normalizedName;
-                });
+              const duplicateTask = tasks.find(function (task) {
+                return task.name.trim().toLowerCase() === normalizedName;
+              });
 
-                if (duplicateTask) {
-                    input.value = duplicateTask.name;
-                    addingMode = false;
-                    input.dataset.addingTask = "false";
-                    input.placeholder = "ابحث أو اختر المهمة";
-                    closeDropdown();
-                    return;
-                }
+              if (duplicateTask) {
+                input.value = duplicateTask.name;
+
+                input.dataset.selectedTask = duplicateTask.name;
+
+                input.dataset.selectedTaskId = duplicateTask.id;
+
+                addingMode = false;
+
+                input.dataset.addingTask = "false";
+
+                input.placeholder = "ابحث أو اختر المهمة";
+
+                closeDropdown();
+
+                return;
+              }
             }
 
-            alert("تعذر حفظ المهمة:\n" + (error.message || error.details || error.hint || "خطأ غير معروف"));
+            alert(
+              "تعذر حفظ المهمة: " +
+                (error.message ||
+                  error.details ||
+                  error.hint ||
+                  "خطأ غير معروف"),
+            );
+
             return;
+          }
+
+          // has_team لا يتم إرسالها من JavaScript.
+          // Database trigger يحددها تلقائيًا
+          // بناءً على وجود كلمة "فرقة".
+
+          tasks.push(data);
+
+          input.value = data.name;
+
+          input.dataset.selectedTask = data.name;
+
+          input.dataset.selectedTaskId = data.id;
+
+          addingMode = false;
+
+          input.dataset.addingTask = "false";
+
+          input.placeholder = "ابحث أو اختر المهمة";
+
+          closeDropdown();
         }
 
-        tasks.push(data);
+        // INPUT EVENTS
 
-        input.value = data.name;
-        addingMode = false;
-        input.dataset.addingTask = "false";
-        input.placeholder = "ابحث أو اختر المهمة";
-
-        closeDropdown();
+        document.addEventListener("click", function (event) {
+    if (!dropdown.classList.contains("open")) {
+      return;
     }
 
-    input.addEventListener("focus", async function () {
-        await loadTasks();
+    if (
+      event.target !== input &&
+      !dropdown.contains(event.target)
+    ) {
+      closeDropdown();
+    }
+  });
+  input.addEventListener("focus", async function () {
+          await loadTasks();
 
-        if (addingMode) {
+          if (addingMode) {
             dropdown.classList.add("open");
-        } else {
+          } else {
             openTaskList();
-        }
-    });
+          }
+        });
 
-    input.addEventListener("beforeinput", function (event) {
-    if (event.inputType === "insertText" && event.data) {
-        const hasEnglish = /[A-Za-z]/.test(event.data);
+        input.addEventListener("beforeinput", function (event) {
+          if (event.inputType === "insertText" && event.data) {
+            const hasEnglish = /[A-Za-z]/.test(event.data);
 
-        if (hasEnglish) {
+            if (hasEnglish) {
+              event.preventDefault();
+            }
+          }
+        });
+
+        input.addEventListener("paste", function (event) {
+          const text = (event.clipboardData || window.clipboardData).getData(
+            "text",
+          );
+
+          if (/[A-Za-z]/.test(text)) {
             event.preventDefault();
-        }
-    }
-});
 
-input.addEventListener("paste", function (event) {
-    const text = (event.clipboardData || window.clipboardData).getData("text");
+            const arabicOnly = text.replace(/[A-Za-z]/g, "");
 
-    if (/[A-Za-z]/.test(text)) {
-        event.preventDefault();
+            if (arabicOnly) {
+              document.execCommand("insertText", false, arabicOnly);
+            }
+          }
+        });
 
-        const arabicOnly = text.replace(/[A-Za-z]/g, "");
+        input.addEventListener("input", function () {
+          // إذا عدّل المستخدم الاسم يدويًا،
+          // لا نترك task_id القديم.
 
-        if (arabicOnly) {
-            document.execCommand("insertText", false, arabicOnly);
-        }
-    }
-});
-input.addEventListener("input", function () {
-        if (!addingMode) {
+          const selectedTask = input.dataset.selectedTask
+            ? input.dataset.selectedTask.trim()
+            : "";
+
+          if (selectedTask !== input.value.trim()) {
+            delete input.dataset.selectedTask;
+            delete input.dataset.selectedTaskId;
+          }
+
+          if (!addingMode) {
             openTaskList();
-        }
-    });
+          }
+        });
 
-    input.addEventListener("keydown", async function (event) {
-        if (event.key === "Enter" && addingMode) {
+        input.addEventListener("keydown", async function (event) {
+          if (event.key === "Enter" && addingMode) {
             event.preventDefault();
             await saveNewTask();
-        }
+          }
 
-        if (event.key === "Escape") {
+          if (event.key === "Escape") {
             addingMode = false;
+
             input.dataset.addingTask = "false";
+
             input.placeholder = "ابحث أو اختر المهمة";
+
             closeDropdown();
-        }
-    });
+          }
+        });
 
-    document.addEventListener("click", function (event) {
-        if (!combo.contains(event.target)) {
+        document.addEventListener("click", function (event) {
+          if (!combo.contains(event.target)) {
             closeDropdown();
+          }
+        });
+
+        await loadTasks();
+      }
+
+      setupTasksComboBox();
+    </script>
+
+    <!-- =====================================================
+       CLEAN SIDEBAR QUERY
+  ===================================================== -->
+    <script>
+      if (new URLSearchParams(location.search).get("sidebar") === "open") {
+        history.replaceState(null, "", "admin.html");
+      }
+    </script>
+    <!-- SIDEBAR TOUCH SWIPE -->
+    <script>
+      (function () {
+        const sidebar = document.getElementById("adminSidebar");
+
+        if (!sidebar) {
+          return;
         }
-    });
 
-    await loadTasks();
-}
+        let startX = 0;
+        let startY = 0;
 
-setupTasksComboBox();
-</script>
-</body>
+        sidebar.addEventListener("touchstart", function (event) {
+          const touch = event.touches[0];
+
+          startX = touch.clientX;
+          startY = touch.clientY;
+        }, { passive: true });
+
+        sidebar.addEventListener("touchend", function (event) {
+          const touch = event.changedTouches[0];
+
+          const deltaX = touch.clientX - startX;
+          const deltaY = touch.clientY - startY;
+
+          if (
+            deltaX > 80 &&
+            deltaX > Math.abs(deltaY)
+          ) {
+            sidebar.classList.remove("open");
+          }
+        }, { passive: true });
+      })();
+    </script>
+  </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

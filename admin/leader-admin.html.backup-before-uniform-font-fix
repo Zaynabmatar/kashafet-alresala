@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="stylesheet" href="../styles/leader-admin.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة القائد</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase.js"></script>
+
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="user-area">
+        <button
+            class="menu-button"
+            type="button"
+            onclick="goBack()"
+            title="العودة"
+            aria-label="العودة"
+        >
+            ‹
+        </button>
+    </div>
+</header>
+
+<main class="container">
+
+    <div id="loadingState" class="state-box" style="display:none;">
+        جارٍ تحميل معلومات القائد...
+    </div>
+
+    <div id="errorState" class="state-box error-state" style="display:none;">
+        تعذر تحميل معلومات القائد.
+    </div>
+
+    <section id="leaderContent" style="display:block;">
+
+        <div class="profile-card">
+
+    <div class="profile-top">
+        <div class="leader-avatar" id="leaderAvatar">👤</div>
+
+        <div class="leader-title">
+            <h2 id="leaderName">-</h2>
+            <p id="leaderAssistants"></p>
+        </div>
+    </div>
+
+    <div class="leader-card-actions">
+        <button
+            type="button"
+            class="edit-button"
+            onclick="openEditModal()"
+        >
+            ✎ تعديل
+        </button>
+
+        <button
+            type="button"
+            id="deleteLeaderButton"
+            class="edit-button delete-leader-button"
+            onclick="deleteCurrentLeader()"
+        >
+            حذف القائد
+        </button>
+    </div>
+
+    <div class="info-grid leader-clean-info">
+
+        <div class="info-item">
+            <div class="info-icon">📞</div>
+            <div>
+                <span>الهاتف</span>
+                <strong id="leaderPhone">غير محدد</strong>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">🎂</div>
+            <div>
+                <span>العمر</span>
+                <strong id="leaderAge">غير محدد</strong>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">📋</div>
+            <div>
+                <span>المهمة</span>
+                <strong id="leaderBranch">غير محددة</strong>
+            </div>
+        </div>
+
+        <div class="info-item leader-uniform-item">
+            <div id="leaderUniform">-</div>
+        </div>
+
+    </div>
+
+</div>
+<div class="boxes-grid" id="teamSections">
+
+            <section class="content-box">
+                <div class="box-header">
+                    <div class="box-icon">☷</div>
+                    <div>
+                        <h3>النشاطات</h3>
+                        <p>نشاطات القائد</p>
+                    </div>
+                </div>
+
+                <div id="activitiesList" class="empty-content">
+                    لا توجد نشاطات
+                </div>
+            </section>
+
+            <section class="content-box">
+
+                <div class="box-header">
+                    <div class="box-icon">👥</div>
+
+                    <div class="box-header-text">
+                        <h3>الأعضاء</h3>
+                        <p>
+                            أعضاء القائد
+                            <span id="membersHeaderCount" class="section-count">0</span>
+                            <span id="membersMissingUniform" class="section-count warning">0 بدون بدلة</span>
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="add-member-button"
+                        onclick="openMemberModal()"
+                    >
+                        + إضافة عنصر
+                    </button>
+                </div>
+
+                <div id="membersList" class="empty-content">
+                    لا يوجد أعضاء
+                </div>
+
+            </section>
+
+        </div>
+
+    </section>
+</main>
+
+<div class="modal-overlay" id="editModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+            <div>
+                <h2>تعديل معلومات القائد</h2>
+                <p>عدّل المعلومات ثم اضغط حفظ</p>
+            </div>
+
+            <button class="close-button" onclick="closeEditModal()">×</button>
+        </div>
+
+        <form id="editForm">
+
+            <div class="form-group">
+                <label for="editName">اسم القائد / القائدة</label>
+                <input type="text" id="editName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editAssistants">أسماء المساعدين</label>
+
+                <input
+                    type="text"
+                    id="editAssistants"
+                    placeholder="مثال: اسم 1 / اسم 2"
+                    autocomplete="off"
+                    lang="ar"
+                    dir="rtl"
+                    oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s\/]/g, '')"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="editPhone">رقم الهاتف</label>
+
+                <div class="phone-input">
+                    <span>+961</span>
+                    <input type="tel" id="editPhone">
+                </div>
+            </div>
+
+                        <div class="form-group">
+                <label>تاريخ الميلاد</label>
+                <div class="birth-date">
+                    <input
+                        type="text"
+                        id="editBirthDay"
+                        placeholder="اليوم"
+                        inputmode="numeric"
+                        maxlength="2"
+                        autocomplete="off"
+                        oninput="this.value = this.value.replace(/[^\d٠-٩۰-۹]/g, '')"
+                    >
+                    <input
+                        type="text"
+                        id="editBirthMonth"
+                        placeholder="الشهر"
+                        inputmode="numeric"
+                        maxlength="2"
+                        autocomplete="off"
+                        oninput="this.value = this.value.replace(/[^\d٠-٩۰-۹]/g, '')"
+                    >
+                    <input
+                        type="text"
+                        id="editBirthYear"
+                        placeholder="السنة"
+                        inputmode="numeric"
+                        maxlength="4"
+                        autocomplete="off"
+                        oninput="this.value = this.value.replace(/[^\d٠-٩۰-۹]/g, '')"
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="editBranch">المهمة</label>
+                <input
+                    type="text"
+                    id="editBranch"
+                    class="readonly-task"
+                    readonly
+                    aria-readonly="true"
+                    style="background:#f1f1f1; color:#777; cursor:not-allowed;"
+                >
+            </div>
+<div class="form-group">
+                <label>البدلة</label>
+
+                <div class="uniform-options">
+
+                    <label class="has-uniform-option"><input type="radio" name="editUniform" value="true"><span>✓ 👕 البدلة موجودة</span></label>
+
+                    <label class="no-uniform-option"><input type="radio" name="editUniform" value="false"><span>✕ 👕 لا توجد بدلة</span></label>
+
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="cancel-button" onclick="closeEditModal()">
+                    إلغاء
+                </button>
+
+                <button type="submit" class="save-button">
+                    حفظ التعديل
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const leaderId = params.get("id");
+
+let currentLeader = null;
+let currentLeaderHasTeam = false;
+let members = [];
+let activities = [];
+
+const months = [
+    "يناير",
+    "فبراير",
+    "مارس",
+    "أبريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "أغسطس",
+    "سبتمبر",
+    "أكتوبر",
+    "نوفمبر",
+    "ديسمبر"
+];
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function calculateAge(birthDate) {
+
+    if (!birthDate) return "غير محدد";
+
+    const birth = new Date(birthDate + "T00:00:00");
+
+    if (isNaN(birth.getTime())) return "غير محدد";
+
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+
+    const monthDifference = today.getMonth() - birth.getMonth();
+
+    if (
+        monthDifference < 0 ||
+        (
+            monthDifference === 0 &&
+            today.getDate() < birth.getDate()
+        )
+    ) {
+        age--;
+    }
+
+    return age >= 0 ? `${age} سنة` : "غير محدد";
+}
+
+function formatPhone(phone) {
+
+    if (!phone) return "غير محدد";
+
+    if (String(phone).startsWith("+961")) {
+        return phone;
+    }
+
+    return "+961 " + phone;
+}
+
+function formatUniform(hasUniform) {
+    return hasUniform
+        ? '<span class="uniform-status has-uniform"><span class="uniform-clothes" aria-hidden="true">👕</span><span>توجد بدلة</span></span>'
+        : '<span class="uniform-status no-uniform"><span class="uniform-clothes" aria-hidden="true">👕</span><span>لا توجد بدلة</span></span>';
+}
+
+async function loadLeader() {
+
+    if (!leaderId) {
+        showError();
+        return;
+    }
+
+    const loadingState = document.getElementById("loadingState");
+    const leaderContent = document.getElementById("leaderContent");
+
+    let loadingTimer = setTimeout(function () {
+        if (loadingState && leaderContent && leaderContent.style.display !== "block") {
+            loadingState.style.display = "block";
+        }
+    }, 0);
+
+    if (loadingState) loadingState.style.display = "none";
+
+    const { data, error } = await AppDb.getLeaderById(leaderId);
+
+    clearTimeout(loadingTimer);
+
+    if (error || !data) {
+        console.error(error);
+        showError();
+        return;
+    }
+
+    currentLeader = data;
+
+const leaderAvatar = document.getElementById("leaderAvatar");
+
+if (leaderAvatar) {
+    leaderAvatar.innerHTML = "";
+
+    if (data.profile_image) {
+        const image = document.createElement("img");
+
+        image.src = data.profile_image;
+        image.alt = data.full_name
+            ? "صورة " + data.full_name
+            : "صورة القائد";
+
+        image.loading = "eager";
+
+        leaderAvatar.appendChild(image);
+    } else {
+        leaderAvatar.textContent = "👤";
+    }
+}
+
+
+    currentLeaderHasTeam = Boolean(data.team_id);
+
+    const teamSections = document.getElementById("teamSections");
+
+    if (teamSections) {
+        if (currentLeaderHasTeam) {
+            teamSections.hidden = false;
+            teamSections.style.removeProperty("display");
+        } else {
+            teamSections.hidden = true;
+            teamSections.style.setProperty("display", "none", "important");
+        }
+    }
+
+    document.getElementById("leaderName").textContent =
+        data.full_name || "بدون اسم";
+
+    document.getElementById("leaderAssistants").textContent =
+        data.assistants ? "أسماء المساعدين: " + data.assistants : "";
+
+    document.getElementById("leaderBranch").textContent = data.branch || "المهمة غير محددة";
+
+    document.getElementById("leaderPhone").textContent =
+        formatPhone(data.phone);
+
+    const leaderAgeValue = calculateAge(data.birth_date);
+
+if (
+    leaderAgeValue === null ||
+    leaderAgeValue === undefined ||
+    leaderAgeValue === "" ||
+    leaderAgeValue === "غير محدد"
+) {
+    document.getElementById("leaderAge").textContent = "غير محدد";
+} else {
+    const ageDigits = String(leaderAgeValue).replace(
+        /\d/g,
+        digit => "٠١٢٣٤٥٦٧٨٩"[digit]
+    );
+
+    document.getElementById("leaderAge").textContent =
+        ageDigits.includes("سنة")
+            ? ageDigits
+            : ageDigits + " سنة";
+}
+
+    document.getElementById("leaderUniform").innerHTML =
+        formatUniform(data.has_uniform);
+
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("leaderContent").style.display = "block";
+}
+
+function safeDisplayText(value) {
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+}
+
+async function loadMembers() {
+    if (!currentLeaderHasTeam) return;
+
+    const list = document.getElementById("membersList");
+
+    if (!list || !leaderId) return;
+
+    const { data, error } = await supabaseClient
+        .from("members")
+        .select("*")
+        .eq("leader_id", leaderId)
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("LEADER ADMIN - members:", error);
+        list.innerHTML = `<div class="empty-content">تعذر تحميل الأعضاء.</div>`;
+        return;
+    }
+
+    members = data || [];
+
+    const countElement = document.getElementById("membersHeaderCount");
+    const missingUniformElement = document.getElementById("membersMissingUniform");
+
+    const missingUniformCount = members.filter(function (member) {
+        return member.has_uniform === false;
+    }).length;
+
+    if (countElement) {
+        countElement.textContent = members.length;
+    }
+
+    if (missingUniformElement) {
+        missingUniformElement.textContent =
+            missingUniformCount + " بدون بدلة";
+    }
+    if (!members.length) {
+        list.innerHTML = `
+            <div class="empty-content">
+                لا يوجد أعضاء
+            </div>
+        `;
+        return;
+    }
+
+    list.innerHTML = members.map(function (member) {
+
+        const name = safeDisplayText(
+            member.full_name || "بدون اسم"
+        );
+
+        const phone = member.phone
+            ? safeDisplayText(formatPhone(member.phone))
+            : "لا يوجد رقم";
+
+        const age = member.birth_date
+            ? safeDisplayText(calculateAge(member.birth_date))
+            : "العمر غير محدد";
+
+        const uniform = member.has_uniform === true
+            ? "يوجد بدلة"
+            : "لا يوجد بدلة";
+
+        return `
+            <div
+                class="leader-admin-data-item member-admin-item"
+                role="button"
+                tabindex="0"
+                onclick="openMemberModal('${member.id}')"
+            >
+
+                <div class="member-admin-info">
+                    <strong>${name}</strong>
+
+                    <span>${phone}</span>
+
+                    <span>${age}</span>
+
+                    <span class="${
+                        member.has_uniform === true
+                            ? "member-uniform-ok"
+                            : "member-uniform-missing"
+                    }">
+                        ${uniform}
+                    </span>
+                </div>
+
+                ${renderMemberActions(member.id)}
+
+            </div>
+        `;
+    }).join("");
+}
+async function loadActivities() {
+
+    if (!currentLeaderHasTeam) return;
+
+    const list = document.getElementById("activitiesList");
+
+    if (!list || !leaderId) return;
+
+    const { data, error } = await supabaseClient
+        .from("activities")
+        .select("*")
+        .eq("leader_id", leaderId)
+        .order("activity_date", { ascending: false })
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("LEADER ADMIN - activities:", error);
+        list.innerHTML = `
+            <div class="empty-content">
+                تعذر تحميل النشاطات.
+            </div>
+        `;
+        return;
+    }
+
+    activities = data || [];
+    if (!activities.length) {
+        list.innerHTML = `
+            <div class="empty-content">
+                لا توجد نشاطات
+            </div>
+        `;
+        return;
+    }
+
+    list.innerHTML = activities.map(function(activity) {
+
+        const title =
+            safeDisplayText(activity.title || "نشاط بدون عنوان");
+
+        let dateText = "التاريخ غير محدد";
+
+        if (activity.activity_date) {
+
+            const date =
+                new Date(activity.activity_date + "T00:00:00");
+
+            if (!Number.isNaN(date.getTime())) {
+                dateText = safeDisplayText(
+                    date.toLocaleDateString("ar-LB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                    })
+                );
+            }
+        }
+
+        return `
+            <div class="leader-admin-data-item" role="button" tabindex="0"
+                onclick="openActivityDetails('${activity.id}')">
+                <strong>${title}</strong>
+                <span>${dateText}</span>
+            </div>
+        `;
+
+    }).join("");
+}
+
+function showError() {
+
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("errorState").style.display = "block";
+}
+
+
+function openActivityDetails(activityId) {
+    window.location.href =
+        "../activity-details.html?id=" + encodeURIComponent(activityId) +
+        "&leader_id=" + encodeURIComponent(leaderId);
+}
+
+function normalizeArabicDigits(value) {
+    return String(value || "")
+        .replace(/[٠-٩]/g, function(digit) {
+            return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+        })
+        .replace(/[۰-۹]/g, function(digit) {
+            return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+        });
+}
+function openEditModal() {
+
+    if (!currentLeader) return;
+
+    document.getElementById("editName").value =
+        currentLeader.full_name || "";
+
+    document.getElementById("editPhone").value =
+        currentLeader.phone
+            ? String(currentLeader.phone).replace(/^\+961\s*/, "")
+            : "";
+
+    document.getElementById("editAssistants").value =
+        currentLeader.assistants || "";
+
+    document.getElementById("editBranch").value =
+        currentLeader.branch || "";
+
+    const birthDate =
+        String(currentLeader.birth_date || "").slice(0, 10);
+
+    const birthParts =
+        birthDate ? birthDate.split("-") : [];
+
+    document.getElementById("editBirthDay").value =
+        birthParts[2] || "";
+
+    document.getElementById("editBirthMonth").value =
+        birthParts[1] || "";
+
+    document.getElementById("editBirthYear").value =
+        birthParts[0] || "";
+
+    const uniformRadio = document.querySelector(
+        `input[name="editUniform"][value="${currentLeader.has_uniform ? "true" : "false"}"]`
+    );
+
+    if (uniformRadio) {
+        uniformRadio.checked = true;
+    }
+
+    document.getElementById("editModal").classList.add("show");
+}
+
+function closeEditModal() {
+    document.getElementById("editModal").classList.remove("show");
+}
+
+document.getElementById("editForm").addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById("editName").value.trim();
+
+    const phone =
+        document.getElementById("editPhone").value.trim();
+
+    const assistants =
+        document.getElementById("editAssistants").value.trim();
+
+    const day =
+        normalizeArabicDigits(
+            document.getElementById("editBirthDay").value.trim()
+        );
+
+    const month =
+        normalizeArabicDigits(
+            document.getElementById("editBirthMonth").value.trim()
+        );
+
+    const year =
+        normalizeArabicDigits(
+            document.getElementById("editBirthYear").value.trim()
+        );
+
+    const uniform =
+        document.querySelector(
+            'input[name="editUniform"]:checked'
+        )?.value === "true";
+
+    if (!name) {
+        alert("يرجى إدخال اسم القائد.");
+        return;
+    }
+
+    let birthDate = null;
+
+    if (day || month || year) {
+
+        if (!day || !month || !year) {
+            alert("يرجى إدخال اليوم والشهر والسنة كاملة.");
+            return;
+        }
+
+        const dayNumber = Number(day);
+        const monthNumber = Number(month);
+        const yearNumber = Number(year);
+
+        const testDate =
+            new Date(yearNumber, monthNumber - 1, dayNumber);
+
+        const isValidDate =
+            year.length === 4 &&
+            yearNumber >= 1900 &&
+            monthNumber >= 1 &&
+            monthNumber <= 12 &&
+            dayNumber >= 1 &&
+            dayNumber <= 31 &&
+            testDate.getFullYear() === yearNumber &&
+            testDate.getMonth() === monthNumber - 1 &&
+            testDate.getDate() === dayNumber;
+
+        if (!isValidDate) {
+            alert("يرجى إدخال تاريخ ميلاد صحيح.");
+            return;
+        }
+
+        birthDate =
+            year +
+            "-" +
+            month.padStart(2, "0") +
+            "-" +
+            day.padStart(2, "0");
+    }
+
+    const branch =
+        currentLeader?.branch || null;
+
+    const saveButton =
+        document.querySelector(".save-button");
+
+    saveButton.disabled = true;
+
+    const { data, error } =
+        await AppDb.updateLeader(leaderId, {
+
+            full_name: name,
+
+            assistants:
+                assistants || null,
+
+            phone:
+                phone || null,
+
+            birth_date:
+                birthDate,
+
+            branch:
+                branch,
+
+            has_uniform:
+                uniform
+        });
+
+    saveButton.disabled = false;
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "خطأ الحفظ: " +
+            error.message
+        );
+
+        return;
+    }
+
+    currentLeader = data;
+
+const leaderAvatar = document.getElementById("leaderAvatar");
+
+if (leaderAvatar) {
+    leaderAvatar.innerHTML = "";
+
+    if (data.profile_image) {
+        const image = document.createElement("img");
+
+        image.src = data.profile_image;
+        image.alt = data.full_name
+            ? "صورة " + data.full_name
+            : "صورة القائد";
+
+        image.loading = "eager";
+
+        leaderAvatar.appendChild(image);
+    } else {
+        leaderAvatar.textContent = "👤";
+    }
+}
+
+
+    closeEditModal();
+
+    await loadLeader();
+});
+
+async function deleteCurrentLeader() {
+    if (!leaderId) return;
+    const confirmed = confirm("هل أنت متأكد أنك تريد حذف هذا القائد؟");
+    if (!confirmed) return;
+    const button = document.getElementById("deleteLeaderButton");
+    if (button) button.disabled = true;
+    const { error } = await AppDb.softDeleteLeader(leaderId);
+    if (error) {
+        console.error(error);
+        alert("تعذر حذف القائد: " + error.message);
+        if (button) button.disabled = false;
+        return;
+    }
+    window.location.href = "../admin/admin.html";
+}
+function goBack() {
+    window.location.href = "../admin/admin.html";
+}
+loadLeader().then(function () {
+    if (!currentLeader) return;
+    loadMembers();
+    loadActivities();
+});
+
+document.getElementById("editModal").addEventListener("click", function(event) {
+
+    if (event.target === this) {
+        closeEditModal();
+    }
+});
+
+
+/* =======================================================
+   ADMIN — MEMBERS CRUD
+   ======================================================= */
+
+let editingMemberId = null;
+
+function normalizeArabicDigits(value) {
+    return String(value || "")
+        .replace(/[٠-٩]/g, function (d) {
+            return String("٠١٢٣٤٥٦٧٨٩".indexOf(d));
+        })
+        .replace(/[۰-۹]/g, function (d) {
+            return String("۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+        });
+}
+
+function openMemberModal(memberId = null) {
+    editingMemberId = memberId;
+
+    const modal = document.getElementById("memberModal");
+    const title = document.getElementById("memberModalTitle");
+    const subtitle = document.getElementById("memberModalSubtitle");
+    const saveButton = document.getElementById("saveMemberButton");
+
+    if (!modal) return;
+
+    if (memberId) {
+        const member = members.find(function (item) {
+            return item.id === memberId;
+        });
+
+        if (!member) return;
+
+        title.textContent = "تعديل معلومات العنصر";
+        subtitle.textContent = "عدّل معلومات العنصر ثم احفظ التغييرات";
+        saveButton.textContent = "حفظ التعديلات";
+
+        document.getElementById("memberName").value =
+            member.full_name || "";
+
+        let phone = member.phone || "";
+        phone = String(phone)
+            .replace(/^\+961/, "")
+            .replace(/^961/, "")
+            .replace(/\D/g, "");
+
+        document.getElementById("memberPhone").value = phone;
+
+        let day = "";
+        let month = "";
+        let year = "";
+
+        if (member.birth_date) {
+            const parts = String(member.birth_date).split("-");
+
+            if (parts.length === 3) {
+                year = parts[0];
+                month = parts[1];
+                day = parts[2];
+            }
+        }
+
+        document.getElementById("memberBirthDay").value = day;
+        document.getElementById("memberBirthMonth").value = month;
+        document.getElementById("memberBirthYear").value = year;
+
+        const uniformInput = document.querySelector(
+            'input[name="memberUniform"][value="' +
+            (member.has_uniform === true ? "true" : "false") +
+            '"]'
+        );
+
+        if (uniformInput) {
+            uniformInput.checked = true;
+        }
+
+    } else {
+        title.textContent = "إضافة عنصر";
+        subtitle.textContent = "أدخل معلومات العنصر";
+        saveButton.textContent = "حفظ العنصر";
+
+        document.getElementById("memberName").value = "";
+        document.getElementById("memberPhone").value = "";
+        document.getElementById("memberBirthDay").value = "";
+        document.getElementById("memberBirthMonth").value = "";
+        document.getElementById("memberBirthYear").value = "";
+
+        const defaultUniform = document.querySelector(
+            'input[name="memberUniform"][value="true"]'
+        );
+
+        if (defaultUniform) {
+            defaultUniform.checked = true;
+        }
+    }
+
+    modal.classList.add("show");
+}
+
+function closeMemberModal() {
+    const modal = document.getElementById("memberModal");
+
+    if (modal) {
+        modal.classList.remove("show");
+    }
+
+    editingMemberId = null;
+}
+
+async function saveMember() {
+    if (!leaderId || !currentLeader) {
+        console.error("ADMIN MEMBERS: لا يوجد قائد محدد.");
+        return;
+    }
+
+    if (!currentLeader.team_id) {
+        alert("هذا القائد لا يملك فرقة.");
+        return;
+    }
+
+    const name = String(
+        document.getElementById("memberName")?.value || ""
+    ).trim();
+
+    let phone = String(
+        document.getElementById("memberPhone")?.value || ""
+    ).trim();
+
+    const day = normalizeArabicDigits(
+        document.getElementById("memberBirthDay")?.value || ""
+    ).trim();
+
+    const month = normalizeArabicDigits(
+        document.getElementById("memberBirthMonth")?.value || ""
+    ).trim();
+
+    const year = normalizeArabicDigits(
+        document.getElementById("memberBirthYear")?.value || ""
+    ).trim();
+
+    const uniformInput = document.querySelector(
+        'input[name="memberUniform"]:checked'
+    );
+
+    const hasUniform = uniformInput
+        ? uniformInput.value === "true"
+        : true;
+
+    if (!name) {
+        alert("يرجى إدخال اسم العنصر.");
+        return;
+    }
+
+    phone = phone.replace(/\D/g, "");
+
+    let birthDate = null;
+
+    if (day || month || year) {
+        if (!day || !month || !year) {
+            alert("يرجى إدخال تاريخ الميلاد كاملًا.");
+            return;
+        }
+
+        birthDate =
+            year + "-" +
+            month.padStart(2, "0") + "-" +
+            day.padStart(2, "0");
+    }
+
+    const saveButton = document.getElementById("saveMemberButton");
+
+    if (saveButton) {
+        saveButton.disabled = true;
+    }
+
+    try {
+        if (editingMemberId) {
+
+            const { error } = await supabaseClient
+                .from("members")
+                .update({
+                    full_name: name,
+                    phone: phone || null,
+                    birth_date: birthDate,
+                    has_uniform: hasUniform,
+                    team_id: currentLeader.team_id
+                })
+                .eq("id", editingMemberId)
+                .eq("leader_id", leaderId);
+
+            if (error) {
+                console.error("ADMIN MEMBERS - update:", error);
+                alert("تعذر تعديل معلومات العنصر.");
+                return;
+            }
+
+        } else {
+
+            const { error } = await supabaseClient
+                .from("members")
+                .insert({
+                    leader_id: leaderId,
+                    full_name: name,
+                    phone: phone || null,
+                    birth_date: birthDate,
+                    profile_image: null,
+                    has_uniform: hasUniform,
+                    team_id: currentLeader.team_id
+                });
+
+            if (error) {
+                console.error("ADMIN MEMBERS - insert:", error);
+                alert("تعذر إضافة العنصر.");
+                return;
+            }
+        }
+
+        closeMemberModal();
+        await loadMembers();
+
+    } finally {
+        if (saveButton) {
+            saveButton.disabled = false;
+        }
+    }
+}
+
+async function deleteMember(memberId) {
+    const member = members.find(function (item) {
+        return item.id === memberId;
+    });
+
+    if (!member) return;
+
+    const confirmed = confirm(
+        "هل تريد نقل هذا العنصر إلى سلة المحذوفات؟"
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabaseClient
+        .from("members")
+        .update({
+            deleted_at: new Date().toISOString()
+        })
+        .eq("id", memberId)
+        .eq("leader_id", leaderId);
+
+    if (error) {
+        console.error("ADMIN MEMBERS - delete:", error);
+        alert("تعذر نقل العنصر إلى سلة المحذوفات.");
+        return;
+    }
+
+    await loadMembers();
+}
+
+function renderMemberActions(memberId) {
+    return `
+        <div class="member-admin-actions" onclick="event.stopPropagation()">
+            <button
+                type="button"
+                class="member-edit-button"
+                onclick="openMemberModal('${memberId}')"
+            >
+                تعديل
+            </button>
+
+            <button
+                type="button"
+                class="member-delete-button"
+                onclick="deleteMember('${memberId}')"
+            >
+                حذف
+            </button>
+        </div>
+    `;
+}
+</script>
+
+<!-- =======================================================
+     MEMBER MODAL — ADMIN
+     ======================================================= -->
+
+<div class="modal-overlay" id="memberModal">
+    <div class="modal-card">
+
+        <div class="modal-header">
+            <div>
+                <h2 id="memberModalTitle">إضافة عنصر</h2>
+                <p id="memberModalSubtitle">أدخل معلومات العنصر</p>
+            </div>
+
+            <button
+                type="button"
+                class="close-button"
+                onclick="closeMemberModal()"
+            >
+                ×
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label for="memberName">اسم العنصر</label>
+            <input
+                id="memberName"
+                type="text"
+                placeholder="أدخل الاسم الكامل بالعربية"
+                lang="ar"
+                dir="rtl"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="memberPhone">رقم الهاتف</label>
+
+            <div class="member-phone-field">
+                <span class="member-phone-prefix">+961</span>
+
+                <input
+                    id="memberPhone"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    dir="ltr"
+                >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>تاريخ الميلاد</label>
+
+            <div class="birth-date-fields" dir="ltr">
+                <input
+                    id="memberBirthDay"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="2"
+                    placeholder="اليوم"
+                    autocomplete="off"
+                >
+
+                <input
+                    id="memberBirthMonth"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="2"
+                    placeholder="الشهر"
+                    autocomplete="off"
+                >
+
+                <input
+                    id="memberBirthYear"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="4"
+                    placeholder="السنة"
+                    autocomplete="off"
+                >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>البدلة</label>
+
+            <div class="uniform-options">
+
+                <label class="uniform-radio-option">
+                    <input
+                        type="radio"
+                        name="memberUniform"
+                        value="true"
+                        checked
+                    >
+                    <span>👕 توجد بدلة</span>
+                </label>
+
+                <label class="uniform-radio-option">
+                    <input
+                        type="radio"
+                        name="memberUniform"
+                        value="false"
+                    >
+                    <span>👕 لا توجد بدلة</span>
+                </label>
+
+            </div>
+        </div>
+
+        <button
+            id="saveMemberButton"
+            class="save-button"
+            type="button"
+            onclick="saveMember()"
+        >
+            حفظ العنصر
+        </button>
+
+    </div>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,4663 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>قائمة القادة</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script>
+    <script src="../supabase.js">
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script>
+
+    <link rel="stylesheet" href="../styles/admin.css" />
+  <style>
+.task-combobox {
+    position: relative;
+    width: 100%;
+}
+
+.task-combobox input {
+    width: 100%;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 14px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    color: #222;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-combobox input:focus {
+    border-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.tasks-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    display: none;
+    max-height: 210px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+    scroll-behavior: smooth;
+}
+
+.tasks-dropdown.open {
+    display: block;
+}
+
+.task-option,
+.add-task-option {
+    min-height: 42px;
+    padding: 10px 14px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.15s ease;
+}
+
+.task-option:hover,
+.add-task-option:hover {
+    background: rgba(0, 0, 0, 0.045);
+}
+
+.add-task-option {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+}
+
+.task-action-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+}
+
+.task-action-buttons button {
+    flex: 1;
+    min-height: 40px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.task-action-buttons button:active {
+    transform: scale(0.98);
+}
+
+.save-task-button {
+    background: #f2f2f2;
+    color: #222;
+}
+
+.save-task-button:hover {
+    background: #e8e8e8;
+}
+
+.cancel-task-button {
+    background: #f5f5f5;
+    color: #666;
+}
+
+.cancel-task-button:hover {
+    background: #e9e9e9;
+}
+.save-task-button {
+    width: calc(100% - 20px);
+    margin: 10px;
+    min-height: 40px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    background: #f2f2f2;
+    color: #222;
+    transition: background 0.15s ease;
+}
+
+.save-task-button:hover {
+    background: #e8e8e8;
+}
+
+.tasks-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tasks-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 10px;
+}
+
+.tasks-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+.birth-date-picker {
+  position: relative;
+  width: 100%;
+  direction: rtl;
+}
+
+.birth-date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.birth-date-input {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 48px 0 14px;
+  border: 1px solid #d7d7d7;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 16px;
+  font-family: inherit;
+  text-align: right;
+  direction: rtl;
+  outline: none;
+}
+
+.birth-date-input:focus {
+  border-color: #315b4b;
+  box-shadow: 0 0 0 3px rgba(49, 91, 75, 0.10);
+}
+
+.birth-date-input::placeholder {
+  color: #999;
+}
+
+.birth-calendar-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(330px, 100%);
+  padding: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+  z-index: 5000;
+}
+
+.birth-calendar.open {
+  display: block;
+}
+
+.birth-calendar-header {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.birth-calendar-header strong {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.birth-calendar-nav {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3f5f4;
+  color: #315b4b;
+  font-size: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar-nav:active {
+  transform: scale(.96);
+}
+
+.birth-calendar-weekdays,
+.birth-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.birth-calendar-weekdays {
+  margin-bottom: 6px;
+}
+
+.birth-calendar-weekdays span {
+  font-size: 11px;
+  color: #777;
+  font-weight: 600;
+}
+
+.birth-calendar-days button {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.birth-calendar-days button:hover {
+  background: #eef3f0;
+}
+
+.birth-calendar-days button.selected {
+  background: #315b4b;
+  color: #fff;
+  font-weight: 700;
+}
+
+.birth-calendar-days button.today {
+  box-shadow: inset 0 0 0 1px #315b4b;
+}
+
+.birth-calendar-days button.empty {
+  cursor: default;
+}
+
+.birth-calendar-days button.empty:hover {
+  background: transparent;
+}
+
+@media (max-width: 480px) {
+  .birth-calendar {
+    width: 100%;
+  }
+}
+</style>
+<style id="task-buttons-fix">
+.task-action-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px !important;
+}
+
+.task-action-buttons button {
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    height: 40px !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 40px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+}
+
+.task-action-buttons .save-task-button,
+.task-action-buttons .cancel-task-button {
+    background: #f5f5f5 !important;
+    color: #222 !important;
+}
+
+.task-action-buttons button:hover {
+    background: #e9e9e9 !important;
+}
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+.birth-date-picker {
+  position: relative;
+  width: 100%;
+  direction: rtl;
+}
+
+.birth-date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.birth-date-input {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 48px 0 14px;
+  border: 1px solid #d7d7d7;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 16px;
+  font-family: inherit;
+  text-align: right;
+  direction: rtl;
+  outline: none;
+}
+
+.birth-date-input:focus {
+  border-color: #315b4b;
+  box-shadow: 0 0 0 3px rgba(49, 91, 75, 0.10);
+}
+
+.birth-date-input::placeholder {
+  color: #999;
+}
+
+.birth-calendar-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(330px, 100%);
+  padding: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+  z-index: 5000;
+}
+
+.birth-calendar.open {
+  display: block;
+}
+
+.birth-calendar-header {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.birth-calendar-header strong {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.birth-calendar-nav {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3f5f4;
+  color: #315b4b;
+  font-size: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar-nav:active {
+  transform: scale(.96);
+}
+
+.birth-calendar-weekdays,
+.birth-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.birth-calendar-weekdays {
+  margin-bottom: 6px;
+}
+
+.birth-calendar-weekdays span {
+  font-size: 11px;
+  color: #777;
+  font-weight: 600;
+}
+
+.birth-calendar-days button {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.birth-calendar-days button:hover {
+  background: #eef3f0;
+}
+
+.birth-calendar-days button.selected {
+  background: #315b4b;
+  color: #fff;
+  font-weight: 700;
+}
+
+.birth-calendar-days button.today {
+  box-shadow: inset 0 0 0 1px #315b4b;
+}
+
+.birth-calendar-days button.empty {
+  cursor: default;
+}
+
+.birth-calendar-days button.empty:hover {
+  background: transparent;
+}
+
+@media (max-width: 480px) {
+  .birth-calendar {
+    width: 100%;
+  }
+}
+</style>
+<style id="task-buttons-font-fix">
+.task-action-buttons button,
+.task-action-buttons button.save-task-button,
+.task-action-buttons button.cancel-task-button {
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 700 !important; line-height: 40px !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    text-shadow: none !important;
+}
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+.birth-date-picker {
+  position: relative;
+  width: 100%;
+  direction: rtl;
+}
+
+.birth-date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.birth-date-input {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 48px 0 14px;
+  border: 1px solid #d7d7d7;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 16px;
+  font-family: inherit;
+  text-align: right;
+  direction: rtl;
+  outline: none;
+}
+
+.birth-date-input:focus {
+  border-color: #315b4b;
+  box-shadow: 0 0 0 3px rgba(49, 91, 75, 0.10);
+}
+
+.birth-date-input::placeholder {
+  color: #999;
+}
+
+.birth-calendar-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(330px, 100%);
+  padding: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+  z-index: 5000;
+}
+
+.birth-calendar.open {
+  display: block;
+}
+
+.birth-calendar-header {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.birth-calendar-header strong {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.birth-calendar-nav {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3f5f4;
+  color: #315b4b;
+  font-size: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar-nav:active {
+  transform: scale(.96);
+}
+
+.birth-calendar-weekdays,
+.birth-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.birth-calendar-weekdays {
+  margin-bottom: 6px;
+}
+
+.birth-calendar-weekdays span {
+  font-size: 11px;
+  color: #777;
+  font-weight: 600;
+}
+
+.birth-calendar-days button {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.birth-calendar-days button:hover {
+  background: #eef3f0;
+}
+
+.birth-calendar-days button.selected {
+  background: #315b4b;
+  color: #fff;
+  font-weight: 700;
+}
+
+.birth-calendar-days button.today {
+  box-shadow: inset 0 0 0 1px #315b4b;
+}
+
+.birth-calendar-days button.empty {
+  cursor: default;
+}
+
+.birth-calendar-days button.empty:hover {
+  background: transparent;
+}
+
+@media (max-width: 480px) {
+  .birth-calendar {
+    width: 100%;
+  }
+}
+</style>
+<style id="leader-info-button-fix">
+.leader-info-button {
+    width: 100%;
+    min-height: 38px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border: 1px solid #cfded5;
+    border-radius: 10px;
+    background: #f7faf8;
+    color: #225d3c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    direction: rtl;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.leader-info-button:hover {
+    background: #eaf3ed;
+}
+
+.leader-info-arrow {
+    font-size: 20px;
+    line-height: 1;
+    direction: ltr;
+}
+
+@media (max-width: 600px) {
+    .leader-info-button {
+        width: 100%;
+        min-height: 34px;
+        margin-top: 4px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .leader-info-arrow {
+        font-size: 19px;
+    }
+}
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+.birth-date-picker {
+  position: relative;
+  width: 100%;
+  direction: rtl;
+}
+
+.birth-date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.birth-date-input {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 48px 0 14px;
+  border: 1px solid #d7d7d7;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 16px;
+  font-family: inherit;
+  text-align: right;
+  direction: rtl;
+  outline: none;
+}
+
+.birth-date-input:focus {
+  border-color: #315b4b;
+  box-shadow: 0 0 0 3px rgba(49, 91, 75, 0.10);
+}
+
+.birth-date-input::placeholder {
+  color: #999;
+}
+
+.birth-calendar-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(330px, 100%);
+  padding: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+  z-index: 5000;
+}
+
+.birth-calendar.open {
+  display: block;
+}
+
+.birth-calendar-header {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.birth-calendar-header strong {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.birth-calendar-nav {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3f5f4;
+  color: #315b4b;
+  font-size: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar-nav:active {
+  transform: scale(.96);
+}
+
+.birth-calendar-weekdays,
+.birth-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.birth-calendar-weekdays {
+  margin-bottom: 6px;
+}
+
+.birth-calendar-weekdays span {
+  font-size: 11px;
+  color: #777;
+  font-weight: 600;
+}
+
+.birth-calendar-days button {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.birth-calendar-days button:hover {
+  background: #eef3f0;
+}
+
+.birth-calendar-days button.selected {
+  background: #315b4b;
+  color: #fff;
+  font-weight: 700;
+}
+
+.birth-calendar-days button.today {
+  box-shadow: inset 0 0 0 1px #315b4b;
+}
+
+.birth-calendar-days button.empty {
+  cursor: default;
+}
+
+.birth-calendar-days button.empty:hover {
+  background: transparent;
+}
+
+@media (max-width: 480px) {
+  .birth-calendar {
+    width: 100%;
+  }
+}
+</style><style id="leader-info-button-size-fix">
+.leader-info-button {
+    width: 100% !important; min-width: 0 !important; max-width: none !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    margin-top: 0 !important;
+    padding: 6px 10px !important;
+    border: 1px solid #d7e1db !important;
+    border-radius: 8px !important;
+    background: #f7faf8 !important;
+    color: #225d3c !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 7px !important;
+    direction: rtl !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+}
+
+.leader-info-arrow {
+    font-size: 17px !important;
+    line-height: 1 !important;
+    direction: ltr !important;
+    flex-shrink: 0 !important;
+}
+
+@media (max-width: 600px) {
+    .leader-info-button {
+        width: 100% !important; min-width: 0 !important; max-width: none !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 5px 9px !important;
+        font-size: 11px !important;
+    }
+
+    .leader-info-arrow {
+        font-size: 16px !important;
+    }
+}
+
+/* =====================================================
+   ADD LEADER MODAL — FIXED HEADER / SCROLL BODY / FIXED ACTIONS
+===================================================== */
+
+#leaderModal {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+#leaderModal .modal {
+    width: min(620px, 100%);
+    height: min(90vh, 760px);
+    max-height: 90vh;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 18px;
+}
+
+/* الهيدر ثابت */
+#leaderModal .modal-header {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 22px 28px;
+    background: #fff;
+    border-bottom: 1px solid #e5e9e7;
+    z-index: 2;
+}
+
+/* محتوى الفورم فقط يعمل Scroll */
+#leaderModal #leaderForm {
+    min-height: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* الحقول تعمل Scroll */
+#leaderModal #leaderForm > .form-group {
+    flex: 0 0 auto;
+}
+
+#leaderModal #leaderForm {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 22px 28px 0;
+}
+
+/* الأزرار ثابتة في الأسفل */
+#leaderModal #leaderForm .form-actions {
+    flex: 0 0 auto;
+    margin: 0 -28px;
+    padding: 16px 28px 22px;
+    background: #fff;
+    border-top: 1px solid #e5e9e7;
+    z-index: 2;
+}
+
+/* حتى الـscroll يكون فقط بالجزء بين الهيدر والأزرار */
+#leaderModal #leaderForm {
+    scrollbar-width: thin;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    #leaderModal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    #leaderModal .modal {
+        width: 100%;
+        height: 90vh;
+        max-height: 90vh;
+        border-radius: 18px 18px 0 0;
+    }
+
+    #leaderModal .modal-header {
+        padding: 18px;
+    }
+
+    #leaderModal #leaderForm {
+        padding: 18px 18px 0;
+    }
+
+    #leaderModal #leaderForm .form-actions {
+        margin: 0 -18px;
+        padding: 14px 18px 18px;
+    }
+}
+
+
+/* =====================================================
+   FINAL ADD LEADER MODAL LAYOUT
+   Fixed header + scrolling fields + fixed actions
+===================================================== */
+
+#leaderModal {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+#leaderModal .modal {
+    width: min(620px, 100%);
+    height: min(88vh, 760px);
+    max-height: 88vh;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 18px;
+}
+
+/* =========================
+   HEADER — ثابت
+========================= */
+
+#leaderModal .modal-header {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 22px 28px;
+    background: #fff;
+    border-bottom: 1px solid #e5e9e7;
+    z-index: 10;
+}
+
+/* =========================
+   FORM — لا يعمل Scroll بنفسه
+========================= */
+
+#leaderModal #leaderForm {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+    padding: 22px 28px 0;
+}
+
+/* =========================
+   FIELDS — الجزء المتحرك
+========================= */
+
+#leaderModal #leaderForm > .form-group {
+    flex: none;
+}
+
+/* =========================
+   ACTIONS — ثابتة بأسفل الـModal
+========================= */
+
+#leaderModal #leaderForm .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+
+    margin: 28px -28px 0;
+    padding: 16px 28px 22px;
+
+    background: #fff;
+    border-top: 1px solid #e5e9e7;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 640px) {
+
+    #leaderModal {
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0;
+    }
+
+    #leaderModal .modal {
+        width: 100%;
+        height: 88vh;
+        max-height: 88vh;
+        border-radius: 18px 18px 0 0;
+    }
+
+    #leaderModal .modal-header {
+        padding: 18px;
+    }
+
+    #leaderModal #leaderForm {
+        padding: 18px 18px 0;
+    }
+
+    #leaderModal #leaderForm .form-actions {
+        margin: 28px -18px 0;
+        padding: 14px 18px 18px;
+    }
+}
+
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+.birth-date-picker {
+  position: relative;
+  width: 100%;
+  direction: rtl;
+}
+
+.birth-date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.birth-date-input {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 48px 0 14px;
+  border: 1px solid #d7d7d7;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 16px;
+  font-family: inherit;
+  text-align: right;
+  direction: rtl;
+  outline: none;
+}
+
+.birth-date-input:focus {
+  border-color: #315b4b;
+  box-shadow: 0 0 0 3px rgba(49, 91, 75, 0.10);
+}
+
+.birth-date-input::placeholder {
+  color: #999;
+}
+
+.birth-calendar-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(330px, 100%);
+  padding: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.14);
+  z-index: 5000;
+}
+
+.birth-calendar.open {
+  display: block;
+}
+
+.birth-calendar-header {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.birth-calendar-header strong {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.birth-calendar-nav {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: #f3f5f4;
+  color: #315b4b;
+  font-size: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birth-calendar-nav:active {
+  transform: scale(.96);
+}
+
+.birth-calendar-weekdays,
+.birth-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.birth-calendar-weekdays {
+  margin-bottom: 6px;
+}
+
+.birth-calendar-weekdays span {
+  font-size: 11px;
+  color: #777;
+  font-weight: 600;
+}
+
+.birth-calendar-days button {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.birth-calendar-days button:hover {
+  background: #eef3f0;
+}
+
+.birth-calendar-days button.selected {
+  background: #315b4b;
+  color: #fff;
+  font-weight: 700;
+}
+
+.birth-calendar-days button.today {
+  box-shadow: inset 0 0 0 1px #315b4b;
+}
+
+.birth-calendar-days button.empty {
+  cursor: default;
+}
+
+.birth-calendar-days button.empty:hover {
+  background: transparent;
+}
+
+@media (max-width: 480px) {
+  .birth-calendar {
+    width: 100%;
+  }
+}
+</style></head>
+
+  <body>
+    <header class="topbar">
+  <div class="user-area">
+    <button class="menu-button" type="button" onclick="document.getElementById('adminSidebar').classList.toggle('open')">☰</button>
+
+    <div class="profile-image" id="adminProfileImage">
+      <span>👤</span>
+    </div>
+
+    <span class="user-name" id="userName"></span>
+  </div>
+</header>
+
+<aside class="admin-sidebar" id="adminSidebar">
+  <button class="sidebar-item" type="button" id="myInfoButton">👥 معلوماتي</button>
+
+  <div class="sidebar-stat">
+    👤 <span>عدد القادة: <strong id="leadersCount">0</strong></span>
+  </div>
+
+  <div class="sidebar-stat missing-uniform-stat">
+    🔴 <span>عدد البدلات الناقصة: <strong id="missingUniformCount">0</strong></span>
+  </div>
+
+  <div class="topbar-actions">
+    <button
+      class="trash-button"
+      type="button"
+      onclick="window.location.href='trash.html'"
+    >
+      🗑️ سلة المحذوفات
+      <span class="trash-count" id="trashCount">0</span>
+    </button>
+
+    <button class="logout-button" type="button" onclick="logout()">
+      تسجيل الخروج
+    </button>
+  </div>
+</aside>
+
+    <main class="container">
+      <div class="page-header">
+        <div>
+          <h1>قائمة القادة</h1>
+          <p>إدارة القادة والفرق التابعة لهم</p>
+        </div>
+
+        <div class="header-actions"><button class="add-leader" type="button" onclick="openAddLeaderForm()"><span>+</span>إضافة قائد</button><button class="add-meetings" type="button" onclick="window.location.href='meetings.html'">الاجتماعات</button></div>
+      </div>
+
+      <section class="leaders-table-wrapper">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">👥</div>
+
+          <h2>لا يوجد قادة بعد</h2>
+
+          <p>اضغط على «إضافة قائد» لإضافة أول قائد.</p>
+        </div>
+
+        <div class="leaders-table" id="leadersTable"></div>
+      </section>
+    </main>
+
+    <!-- =========================
+     Add Leader Modal
+========================= -->
+
+    <div class="modal-overlay" id="leaderModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2>إضافة قائد</h2>
+
+            <p>أدخل معلومات القائد أو القائدة</p>
+          </div>
+
+          <button
+            class="close-button"
+            type="button"
+            onclick="closeAddLeaderForm()"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="leaderForm">
+          <!-- الاسم -->
+
+          <div class="form-group">
+            <label for="leaderName"> اسم القائد / القائدة </label>
+
+            <input
+              type="text"
+              id="leaderName"
+              value="القائد"
+              placeholder="أدخل الاسم الكامل بالعربية"
+              required
+              lang="ar"
+              dir="rtl"
+              oninput="
+                this.value = this.value.replace(/[^\u0600-\u06FF\s]/g, '')
+              "
+            />
+          </div>
+
+          <!-- المساعدون -->
+
+          <div class="form-group">
+            <label for="leaderAssistants">أسماء المساعدين</label>
+
+            <input
+              type="text"
+              id="leaderAssistants"
+              placeholder="مثال: اسم 1 / اسم 2"
+              autocomplete="off"
+              lang="ar"
+              dir="rtl"
+              oninput="this.value = this.value.replace(/[^\u0600-\u06FF\s\/]/g, '')"
+            />
+          </div>
+
+          <!-- الهاتف -->
+
+          <div class="form-group">
+            <label for="leaderPhone"> رقم الهاتف </label>
+
+            <div class="phone-input">
+              <span class="country-code"> +961 </span>
+
+              <input
+                type="tel"
+                id="leaderPhone"
+                placeholder="أدخل رقم الهاتف"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+          <!-- تاريخ الميلاد -->
+
+          <div class="form-group">
+            <label for="birthDateInput">تاريخ الميلاد</label>
+
+            <div class="birth-date-picker" id="birthDatePicker">
+
+  <div class="birth-date-input-wrap">
+
+    <input
+      type="text"
+      id="birthDateInput"
+      class="birth-date-input"
+      placeholder="يوم / شهر / سنة"
+      inputmode="numeric"
+      autocomplete="off"
+      maxlength="10"
+      dir="rtl"
+      aria-label="تاريخ الميلاد"
+    />
+
+    <button
+      type="button"
+      class="birth-calendar-button"
+      id="birthCalendarButton"
+      aria-label="فتح التقويم"
+    >
+      📅
+    </button>
+
+  </div>
+
+  <input type="hidden" id="birthDateValue" />
+
+  <div class="birth-calendar" id="birthCalendar">
+
+    <div class="birth-calendar-header">
+
+      <button type="button" class="birth-calendar-nav" id="birthPrevMonth">
+        ‹
+      </button>
+
+      <strong id="birthCalendarTitle"></strong>
+
+      <button type="button" class="birth-calendar-nav" id="birthNextMonth">
+        ›
+      </button>
+
+    </div>
+
+    <div class="birth-calendar-weekdays">
+      <span>أحد</span>
+      <span>اثنين</span>
+      <span>ثلاثاء</span>
+      <span>أربعاء</span>
+      <span>خميس</span>
+      <span>جمعة</span>
+      <span>سبت</span>
+    </div>
+
+    <div class="birth-calendar-days" id="birthCalendarDays"></div>
+
+  </div>
+
+</div>
+          </div>
+<!-- المهمة -->
+
+          <div class="form-group">
+            <label for="leaderBranch"> المهمة </label>
+
+            <div class="task-combobox" id="taskComboBox">
+              <input
+                type="text"
+                id="leaderBranch"
+                placeholder="ابحث أو اختر المهمة"
+                autocomplete="off"
+              />
+              <div id="tasksDropdown" class="tasks-dropdown"></div>
+            </div>
+          </div>
+
+          <!-- البدلة -->
+
+          <div class="form-group">
+            <label> البدلة </label>
+
+            <div class="uniform-options">
+              <label class="radio-option has-uniform-option"><input type="radio" name="hasUniform" value="true" /><span>✓ 👕 البدلة موجودة</span></label>
+
+              <label class="radio-option no-uniform-option"><input type="radio" name="hasUniform" value="false" checked /><span>✕ 👕 لا توجد بدلة</span></label>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              onclick="closeAddLeaderForm()"
+            >
+              إلغاء
+            </button>
+
+            <button type="submit" class="save-button" id="saveLeaderButton">
+              حفظ
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      /* =====================================================
+   ADMIN NAME
+===================================================== */
+
+      async function loadAdminName() {
+        try {
+          const { data, error } = await AppDb.getAdminSummary();
+
+          if (error) {
+            console.error("Error loading admin:", error);
+
+            return;
+          }
+
+          const profileImage = document.getElementById("adminProfileImage"); if (profileImage) { profileImage.innerHTML = data && data.profile_image ? "<img src=\"" + data.profile_image + "\" alt=\"صورة البروفايل\">" : "<span>👤</span>"; } if (data && data.full_name) {
+            document.getElementById("userName").textContent = data.full_name;
+          }
+        } catch (error) {
+          console.error("Admin loading error:", error);
+        }
+      }
+
+      /* =====================================================
+   DATE SELECTORS
+===================================================== */
+/* =====================================================
+   MODAL
+===================================================== */
+
+      function openAddLeaderForm() {
+        const modal = document.getElementById("leaderModal");
+
+        if (modal) {
+          modal.classList.add("active");
+        }
+      }
+
+      function closeAddLeaderForm() {
+        const modal = document.getElementById("leaderModal");
+
+        if (modal) {
+          modal.classList.remove("active");
+        }
+      }
+
+      /* =====================================================
+   AGE
+===================================================== */
+
+      function calculateAge(birthDate) {
+        if (!birthDate) {
+          return "غير محدد";
+        }
+
+        const birth = new Date(birthDate);
+
+        if (isNaN(birth.getTime())) {
+          return "غير محدد";
+        }
+
+        const today = new Date();
+
+        let age = today.getFullYear() - birth.getFullYear();
+
+        const monthDifference = today.getMonth() - birth.getMonth();
+
+        if (
+          monthDifference < 0 ||
+          (monthDifference === 0 && today.getDate() < birth.getDate())
+        ) {
+          age--;
+        }
+
+        return age >= 0 ? `${age} سنة` : "غير محدد";
+      }
+
+      /* =====================================================
+   LOAD LEADERS FROM SUPABASE
+===================================================== */
+
+      async function loadLeaders() {
+        const table = document.getElementById("leadersTable");
+
+        const emptyState = document.getElementById("emptyState");
+
+        if (!table || !emptyState) {
+          return false;
+        }
+
+        try {
+          const { data, error } = await AppDb.listActiveLeaders();
+
+          if (error) {
+            throw error;
+          }
+
+          table.innerHTML = "";
+
+          const leadersCount = document.getElementById("leadersCount");
+    const missingUniformCount = document.getElementById("missingUniformCount");
+    if (leadersCount) leadersCount.textContent = data ? data.length : 0;
+    if (missingUniformCount) missingUniformCount.textContent = data ? data.filter(function(leader) { return leader.has_uniform === false; }).length : 0;
+
+    if (!data || data.length === 0) {
+            table.style.display = "none";
+
+            emptyState.style.display = "block";
+
+            return true;
+          }
+
+          emptyState.style.display = "none";
+
+          table.style.display = "flex";
+
+          data.forEach(function (leader) {
+            addLeaderToTable({
+              id: leader.id,
+
+              name: leader.full_name,
+              assistants: leader.assistants,
+
+              phone: leader.phone,
+
+              birthDate: leader.birth_date,
+
+              branch: leader.branch,
+
+              uniform: leader.has_uniform,
+
+              activities: leader.activities || 0,
+            });
+          });
+
+          return true;
+        } catch (error) {
+          console.error("Error loading leaders:", error);
+
+          table.innerHTML = "";
+
+          table.style.display = "none";
+
+          emptyState.style.display = "block";
+
+          /*
+           * مهم:
+           * loadLeaders ترجع false فقط.
+           * ما رح ترمي error للحفظ.
+           */
+
+          return false;
+        }
+      }
+
+      /* =====================================================
+   SAVE NEW LEADER
+===================================================== */
+
+      const leaderForm = document.getElementById("leaderForm");
+
+      if (leaderForm) {
+        leaderForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const name = document.getElementById("leaderName").value.trim();
+          const assistants = document.getElementById("leaderAssistants").value.trim();
+
+          const phone = document.getElementById("leaderPhone").value.trim();
+          const birthDate = document.getElementById("birthDateValue").value || null;
+
+          const branch = document.getElementById("leaderBranch").value.trim();
+          const selectedTaskId = document.getElementById("leaderBranch").dataset.selectedTaskId || null;
+
+          const uniformInput = document.querySelector(
+            'input[name="hasUniform"]:checked',
+          );
+
+          const uniform = uniformInput ? uniformInput.value === "true" : false;
+
+          /* Validation */
+
+          if (!name) {
+            alert("يرجى إدخال اسم القائد.");
+
+            return;
+          }
+
+          if (!branch) {
+            alert("يرجى اختيار المهمة.");
+
+            return;
+          }
+          // كل مهمة يمكن أن تكون لقائد Active واحد فقط.
+          // إذا كان القائد القديم في سلة المحذوفات، تصبح المهمة متاحة من جديد.
+          const { data: existingLeaders, error: duplicateCheckError } =
+            await supabaseClient
+              .from("leaders")
+              .select("id, full_name, branch")
+              .is("deleted_at", null)
+              .eq("branch", branch)
+              .limit(1);
+
+          if (duplicateCheckError) {
+            console.error(
+              "Task availability check error:",
+              duplicateCheckError,
+            );
+
+            alert("تعذّر التحقق من المهمة. لم يتم حفظ القائد.");
+            return;
+          }
+
+          if (existingLeaders && existingLeaders.length > 0) {
+            alert(
+              "هذه المهمة مستخدمة حاليًا من قبل: " +
+                (existingLeaders[0].full_name || "شخص آخر") +
+                ".\nلا يمكن تعيين نفس المهمة لقائدين.",
+            );
+
+            return;
+          }
+/* Save button */
+
+          const saveButton = document.getElementById("saveLeaderButton");
+
+          if (saveButton) {
+            saveButton.disabled = true;
+
+            saveButton.textContent = "جارٍ الحفظ...";
+          }
+
+          try {
+            /* =================================================
+                   STEP 1 — ACTUAL DATABASE INSERT
+                ================================================= */
+
+            const { data, error } = await AppDb.createLeader({
+              full_name: name,
+              assistants: assistants || null,
+              phone: phone || null,
+              birth_date: birthDate,
+              branch: branch,
+              task_id: selectedTaskId,
+              has_uniform: uniform,
+            });
+
+            /*
+             * إذا Supabase أعطى error،
+             * الحفظ فشل فعلًا.
+             */
+
+            if (error) {
+              throw error;
+            }
+
+            /*
+             * إذا وصلنا لهون:
+             * القائد انحفظ فعليًا في Database.
+             */
+
+            console.log("Leader saved successfully:", data);
+            /* =================================================
+                   STEP 1.5 — AUTO LINK TEAM FOR "فرقة" TASKS
+                ================================================= */
+
+            if (selectedTaskId) {
+              const { data: selectedTask, error: taskError } =
+                await supabaseClient
+                  .from("tasks")
+                  .select("id, name")
+                  .eq("id", selectedTaskId)
+                  .single();
+
+              if (taskError) {
+                console.error("Could not load selected task:", taskError);
+              } else if (selectedTask && selectedTask.name.includes("فرقة")) {
+                const taskName = selectedTask.name.trim();
+                const teamIndex = taskName.indexOf("فرقة");
+                const teamName =
+                  teamIndex >= 0 ? taskName.slice(teamIndex).trim() : taskName;
+
+                const { data: teamData, error: teamError } =
+                  await AppDb.getOrCreateTeam(selectedTask.id, teamName);
+
+                if (teamError) {
+                  console.error("Could not get or create team:", teamError);
+                } else if (teamData) {
+                  const { error: leaderTeamError } =
+                    await AppDb.updateLeader(data.id, {
+                      team_id: teamData.id,
+                    });
+
+                  if (leaderTeamError) {
+                    console.error(
+                      "Could not link leader to team:",
+                      leaderTeamError,
+                    );
+                  } else {
+                    data.team_id = teamData.id;
+                    console.log(
+                      "Leader linked to team successfully:",
+                      teamData,
+                    );
+                  }
+                }
+              }
+            }
+            /* =================================================
+                   STEP 1.5 — CREATE TEAM FOR "فرقة" TASKS
+                ================================================= */
+
+            if (selectedTaskId) {
+              const { data: selectedTask, error: taskError } = await supabaseClient
+                .from("tasks")
+                .select("id, name")
+                .eq("id", selectedTaskId)
+                .single();
+
+              if (taskError) {
+                console.error("Could not load selected task:", taskError);
+              } else if (selectedTask && selectedTask.name.includes("فرقة")) {
+                const taskName = selectedTask.name.trim();
+                const teamIndex = taskName.indexOf("فرقة");
+                const teamName = teamIndex >= 0 ? taskName.slice(teamIndex).trim() : taskName;
+                const { data: teamData, error: teamError } =
+                  await AppDb.createTeam({
+                    task_id: selectedTask.id,
+                    name: teamName,
+                  });
+
+                if (teamError) {
+                  console.error("Could not create team:", teamError);
+                } else if (teamData) {
+                  const { error: leaderTeamError } =
+                    await AppDb.updateLeader(data.id, {
+                      team_id: teamData.id,
+                    });
+
+                  if (leaderTeamError) {
+                    console.error(
+                      "Team was created, but leader could not be linked to it:",
+                      leaderTeamError,
+                    );
+                  } else {
+                    data.team_id = teamData.id;
+                    console.log("Team created and linked successfully:", teamData);
+                  }
+                }
+              }
+            }
+
+            /* =================================================
+                   STEP 2 — UPDATE THE LIST
+                ================================================= */
+
+            const listLoaded = await loadLeaders(); loadTrashCount();
+
+            /*
+             * حتى لو صار مشكلة بتحديث القائمة،
+             * ما منعتبر عملية الحفظ فاشلة.
+             */
+
+            if (!listLoaded) {
+              console.warn(
+                "Leader was saved, but the list could not be refreshed.",
+              );
+            }
+
+            /* =================================================
+                   STEP 3 — RESET FORM
+                ================================================= */
+
+            leaderForm.reset();
+
+            const defaultUniform = document.querySelector(
+              'input[name="hasUniform"][value="false"]',
+            );
+
+            if (defaultUniform) {
+              defaultUniform.checked = true;
+            }
+
+            closeAddLeaderForm();
+
+            /* =================================================
+                   STEP 4 — SUCCESS
+                ================================================= */
+
+            
+          } catch (error) {
+            console.error("Error saving leader:", error);
+
+            alert(
+              "تعذّر حفظ القائد:" + (error.message || "حدث خطأ غير معروف."),
+            );
+          } finally {
+            if (saveButton) {
+              saveButton.disabled = false;
+
+              saveButton.textContent = "حفظ";
+            }
+          }
+        });
+      }
+
+      /* =====================================================
+   LEADER CARD
+===================================================== */
+
+      function addLeaderToTable(leader) {
+        const table = document.getElementById("leadersTable");
+
+        const emptyState = document.getElementById("emptyState");
+
+        if (!table || !emptyState) {
+          return;
+        }
+
+        emptyState.style.display = "none";
+
+        table.style.display = "flex";
+
+        const card = document.createElement("div");
+
+        card.className = "leader-row";
+
+        card.setAttribute("role", "link");
+
+        card.setAttribute("tabindex", "0");
+        card.dataset.leaderId = leader.id;
+
+        const age = calculateAge(leader.birthDate);
+
+        const phone = leader.phone
+          ? String(leader.phone).replace(/^\+961\s*/, "")
+          : "غير محدد";
+
+        const uniformIcon = leader.uniform
+          ? '<span class="uniform-check has-uniform">✓</span><span class="uniform-clothes">👕</span><span class="uniform-text has-uniform">البدلة موجودة</span>'
+          : '<span class="uniform-check no-uniform">✕</span><span class="uniform-clothes">👕</span><span class="uniform-text no-uniform">لا توجد بدلة</span>';
+
+        card.innerHTML = `
+
+        <div class="leader-main">
+
+            <div class="leader-profile">
+
+                <div class="leader-avatar">
+                    👤
+                </div>
+
+                <div class="leader-identity">
+
+                    <div class="leader-name-phone">
+                        <h3>${escapeHtml(leader.name)}</h3>
+                        <span class="leader-phone">${phone === "غير محدد📞" ? "غير محدد" : "📞 +961 " + escapeHtml(phone)}</span>
+                    </div>
+
+                    ${
+                      leader.assistants
+                        ? `<p class="leader-assistants">أسماء المساعدين: ${escapeHtml(leader.assistants)}</p>`
+                        : ""
+                    }
+
+                    <p style="display:none;">
+
+                        ${phone === "غير محدد📞" ? "غير محدد📞" : "📞 +961 " + escapeHtml(phone)}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="leader-info">
+
+                <div class="compact-info">
+
+                    <span class="compact-icon">
+                        📅
+                    </span>
+
+                    <strong>
+                        ${leader.birthDate ? escapeHtml(age) + " سنة" : "غير محدد العمر"}
+                    </strong>
+
+                </div>
+
+
+                <div class="compact-info">
+
+                    <span class="compact-icon">
+                        👥
+                    </span>
+
+                    <strong>
+                        ${escapeHtml(leader.branch || "غير محددة")}
+                    </strong>
+
+                </div>
+
+
+                <div class="compact-info">
+
+                    <strong>
+                        ${uniformIcon}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="activities-box">
+
+                <span>
+                    عدد النشاطات
+                </span>
+
+                <strong>
+                    ${leader.activities || 0}
+                </strong>
+
+            </div>
+
+
+            <div class="leader-actions">
+  <button type="button" class="leader-info-button" onclick="event.stopPropagation(); window.location.href='../leader/leader.html?id=${leader.id}'">
+    <span>معلومات القائد</span>
+    <span class="leader-info-arrow">←</span>
+  </button>
+</div>
+
+        </div>
+
+    `;
+
+        function openLeaderPage() {
+          if (!leader.id) return;
+
+          window.location.href =
+            "../leader/leader.html?id=" + encodeURIComponent(leader.id);
+        }
+
+        card.addEventListener("click", openLeaderPage);
+
+        card.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+
+            openLeaderPage();
+          }
+        });
+
+        table.appendChild(card);
+      }
+
+      /* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+
+          .replaceAll("<", "&lt;")
+
+          .replaceAll(">", "&gt;")
+
+          .replaceAll('"', "&quot;")
+
+          .replaceAll("'", "&#039;");
+      }
+
+      /* =====================================================
+   LOGOUT
+===================================================== */
+
+      async function deleteLeader(leaderId) {
+
+  const confirmed = confirm(
+    "هل أنت متأكد من حذف هذا القائد؟\nيمكنك استعادته لاحقًا من سلة المحذوفات."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const { error } = await AppDb.softDeleteLeader(leaderId);
+
+  if (error) {
+    console.error("Delete error:", error);
+    alert("حدث خطأ أثناء حذف القائد.");
+    return;
+  }
+
+  await loadLeaders(); loadTrashCount();
+
+  if (typeof loadTrashCount === "function") {
+    await loadTrashCount();
+  }
+}
+async function loadTrashCount() {
+
+  const { count, error } = await AppDb.countDeletedLeaders();
+
+  if (error) {
+    console.error("Trash count error:", error);
+    return;
+  }
+
+  const trashCount = document.getElementById("trashCount");
+
+  if (trashCount) {
+    trashCount.textContent = count || 0;
+  }
+}
+async function logout() {
+        await AppDb.signOut();
+
+        window.location.href = "../index.html";
+      }
+
+      /* =====================================================
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+===================================================== */
+
+      const leaderModal = document.getElementById("leaderModal");
+
+      if (leaderModal) {
+        leaderModal.addEventListener("click", function (event) {
+          if (event.target === this) {
+            closeAddLeaderForm();
+          }
+        });
+      }
+
+      /* =====================================================
+   START PAGE
+===================================================== */
+loadAdminName();
+
+      loadLeaders(); loadTrashCount();
+    
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script>
+  <script>
+const currentAdminId = new URLSearchParams(window.location.search).get("id");
+
+const myInfoLink = document.getElementById("myInfoLink");
+
+if (myInfoLink && currentAdminId) {
+    myInfoLink.href = "my-info.html?id=" + encodeURIComponent(currentAdminId);
+}
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script>
+
+<script>
+const myInfoButton = document.getElementById("myInfoButton");
+const adminSidebar = document.getElementById("adminSidebar");
+const sidebarState = new URLSearchParams(window.location.search).get("sidebar");
+
+if (adminSidebar && sidebarState === "open") {
+    adminSidebar.classList.add("open");
+}
+
+if (myInfoButton) {
+    myInfoButton.addEventListener("click", function () {
+        window.location.href = "my-info.html?sidebar=open";
+    });
+}
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script>
+
+
+<script>
+async function setupTasksComboBox() {
+    const input = document.getElementById("leaderBranch");
+    const dropdown = document.getElementById("tasksDropdown");
+    const combo = document.getElementById("taskComboBox");
+
+    if (!input || !dropdown || !combo) return;
+
+    let tasks = [];
+    let addingMode = false;
+
+    async function loadTasks() {
+        const { data, error } = await AppDb.listTasks();
+
+        if (error) {
+            console.error("Error loading tasks:", error);
+            return;
+        }
+
+        tasks = data || [];
+    }
+
+    function closeDropdown() {
+        dropdown.classList.remove("open");
+        dropdown.innerHTML = "";
+    }
+
+    function openTaskList() {
+        addingMode = false;
+        input.dataset.addingTask = "false";
+        input.placeholder = "ابحث أو اختر المهمة";
+
+        dropdown.innerHTML = "";
+
+        const currentTask =
+            input.dataset.selectedTask
+                ? input.dataset.selectedTask.trim().toLowerCase()
+                : "";
+
+        const search = input.value.trim().toLowerCase();
+
+        // إضافة مهمة تكون دائمًا أول عنصر
+        const addOption = document.createElement("div");
+        addOption.className = "add-task-option";
+        addOption.textContent = "＋ إضافة مهمة";
+
+        addOption.addEventListener("click", function (event) {
+            event.stopPropagation();
+            startAddingTask();
+        });
+
+        dropdown.appendChild(addOption);
+
+        const filteredTasks = tasks.filter(function (task) {
+            const taskName = task.name.trim().toLowerCase();
+
+            // لا نعرض المهمة المختارة حاليًا
+            if (currentTask && taskName === currentTask) {
+                return false;
+            }
+
+            // إذا في بحث، نفلتر
+            if (search && search !== currentTask) {
+                return taskName.includes(search);
+            }
+
+            return true;
+        });
+
+        filteredTasks.forEach(function (task) {
+            const option = document.createElement("div");
+            option.className = "task-option";
+            option.textContent = task.name;
+
+            option.addEventListener("click", function () {
+                input.value = task.name;
+                input.dataset.selectedTask = task.name; input.dataset.selectedTaskId = task.id;
+                closeDropdown();
+            });
+
+            dropdown.appendChild(option);
+        });
+
+        dropdown.classList.add("open");
+    }
+function startAddingTask() {
+        addingMode = true;
+        input.dataset.addingTask = "true";
+
+        input.value = "";
+        input.placeholder = "اكتب اسم المهمة";
+
+        dropdown.innerHTML = "";
+
+        const buttonsArea = document.createElement("div");
+        buttonsArea.className = "task-action-buttons";
+
+        const saveButton = document.createElement("button");
+        saveButton.type = "button";
+        saveButton.className = "save-task-button";
+        saveButton.textContent = "حفظ المهمة";
+
+        saveButton.addEventListener("click", async function (event) {
+            event.stopPropagation();
+            await saveNewTask();
+        });
+
+        const cancelButton = document.createElement("button");
+        cancelButton.type = "button";
+        cancelButton.className = "cancel-task-button";
+        cancelButton.textContent = "إلغاء";
+
+        cancelButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+
+            addingMode = false;
+            input.dataset.addingTask = "false";
+            input.value = "";
+            input.placeholder = "ابحث أو اختر المهمة";
+
+            closeDropdown();
+        });
+
+        buttonsArea.appendChild(saveButton);
+        buttonsArea.appendChild(cancelButton);
+        dropdown.appendChild(buttonsArea);
+
+        dropdown.classList.add("open");
+
+        input.focus();
+    }
+
+    async function saveNewTask() {
+        const name = input.value.trim();
+
+        if (!name) {
+            input.focus();
+            return;
+        }
+
+        const normalizedName = name.toLowerCase();
+
+        const existingTask = tasks.find(function (task) {
+            return task.name.trim().toLowerCase() === normalizedName;
+        });
+
+        if (existingTask) {
+            input.value = existingTask.name;
+            input.dataset.selectedTask = existingTask.name;
+            input.dataset.selectedTaskId = existingTask.id;
+            addingMode = false;
+            input.dataset.addingTask = "false";
+            input.placeholder = "ابحث أو اختر المهمة";
+            closeDropdown();
+            return;
+        }
+
+        const { data, error } = await AppDb.createTask(name);
+
+        if (error) {
+            console.error("Error adding task:", error);
+
+            if (error.code === "23505") {
+                await loadTasks();
+
+                const duplicateTask = tasks.find(function (task) {
+                    return task.name.trim().toLowerCase() === normalizedName;
+                });
+
+                if (duplicateTask) {
+                    input.value = duplicateTask.name;
+                    input.dataset.selectedTask = duplicateTask.name;
+                    input.dataset.selectedTaskId = duplicateTask.id;
+                    addingMode = false;
+                    input.dataset.addingTask = "false";
+                    input.placeholder = "ابحث أو اختر المهمة";
+                    closeDropdown();
+                    return;
+                }
+            }
+
+            alert("تعذر حفظ المهمة:\n" + (error.message || error.details || error.hint || "خطأ غير معروف"));
+            return;
+        }
+
+        tasks.push(data);
+
+        input.value = data.name;
+        input.dataset.selectedTask = data.name;
+        input.dataset.selectedTaskId = data.id;
+        addingMode = false;
+        input.dataset.addingTask = "false";
+        input.placeholder = "ابحث أو اختر المهمة";
+
+        closeDropdown();
+    }
+
+    input.addEventListener("focus", async function () {
+        await loadTasks();
+
+        if (addingMode) {
+            dropdown.classList.add("open");
+        } else {
+            openTaskList();
+        }
+    });
+
+    input.addEventListener("beforeinput", function (event) {
+    if (event.inputType === "insertText" && event.data) {
+        const hasEnglish = /[A-Za-z]/.test(event.data);
+
+        if (hasEnglish) {
+            event.preventDefault();
+        }
+    }
+});
+
+input.addEventListener("paste", function (event) {
+    const text = (event.clipboardData || window.clipboardData).getData("text");
+
+    if (/[A-Za-z]/.test(text)) {
+        event.preventDefault();
+
+        const arabicOnly = text.replace(/[A-Za-z]/g, "");
+
+        if (arabicOnly) {
+            document.execCommand("insertText", false, arabicOnly);
+        }
+    }
+});
+input.addEventListener("input", function () {
+        if (!addingMode) {
+            openTaskList();
+        }
+    });
+
+    input.addEventListener("keydown", async function (event) {
+        if (event.key === "Enter" && addingMode) {
+            event.preventDefault();
+            await saveNewTask();
+        }
+
+        if (event.key === "Escape") {
+            addingMode = false;
+            input.dataset.addingTask = "false";
+            input.placeholder = "ابحث أو اختر المهمة";
+            closeDropdown();
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!combo.contains(event.target)) {
+            closeDropdown();
+        }
+    });
+
+    await loadTasks();
+}
+
+setupTasksComboBox();
+
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script>
+<script id="clearSidebarQuery">if(new URLSearchParams(location.search).get("sidebar")==="open"){history.replaceState(null,"","admin.html");}
+/* =========================================================
+   CUSTOM ARABIC BIRTH DATE PICKER
+========================================================= */
+
+(function setupArabicBirthDatePicker() {
+
+  const input = document.getElementById("birthDateInput");
+  const hidden = document.getElementById("birthDateValue");
+  const picker = document.getElementById("birthDatePicker");
+  const calendar = document.getElementById("birthCalendar");
+  const calendarButton = document.getElementById("birthCalendarButton");
+  const calendarTitle = document.getElementById("birthCalendarTitle");
+  const calendarDays = document.getElementById("birthCalendarDays");
+  const prevButton = document.getElementById("birthPrevMonth");
+  const nextButton = document.getElementById("birthNextMonth");
+
+  if (
+    !input ||
+    !hidden ||
+    !picker ||
+    !calendar ||
+    !calendarButton ||
+    !calendarTitle ||
+    !calendarDays ||
+    !prevButton ||
+    !nextButton
+  ) {
+    return;
+  }
+
+  const arabicMonths = [
+    "كانون الثاني",
+    "شباط",
+    "آذار",
+    "نيسان",
+    "أيار",
+    "حزيران",
+    "تموز",
+    "آب",
+    "أيلول",
+    "تشرين الأول",
+    "تشرين الثاني",
+    "كانون الأول"
+  ];
+
+  const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  let calendarYear = new Date().getFullYear();
+  let calendarMonth = new Date().getMonth();
+
+  function toArabicDigits(value) {
+    return String(value).replace(/[0-9]/g, function(digit) {
+      return arabicDigits[Number(digit)];
+    });
+  }
+
+  function toEnglishDigits(value) {
+    return String(value)
+      .replace(/[٠-٩]/g, function(digit) {
+        return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit));
+      })
+      .replace(/[۰-۹]/g, function(digit) {
+        return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+      });
+  }
+
+  function formatVisibleDate(year, month, day) {
+    return (
+      toArabicDigits(String(day).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(String(month + 1).padStart(2, "0")) +
+      "/" +
+      toArabicDigits(year)
+    );
+  }
+
+  function setDate(year, month, day) {
+    const monthValue = String(month + 1).padStart(2, "0");
+    const dayValue = String(day).padStart(2, "0");
+
+    hidden.value = `${year}-${monthValue}-${dayValue}`;
+
+    input.value = formatVisibleDate(year, month, day);
+
+    calendarYear = year;
+    calendarMonth = month;
+
+    renderCalendar();
+  }
+
+  function clearDate() {
+    input.value = "";
+    hidden.value = "";
+  }
+
+  function renderCalendar() {
+
+    calendarTitle.textContent =
+      arabicMonths[calendarMonth] +
+      " " +
+      toArabicDigits(calendarYear);
+
+    calendarDays.innerHTML = "";
+
+    const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(
+      calendarYear,
+      calendarMonth + 1,
+      0
+    ).getDate();
+
+    const selectedDate = hidden.value
+      ? hidden.value.split("-")
+      : null;
+
+    const selectedYear = selectedDate ? Number(selectedDate[0]) : null;
+    const selectedMonth = selectedDate ? Number(selectedDate[1]) - 1 : null;
+    const selectedDay = selectedDate ? Number(selectedDate[2]) : null;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement("button");
+      empty.type = "button";
+      empty.className = "empty";
+      empty.tabIndex = -1;
+      calendarDays.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = toArabicDigits(day);
+
+      if (
+        selectedYear === calendarYear &&
+        selectedMonth === calendarMonth &&
+        selectedDay === day
+      ) {
+        button.classList.add("selected");
+      }
+
+      const today = new Date();
+
+      if (
+        today.getFullYear() === calendarYear &&
+        today.getMonth() === calendarMonth &&
+        today.getDate() === day
+      ) {
+        button.classList.add("today");
+      }
+
+      button.addEventListener("click", function() {
+        setDate(calendarYear, calendarMonth, day);
+        calendar.classList.remove("open");
+      });
+
+      calendarDays.appendChild(button);
+    }
+  }
+
+  function openCalendar() {
+    if (hidden.value) {
+      const parts = hidden.value.split("-");
+
+      if (parts.length === 3) {
+        calendarYear = Number(parts[0]);
+        calendarMonth = Number(parts[1]) - 1;
+      }
+    }
+
+    renderCalendar();
+    calendar.classList.add("open");
+  }
+
+  function parseManualDate() {
+
+    let value = toEnglishDigits(input.value.trim());
+
+    if (!value) {
+      clearDate();
+      return;
+    }
+
+    value = value.replace(/[.\-]/g, "/");
+
+    const parts = value.split("/");
+
+    if (parts.length !== 3) {
+      hidden.value = "";
+      return;
+    }
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+
+    if (
+      !Number.isInteger(day) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(year) ||
+      year < 1940 ||
+      year > new Date().getFullYear() ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > new Date(year, month, 0).getDate()
+    ) {
+      hidden.value = "";
+      return;
+    }
+
+    hidden.value =
+      `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+    input.value = formatVisibleDate(year, month - 1, day);
+
+    calendarYear = year;
+    calendarMonth = month - 1;
+  }
+
+  input.addEventListener("input", function() {
+
+    let value = input.value;
+
+    value = value.replace(/[^\d٠-٩۰-۹/.-]/g, "");
+
+    input.value = value;
+    hidden.value = "";
+  });
+
+  input.addEventListener("blur", function() {
+    parseManualDate();
+  });
+
+  input.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      parseManualDate();
+      calendar.classList.remove("open");
+    }
+
+    if (event.key === "Escape") {
+      calendar.classList.remove("open");
+    }
+  });
+
+  calendarButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    openCalendar();
+  });
+
+  prevButton.addEventListener("click", function() {
+
+    calendarMonth--;
+
+    if (calendarMonth < 0) {
+      calendarMonth = 11;
+      calendarYear--;
+    }
+
+    if (calendarYear < 1940) {
+      calendarYear = 1940;
+      calendarMonth = 0;
+    }
+
+    renderCalendar();
+  });
+
+  nextButton.addEventListener("click", function() {
+
+    calendarMonth++;
+
+    if (calendarMonth > 11) {
+      calendarMonth = 0;
+      calendarYear++;
+    }
+
+    if (calendarYear > new Date().getFullYear()) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+
+    renderCalendar();
+  });
+
+  document.addEventListener("click", function(event) {
+
+    if (!picker.contains(event.target)) {
+      calendar.classList.remove("open");
+    }
+
+  });
+
+  input.addEventListener("focus", function() {
+    if (!input.value) {
+      calendarYear = new Date().getFullYear();
+      calendarMonth = new Date().getMonth();
+    }
+  });
+
+})();
+</script></body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

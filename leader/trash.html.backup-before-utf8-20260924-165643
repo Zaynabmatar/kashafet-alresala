@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سلة المحذوفات</title>
+  <script src="../supabase.js"></script>
+  <link rel="stylesheet" href="../styles/leader-trash.css">
+</head>
+<body>
+
+<header class="trash-topbar">
+  <div class="trash-topbar-inner">
+    <button class="back-button" type="button" onclick="history.back()">←</button>
+    <h1>سلة المحذوفات</h1>
+  </div>
+</header>
+
+<main class="trash-container">
+
+  <section class="trash-header">
+    <div>
+      <h2>العناصر المحذوفة</h2>
+      <p>يمكنك استعادة العنصر أو حذفه نهائيًا.</p>
+    </div>
+  </section>
+
+  <section id="trashList" class="trash-list"></section>
+
+  <div id="emptyTrash" class="empty-trash" style="display:none;">
+    <div class="empty-trash-icon">🗑️</div>
+    <h3>سلة المحذوفات فارغة</h3>
+    <p>لا يوجد عناصر محذوفة حاليًا.</p>
+  </div>
+
+</main>
+
+<script>
+async function loadTrash() {
+  const list = document.getElementById("trashList");
+  const empty = document.getElementById("emptyTrash");
+
+  list.innerHTML = "";
+
+  const { data, error } = await supabaseClient
+    .from("members")
+    .select("*")
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false });
+
+  if (error) {
+    console.error("Trash load error:", error);
+    list.innerHTML = '<div class="trash-error">تعذّر تحميل سلة المحذوفات.</div>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    empty.style.display = "flex";
+    return;
+  }
+
+  empty.style.display = "none";
+
+  data.forEach(member => {
+    const card = document.createElement("article");
+    card.className = "trash-card";
+
+    const name = escapeHtml(member.full_name || "عنصر بدون اسم");
+    const phone = escapeHtml(member.phone || "غير محدد");
+
+    card.innerHTML = `
+      <div class="trash-card-info">
+        <div class="trash-avatar">👤</div>
+
+        <div class="trash-details">
+          <h3>${name}</h3>
+          <p>الهاتف: ${phone}</p>
+        </div>
+      </div>
+
+      <div class="trash-actions">
+        <button
+          type="button"
+          class="restore-button"
+          onclick="restoreMember('${member.id}')">
+          استعادة
+        </button>
+
+        <button
+          type="button"
+          class="delete-button"
+          onclick="deleteMemberPermanently('${member.id}')">
+          حذف العنصر
+        </button>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+async function restoreMember(memberId) {
+  const confirmed = confirm("هل تريد استعادة هذا العنصر؟");
+  if (!confirmed) return;
+
+  const { error } = await supabaseClient
+    .from("members")
+    .update({ deleted_at: null })
+    .eq("id", memberId);
+
+  if (error) {
+    console.error("Restore error:", error);
+    alert("حدث خطأ أثناء استعادة العنصر.");
+    return;
+  }
+
+  await loadTrash();
+}
+
+async function deleteMemberPermanently(memberId) {
+  const confirmed = confirm(
+    "هل أنت متأكد من حذف العنصر نهائيًا؟\nلا يمكن التراجع عن هذا الإجراء."
+  );
+
+  if (!confirmed) return;
+
+  const { error } = await supabaseClient
+    .from("members")
+    .delete()
+    .eq("id", memberId);
+
+  if (error) {
+    console.error("Permanent delete error:", error);
+    alert("حدث خطأ أثناء حذف العنصر نهائيًا.");
+    return;
+  }
+
+  await loadTrash();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+loadTrash();
+</script>
+
+</body>
+</html>

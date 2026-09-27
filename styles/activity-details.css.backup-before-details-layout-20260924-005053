@@ -1,0 +1,640 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, "Tahoma", sans-serif;
+    background: #f7f9f8;
+    color: #222;
+}
+
+body {
+    min-height: 100vh;
+}
+
+body.activity-modal-open {
+    overflow: hidden;
+}
+
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 64px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e9e7;
+    z-index: 100;
+}
+
+.user-area {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 18px;
+}
+
+.menu-button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #198754;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.page-topbar-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   PAGE
+========================= */
+
+.activity-details-page {
+    min-height: 100vh;
+    padding: 94px 20px 35px;
+}
+
+.activity-details-content {
+    width: min(760px, 100%);
+    margin: 0 auto;
+}
+
+
+/* =========================
+   ACTIVITY HEADING
+========================= */
+
+.activity-heading {
+    background: #ffffff;
+    border: 1px solid #e3e9e5;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.activity-number {
+    color: #198754;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.activity-heading h1 {
+    margin: 0;
+    font-size: 23px;
+    color: #198754;
+    line-height: 1.5;
+}
+
+.activity-date {
+    margin-top: 9px;
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* =========================
+   ATTENDEES
+========================= */
+
+.attendees-section {
+    background: #ffffff;
+    border: 1px solid #e3e9e5;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.attendees-section h2 {
+    margin: 0 0 5px;
+    color: #198754;
+    font-size: 20px;
+}
+
+.attendance-summary {
+    margin: 0 0 16px;
+    color: #777;
+    font-size: 14px;
+}
+
+.present-members-list {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(190px, 1fr)
+    );
+    gap: 10px;
+}
+
+.present-member-card {
+    min-height: 56px;
+    border: 1px solid #e3e9e5;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+}
+
+.member-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f0f4f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+/* =========================
+   EDIT BUTTON
+========================= */
+
+.details-edit-button {
+    width: 100%;
+    min-height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: #198754;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 12px 18px;
+}
+
+.details-edit-button:hover {
+    background: #157347;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+    padding: 35px 20px;
+    text-align: center;
+    color: #888;
+    background: #ffffff;
+    border: 1px dashed #d8dfdb;
+    border-radius: 12px;
+}
+
+
+/* =========================
+   EDIT MODAL
+========================= */
+
+.activity-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.48);
+}
+
+.activity-modal.active {
+    display: flex;
+}
+
+.activity-modal-box {
+    width: min(620px, 100%);
+    height: 88vh;
+    background: #ffffff;
+    border-radius: 18px 18px 0 0;
+    overflow-y: auto;
+    padding: 0 18px 22px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.activity-modal-header {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #edf0ee;
+    margin-bottom: 18px;
+}
+
+.activity-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #198754;
+}
+
+.close-modal-button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #666;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+
+/* =========================
+   TITLE
+========================= */
+
+.edit-field {
+    margin-bottom: 18px;
+}
+
+.edit-field label,
+.edit-date-section > label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+}
+
+.edit-field input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d8dfdb;
+    border-radius: 10px;
+    padding: 0 13px;
+    font-size: 15px;
+    outline: none;
+    direction: rtl;
+}
+
+.edit-field input:focus {
+    border-color: #198754;
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+.edit-date-section {
+    margin-bottom: 18px;
+}
+
+.custom-date-picker {
+    position: relative;
+}
+
+.typed-date-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d8dfdb;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.typed-date-input {
+    flex: 1;
+    height: 100%;
+    border: 0;
+    outline: none;
+    padding: 0 13px;
+    font-size: 15px;
+    direction: rtl;
+}
+
+.calendar-icon-button {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 19px;
+}
+
+.custom-date-popover {
+    display: none;
+    margin-top: 8px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #dfe5e1;
+    border-radius: 10px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.09);
+}
+
+.custom-date-popover.open {
+    display: block;
+}
+
+.date-picker-selects {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 8px;
+}
+
+.date-picker-selects select {
+    height: 44px;
+    border: 1px solid #d8dfdb;
+    border-radius: 9px;
+    background: #fff;
+    padding: 0 8px;
+    font-size: 14px;
+}
+
+
+/* =========================
+   MEMBER SEARCH
+========================= */
+
+.member-search {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d8dfdb;
+    border-radius: 10px;
+    padding: 0 12px;
+    margin-bottom: 10px;
+    background: #ffffff;
+}
+
+.member-search span {
+    color: #777;
+    font-size: 20px;
+}
+
+.member-search input {
+    flex: 1;
+    border: 0;
+    outline: none;
+    height: 100%;
+    font-size: 15px;
+    direction: rtl;
+}
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 310px;
+    overflow-y: auto;
+    margin-bottom: 18px;
+}
+
+.member-row {
+    min-height: 56px;
+    border: 1px solid #e1e6e3;
+    border-radius: 10px;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    background: #fff;
+}
+
+.member-row:hover {
+    border-color: #198754;
+}
+
+.member-row-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.member-row input {
+    width: 19px;
+    height: 19px;
+    accent-color: #198754;
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+.save-activity-button {
+    width: 100%;
+    height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: #198754;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.save-activity-button:hover {
+    background: #157347;
+}
+
+.save-activity-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .activity-details-page {
+        padding: 84px 12px 25px;
+    }
+
+    .activity-details-content {
+        width: 100%;
+    }
+
+    .activity-heading {
+        padding: 18px;
+    }
+
+    .activity-heading h1 {
+        font-size: 20px;
+    }
+
+    .attendees-section {
+        padding: 16px;
+    }
+
+    .present-members-list {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-modal-box {
+        width: 100%;
+        height: 88vh;
+        border-radius: 18px 18px 0 0;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .date-picker-selects {
+        grid-template-columns: 1fr;
+    }
+
+    .members-list {
+        max-height: 270px;
+    }
+}
+
+/* =========================================================
+   ACTIVITY DETAILS FINAL PATCH
+========================================================= */
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    box-sizing: border-box;
+}
+
+/* Green topbar */
+.topbar {
+    background: #198754 !important;
+}
+
+/* Page structure */
+.activity-details-page {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    padding-bottom: 92px;
+}
+
+.activity-details-content {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Attendees area */
+.attendees-section {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 22px;
+}
+
+.present-members-list {
+    max-height: 46vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+    padding-right: 3px;
+}
+
+.present-member-card {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Fixed bottom edit button */
+.details-edit-button {
+    position: fixed !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 400 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 58px;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border-top: 1px solid #dfe5e1;
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.07);
+}
+
+/* Make the separation from attendees obvious */
+.attendees-section {
+    padding-bottom: 4px;
+}
+
+/* Clean edit member search */
+#editMemberSearch {
+    width: 100%;
+    min-height: 48px;
+    height: 48px;
+    box-sizing: border-box;
+    border: 1px solid #dfe5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    padding: 0 14px;
+    font-size: 15px;
+}
+
+#editMemberSearch:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.08);
+}
+
+/* Prevent modal contents from creating horizontal scroll */
+.activity-modal,
+.activity-modal-box,
+.activity-modal-body,
+.members-list,
+.member-row {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.activity-modal {
+    overflow-x: hidden;
+}
+
+.activity-modal-box {
+    overflow-x: hidden;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .activity-details-page {
+        padding-bottom: 84px;
+    }
+
+    .present-members-list {
+        max-height: 42vh;
+    }
+
+    .details-edit-button {
+        min-height: 56px;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+}

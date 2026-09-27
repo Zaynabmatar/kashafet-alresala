@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>سلة المحذوفات</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase.js"></script>
+
+  <link rel="stylesheet" href="../styles/admin.css"><link rel="stylesheet" href="../styles/trash.css">
+<style>
+  .trash-container {
+    padding-top: 12px !important;
+  }
+
+  .topbar .user-area {
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .topbar .menu-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="user-area">
+    <button
+      class="menu-button"
+      type="button"
+      onclick="goBack()"
+      title="العودة إلى لوحة القائد"
+    >
+      ‹
+    </button>
+  </div>
+</header>
+
+
+<main class="trash-container">
+
+  <div class="trash-header">
+
+    <div>
+      <h1>سلة المحذوفات</h1>
+
+      <p>
+        العناصر التي تم حذفها مؤقتًا. يمكنك استعادة أي عنصر في أي وقت.
+      </p>
+    </div>
+
+    <div class="trash-total">
+
+      <span>عدد المحذوفات</span>
+
+      <strong id="trashTotal">0</strong>
+
+    </div>
+
+  </div>
+
+
+  <section
+    id="trashList"
+    class="trash-list"
+  ></section>
+
+
+  <div
+    id="trashEmpty"
+    class="trash-empty"
+  >
+
+    🗑️
+
+    <h2>سلة المحذوفات فارغة</h2>
+
+    <p>
+      لا يوجد عناصر محذوفة حاليًا.
+    </p>
+
+  </div>
+
+</main>
+
+
+<script>
+
+const leaderId =
+  new URLSearchParams(window.location.search).get("id");
+
+
+let currentLeader = null;
+
+
+function escapeHtml(value) {
+
+  const div = document.createElement("div");
+
+  div.textContent = value ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+function formatDeletedDate(dateValue) {
+
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(dateValue);
+
+  return date.toLocaleString("ar-LB", {
+
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+
+  });
+
+}
+
+
+async function loadLeader() {
+
+  if (!leaderId) {
+
+    window.location.href =
+      "../index.html";
+
+    return false;
+
+  }
+
+
+  const { data, error } =
+    await AppDb.getLeaderById(leaderId);
+
+
+  if (
+    error ||
+    !data ||
+    data.deleted_at
+  ) {
+
+    console.error(
+      "Leader loading error:",
+      error
+    );
+
+    window.location.href =
+      "../index.html";
+
+    return false;
+
+  }
+
+
+  currentLeader = data;
+
+
+  const name =
+    currentLeader.full_name || "القائد";
+
+
+  const nameElement =
+    document.getElementById("topLeaderName");
+
+
+  if (nameElement) {
+
+    nameElement.textContent = name;
+
+  }
+
+
+  const avatar =
+    document.getElementById("topLeaderAvatar");
+
+
+  if (
+    avatar &&
+    currentLeader.profile_image
+  ) {
+
+    avatar.innerHTML =
+      '<img src="' +
+      escapeHtml(
+        currentLeader.profile_image
+      ) +
+      '" alt="صورة القائد">';
+
+  }
+
+
+  return true;
+
+}
+
+
+async function loadTrash() {
+
+  if (!currentLeader) {
+    return;
+  }
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("members")
+      .select("*")
+      .eq("leader_id", leaderId)
+      .not("deleted_at", "is", null)
+      .order("deleted_at", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    console.error(
+      "Member trash loading error:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء تحميل سلة المحذوفات."
+    );
+
+    return;
+
+  }
+
+
+  const list =
+    document.getElementById(
+      "trashList"
+    );
+
+
+  const empty =
+    document.getElementById(
+      "trashEmpty"
+    );
+
+
+  const total =
+    document.getElementById(
+      "trashTotal"
+    );
+
+
+  list.innerHTML = "";
+
+
+  total.textContent =
+    data.length;
+
+
+  if (!data.length) {
+
+    empty.style.display =
+      "block";
+
+    return;
+
+  }
+
+
+  empty.style.display =
+    "none";
+
+
+  data.forEach((member) => {
+
+    const card =
+      document.createElement(
+        "article"
+      );
+
+
+    card.className =
+      "trash-card";
+
+
+    const imageHtml =
+      member.profile_image
+        ? `<img src="${escapeHtml(
+            member.profile_image
+          )}" alt="">`
+        : "👤";
+
+
+    card.innerHTML = `
+
+      <div class="trash-card-info">
+
+        <div class="trash-avatar">
+          ${imageHtml}
+        </div>
+
+
+        <div class="trash-details">
+
+          <h3>
+            ${escapeHtml(
+              member.full_name ||
+              "بدون اسم"
+            )}
+          </h3>
+
+
+          <div class="trash-meta">
+
+            <span>
+              📞 ${escapeHtml(
+                member.phone ||
+                "غير محدد"
+              )}
+            </span>
+
+          </div>
+
+
+          <p class="deleted-date">
+            تم الحذف:
+            ${formatDeletedDate(
+              member.deleted_at
+            )}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="restore-button"
+        type="button"
+        onclick="restoreMember('${member.id}')"
+      >
+        ↩️ استعادة
+      </button>
+
+    `;
+
+
+    list.appendChild(card);
+
+  });
+
+}
+
+
+async function restoreMember(
+  memberId
+) {
+
+  const confirmed =
+    confirm(
+      "هل تريد استعادة هذا العنصر إلى قائمة العناصر؟"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("members")
+      .update({
+        deleted_at: null
+      })
+      .eq("id", memberId)
+      .eq("leader_id", leaderId);
+
+
+  if (error) {
+
+    console.error(
+      "Restore member error:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء استعادة العنصر."
+    );
+
+    return;
+
+  }
+
+
+  await loadTrash();
+
+}
+
+
+function goBack() {
+
+  window.location.href =
+    "../leader-dashboard.html?id=" +
+    encodeURIComponent(
+      leaderId
+    );
+
+}
+
+
+async function logout() {
+
+  if (
+    typeof AppDb.signOut ===
+    "function"
+  ) {
+
+    await AppDb.signOut();
+
+  } else {
+
+    await supabaseClient.auth.signOut();
+
+  }
+
+
+  window.location.href =
+    "../index.html";
+
+}
+
+
+async function init() {
+
+  const loaded =
+    await loadLeader();
+
+
+  if (!loaded) {
+    return;
+  }
+
+
+  await loadTrash();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>
+
+
