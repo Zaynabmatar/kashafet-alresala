@@ -1,4 +1,4 @@
-* {
+﻿* {
   box-sizing: border-box;
 }
 
@@ -1212,72 +1212,10 @@ button {
   display: none !important;
 }
 
-/* ============================================================
-   FINAL MEMBER BIRTH DATE
-   ============================================================ */
-
-#memberModal .birth-date-fields {
-  display: flex !important;
-  flex-direction: row !important;
-  direction: ltr !important;
-  align-items: center !important;
-  gap: 8px !important;
-  width: 100% !important;
-}
-
-#memberModal .birth-date-fields input {
-  height: 48px !important;
-  border: 1px solid #d9e2dc !important;
-  border-radius: 12px !important;
-  background: #fff !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-  font-weight: 600 !important;
-  outline: none !important;
-  min-width: 0 !important;
-  padding: 10px 8px !important;
-}
-
-#memberModal #memberBirthDay,
-#memberModal #memberBirthMonth {
-  flex: 1 1 0 !important;
-}
-
-#memberModal #memberBirthYear {
-  flex: 1.5 1 0 !important;
-}
 
 
-/* ============================================================
-   FINAL MEMBER EDIT BUTTON
-   ============================================================ */
-
-#membersSection .member-edit-button {
-  width: 100% !important;
-  margin-top: 14px !important;
-  border: 1px solid #b9dfc4 !important;
-  background: #dff3e4 !important;
-  color: #2f6b42 !important;
-  border-radius: 12px !important;
-  padding: 11px 14px !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-}
-
-#membersSection .member-edit-button:hover {
-  background: #ccebd5 !important;
-}
 
 
-/* ============================================================
-   ONLY ONE PHONE ICON
-   ============================================================ */
-
-#membersSection .member-phone::before,
-#membersSection .member-phone::after {
-  content: none !important;
-  display: none !important;
-}
 
 
 /* FINAL MOBILE HORIZONTAL LOCK */
@@ -1874,10 +1812,6 @@ body {
   color: #a83c3c !important;
 }
 
-.leader-sidebar .sidebar-count {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-}
 
 .leader-sidebar .logout-item {
   margin-top: 0 !important;
@@ -1897,18 +1831,6 @@ body {
   right: 0 !important;
 }
 
-/* ===== LEADER SIDEBAR — MATCH ADMIN TYPOGRAPHY ===== */
-
-.leader-sidebar,
-.leader-sidebar *,
-.leader-sidebar .sidebar-item,
-.leader-sidebar .sidebar-stat,
-.leader-sidebar .sidebar-item span,
-.leader-sidebar .sidebar-stat span,
-.leader-sidebar strong,
-.leader-sidebar b {
-  font-family: inherit !important;
-}
 
 .leader-sidebar .sidebar-item,
 .leader-sidebar .sidebar-stat {
@@ -1949,29 +1871,6 @@ body {
 
 /* ===== FINAL LEADER SIDEBAR MOBILE + TRASH BADGE ===== */
 
-.leader-sidebar .sidebar-item {
-  display: flex !important;
-  align-items: center !important;
-  direction: rtl !important;
-}
-
-.leader-sidebar .sidebar-count {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  min-width: 24px !important;
-  height: 24px !important;
-  padding: 0 !important;
-  margin-inline-start: auto !important;
-  border-radius: 50% !important;
-  background: #2f8f5b !important;
-  color: #ffffff !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  flex: 0 0 24px !important;
-}
 
 @media (max-width: 768px) {
   .leader-sidebar {
@@ -1996,11 +1895,6 @@ body {
 
 /* ===== FINAL LEADER SIDEBAR SWIPE + TRASH BADGE ===== */
 
-.leader-sidebar .sidebar-item {
-  display: flex !important;
-  align-items: center !important;
-  direction: rtl !important;
-}
 
 .leader-sidebar .sidebar-count {
   display: inline-flex !important;

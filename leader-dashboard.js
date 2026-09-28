@@ -772,9 +772,11 @@ const modal =
 
 function closeMemberModal() {
 
-  document.getElementById(
-    "memberModal"
-  ).classList.remove("active");
+  const modal = document.getElementById("memberModal");
+  if (!modal) return;
+
+  modal.classList.remove("active");
+  modal.style.display = "none";
 
 }
 
