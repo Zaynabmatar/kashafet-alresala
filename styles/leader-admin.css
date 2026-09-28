@@ -1218,9 +1218,7 @@ textarea {
     color: #d62828;
 }
 
-.leader-overview-stats {
-    display: none !important;
-}
+
 
 @media (max-width: 700px) {
 
@@ -1330,9 +1328,7 @@ textarea {
         min-height: 58px;
     }
 
-    .leader-clean-info .info-icon {
-        flex-shrink: 0;
-    }
+
 
     .leader-clean-info .info-item span {
         font-size: 11px;
@@ -1350,20 +1346,6 @@ textarea {
 
 
 
-/* ===== MOBILE LEADER INFO TEXT ONLY ===== */
-@media (max-width: 700px) {
-
-    .leader-clean-info .info-item span {
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .leader-clean-info .info-item strong {
-        font-size: 15px;
-        font-weight: 750;
-    }
-
-}
 
 /* ===== MOBILE FINAL TEXT CLARITY ===== */
 @media (max-width: 700px) {
@@ -2085,13 +2067,7 @@ body:has(#activityModal.active) {
 }
 
 /* تاريخ الميلاد — دائمًا 3 خانات جنب بعض */
-#memberModal .birth-date-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.35fr;
-    direction: rtl;
-    gap: 9px;
-    width: 100%;
-}
+
 
 #memberModal .member-phone-prefix {
     width: 72px;
@@ -2227,9 +2203,7 @@ body:has(#memberModal.show) {
 /* موبايل */
 @media (max-width: 700px) {
 
-    .members-box .box-header h3 {
-        font-size: 20px;
-    }
+
 
     .members-box .box-header p {
         font-size: 13px;
