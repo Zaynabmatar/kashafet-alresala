@@ -664,23 +664,6 @@ body {
 ========================= */
 
 @media (max-width: 1050px) {
-  .topbar {
-  width: 100%;
-  height: 76px;
-  padding: 0 32px;
-  background: #145c45;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  box-sizing: border-box;
-}
 
   .container {
     width: calc(100% - 32px);
@@ -729,41 +712,11 @@ body {
 }
 
 @media (max-width: 600px) {
-  .topbar {
-  width: 100%;
-  height: 76px;
-  padding: 0 32px;
-  background: #145c45;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  box-sizing: border-box;
-}
 
   .user-area {
     gap: 8px;
   }
 
-  .menu-button {
-  border: none;
-  background: transparent;
-  color: white;
-  font-size: 28px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 4px 8px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
   .profile-image {
     width: 40px;
@@ -828,27 +781,6 @@ body {
     display: none;
   }
 
-  .birth-date-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr 1.2fr;
-  gap: 10px;
-}
-
-.birth-date-inputs input {
-  width: 100%;
-  border: 1px solid #d7dfda;
-  border-radius: 9px;
-  padding: 12px;
-  font-size: 14px;
-  background: white;
-  outline: none;
-  text-align: right;
-  direction: rtl;
-}
-
-.birth-date-inputs input:focus {
-  border-color: #176b3a;
-}
 .birth-date {
     grid-template-columns: 1fr;
   }
@@ -1055,15 +987,6 @@ body {
   text-align: left;
 }
 
-.leader-assistants {
-  margin: 3px 0 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #666;
-  direction: rtl;
-  text-align: right;
-  white-space: normal;
-}
 
 
 
