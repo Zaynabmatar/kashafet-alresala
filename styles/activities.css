@@ -268,16 +268,9 @@ body {
     line-height: 1;
 }
 
-.activity-card .activity-number {
-    color: #198754;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 2px;
-}
 
-.activity-card .activity-attendance-info {
-    margin-top: 1px;
-}
+
+
 
 /* ============================================================
    EMPTY STATE
@@ -365,9 +358,7 @@ body {
         min-width: 90px;
     }
 }
-body.activity-modal-open {
-  overflow: hidden;
-}
+
 
 .activity-modal {
   position: fixed;
@@ -379,9 +370,7 @@ body.activity-modal-open {
   z-index: 9999;
 }
 
-.activity-modal.active {
-  display: flex;
-}
+
 
 .activity-modal-box {
   width: min(620px, 100%);
@@ -592,9 +581,7 @@ body.activity-modal-open {
   direction: rtl;
 }
 
-.activity-modal.active {
-  display: flex;
-}
+
 
 .activity-modal-box {
   width: min(620px, 100%);
@@ -987,9 +974,7 @@ body.activity-modal-open {
     overflow: hidden;
 }
 
-.activity-modal.active {
-    display: flex;
-}
+
 
 .activity-modal-box {
     width: min(620px, 100%);
@@ -1921,11 +1906,7 @@ body.activity-modal-open {
 
 /* إزالة رمز العدسة القديم */
 
-.activity-modal .member-search span,
-.activity-modal-box .member-search span,
-.activity-modal-body .member-search span {
-    display: none !important;
-}
+
 
 
 .activity-modal .member-search input,
