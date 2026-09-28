@@ -649,7 +649,6 @@
   }
 }
 
-
 /* Typed Arabic date input */
 
 .typed-date-wrapper {
@@ -697,10 +696,6 @@
 .calendar-icon-button:hover {
   background: #f7f7f7;
 }
-
-
-
-
 
 /* ============================================================
    MEETINGS TOPBAR - CONTENT STARTS BELOW HEADER
@@ -758,7 +753,6 @@ body:has(.meetings-topbar) {
     }
 }
 
-
 /* =========================================================
    Meetings header — one horizontal row
    ========================================================= */
@@ -789,7 +783,6 @@ body:has(.meetings-topbar) {
   margin: 0;
 }
 
-
 /* =========================================================
    Meeting card — preserve full card appearance
    ========================================================= */
@@ -804,7 +797,6 @@ body:has(.meetings-topbar) {
   min-width: 0;
   text-align: right;
 }
-
 
 /* =========================================================
    Tiny left chevron
@@ -826,7 +818,6 @@ body:has(.meetings-topbar) {
 
   direction: ltr;
 }
-
 
 /* =========================================================
    Mobile — keep heading + combo on SAME ROW
@@ -866,7 +857,6 @@ body:has(.meetings-topbar) {
   overflow: visible !important;
 }
 
-
 /* إذا كانت الصفحة تستخدم حاوية قابلة للتمرير،
    لا نسمح لقسم الاجتماعات بإلغاء الـ scroll */
 .meetings-page {
@@ -874,14 +864,12 @@ body:has(.meetings-topbar) {
   overflow-x: hidden !important;
 }
 
-
 /* لا تسمح لأي wrapper مباشر بإخفاء القائمة */
 .meetings-page,
 .meetings-list-section,
 .meetings-list {
   min-height: 0;
 }
-
 
 /* Mobile: يبقوا بنفس السطر */
 @media (max-width: 600px) {
@@ -928,7 +916,6 @@ body:has(.meetings-topbar) {
   flex-direction: column;
   gap: 12px;
 }
-
 
 /* =========================================================
    MOBILE
@@ -1020,7 +1007,6 @@ body:has(.meetings-topbar) {
   box-sizing: border-box;
 }
 
-
 /* =========================================================
    SCROLL — الكروت فقط
    ========================================================= */
@@ -1042,7 +1028,6 @@ body:has(.meetings-topbar) {
 
   padding-inline-end: 6px;
 }
-
 
 /* =========================================================
    MOBILE
@@ -1077,9 +1062,622 @@ body:has(.meetings-topbar) {
   font-size: 20px;
 }
 
-
 /* Larger meeting-card chevron */
 .meeting-arrow {
   font-size: 26px;
 }
 
+
+/* Meeting Details page styles (scoped to this page). */
+:where(body.meeting-details-view) .meeting-details-page {
+    min-height: 100vh;
+    background: #f7f8f6;
+}
+:where(body.meeting-details-view) .meeting-details-content {
+    width: min(100%, 720px);
+    margin: 0 auto;
+    padding: 24px 18px 40px;
+    box-sizing: border-box;
+}
+:where(body.meeting-details-view) .meeting-heading {
+    text-align: right;
+    margin-bottom: 28px;
+}
+:where(body.meeting-details-view) .meeting-heading h1 {
+    margin: 0 0 8px;
+    font-size: 25px;
+    font-weight: 800;
+    color: #202820;
+}
+:where(body.meeting-details-view) .meeting-heading .meeting-date {
+    color: #687168;
+    font-size: 15px;
+}
+:where(body.meeting-details-view) .attendees-section {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.05);
+}
+:where(body.meeting-details-view) .attendees-section h2 {
+    margin: 0 0 18px;
+    font-size: 20px;
+    color: #202820;
+}
+:where(body.meeting-details-view) .attendance-summary {
+    margin: -10px 0 18px;
+    color: #747b74;
+    font-size: 14px;
+}
+:where(body.meeting-details-view) .present-leaders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+:where(body.meeting-details-view) .present-leader-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 10px 12px;
+    background: #f7f8f6;
+    border-radius: 13px;
+    box-sizing: border-box;
+}
+:where(body.meeting-details-view) .leader-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e8eee9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+:where(body.meeting-details-view) .present-leader-card span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #273027;
+}
+:where(body.meeting-details-view) .empty-state {
+    text-align: center;
+    padding: 25px 10px;
+    color: #858b85;
+}
+:where(body.meeting-details-view) .details-edit-button {
+    width: 100%;
+    margin-top: 24px;
+    min-height: 50px;
+    border: 0;
+    border-radius: 13px;
+    background: #2f7d4a;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+:where(body.meeting-details-view) .details-edit-button:active {
+    transform: scale(.99);
+}
+:where(body.meeting-details-view) .meeting-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 9999;
+}
+:where(body.meeting-details-view) .meeting-modal.active {
+    display: flex;
+}
+:where(body.meeting-details-view) .meeting-modal-box {
+    width: min(100%, 620px);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 22px 22px 0 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+:where(body.meeting-details-view) .meeting-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+:where(body.meeting-details-view) .meeting-modal-header h2 {
+    margin: 0 0 5px;
+    font-size: 21px;
+}
+:where(body.meeting-details-view) .meeting-modal-header p {
+    margin: 0;
+    color: #777;
+    font-size: 13px;
+}
+:where(body.meeting-details-view) .close-modal-button {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: #f1f2f1;
+    font-size: 23px;
+    cursor: pointer;
+}
+:where(body.meeting-details-view) .edit-date-section {
+    margin-bottom: 20px;
+}
+:where(body.meeting-details-view) .edit-date-section {
+    margin-bottom: 22px;
+}
+:where(body.meeting-details-view) .edit-date-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 800;
+    color: #263126;
+    font-size: 15px;
+}
+:where(body.meeting-details-view) .date-input-wrapper {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0 12px;
+    background: #fff;
+}
+:where(body.meeting-details-view) .date-input-wrapper span {
+    flex: 0 0 auto;
+    font-size: 18px;
+    line-height: 1;
+}
+:where(body.meeting-details-view) .date-input-wrapper input[type="date"] {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 0;
+    outline: none;
+    border-radius: 10px;
+    background: transparent;
+    padding: 0 13px;
+    font-family: inherit;
+    font-size: 15px;
+    color: #263126;
+    direction: rtl;
+    text-align: right;
+    outline: none;
+    cursor: pointer;
+}
+:where(body.meeting-details-view) .date-input-wrapper input[type="date"]:focus {
+    border-color: #2f7d4a;
+    box-shadow: 0 0 0 3px rgba(47,125,74,.10);
+}
+:where(body.meeting-details-view) .date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: .75;
+}
+:where(body.meeting-details-view) .leader-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d8ddd8;
+    border-radius: 11px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+}
+:where(body.meeting-details-view) .leader-search span {
+    color: #777;
+    font-size: 20px;
+}
+:where(body.meeting-details-view) .leader-search input {
+    width: 100%;
+    height: 44px;
+    border: 0;
+    outline: none;
+    font-size: 15px;
+    background: transparent;
+}
+:where(body.meeting-details-view) .leaders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-height: 40vh;
+    overflow-y: auto;
+}
+:where(body.meeting-details-view) .leader-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 54px;
+    padding: 8px 10px;
+    border-radius: 11px;
+    background: #f7f8f6;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+:where(body.meeting-details-view) .leader-row-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+:where(body.meeting-details-view) .leader-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #2f7d4a;
+    cursor: pointer;
+}
+:where(body.meeting-details-view) .no-leaders {
+    text-align: center;
+    padding: 20px 5px;
+    color: #888;
+}
+:where(body.meeting-details-view) .save-meeting-button {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 12px;
+    background: #2f7d4a;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+:where(body.meeting-details-view) .save-meeting-button:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+@media (min-width: 700px) {
+    :where(body.meeting-details-view) .meeting-details-content {
+        padding-top: 32px;
+    }
+    :where(body.meeting-details-view) .meeting-modal {
+        align-items: center;
+    }
+    :where(body.meeting-details-view) .meeting-modal-box {
+        border-radius: 22px;
+        max-height: 85vh;
+    }
+}
+:where(body.meeting-details-view) /* =====================================================
+   MEETING DETAILS — FIXED PAGE / SCROLL ATTENDEES ONLY
+===================================================== */
+
+/* الصفحة نفسها ممنوع تتحرك */
+html,
+body:where(.meeting-details-view) {
+    height: 100%;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* مساحة الصفحة بين الـTopbar وأسفل الشاشة */
+.meetings-page,
+:where(body.meeting-details-view) .meeting-details-page {
+    height: calc(100vh - 64px);
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 86px;
+    box-sizing: border-box;
+}
+:where(body.meeting-details-view) /* معلومات الاجتماع ثابتة */
+.details-header {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* قسم الحاضرين يأخذ كل المساحة المتبقية */
+.attendees-details-section {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* عنوان "الحاضرون" ثابت */
+.details-section-header {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* القائمة وحدها تعمل Scroll */
+.present-leaders-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+:where(body.meeting-details-view) /* زر تعديل الاجتماع ثابت في أسفل الشاشة */
+.details-edit-button {
+    position: fixed;
+    z-index: 100;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    width: calc(100% - 28px);
+    min-height: 48px;
+    box-sizing: border-box;
+}
+/* Mobile */
+@media (max-width: 640px) {
+    :where(body.meeting-details-view) .meetings-page,:where(body.meeting-details-view) .meeting-details-page{
+    height: calc(100vh - 64px);
+    padding: 14px 12px 78px;
+    }:where(body.meeting-details-view) .attendees-details-section{
+    min-height: 0;
+    }:where(body.meeting-details-view) .present-leaders-list{
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 8px;
+    }:where(body.meeting-details-view) .details-edit-button{
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
+    min-height: 50px;
+    }
+}
+:where(body.meeting-details-view) /* =====================================================
+   ATTENDEES — ONLY PEOPLE LIST SCROLLS
+===================================================== */
+
+html,
+body:where(.meeting-details-view) {
+    height: 100%;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) .meetings-page,
+:where(body.meeting-details-view) .meeting-details-page {
+    height: calc(100vh - 64px);
+    min-height: 0;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* قسم الحاضرون نفسه ثابت */
+.attendees-details-section {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+:where(body.meeting-details-view) /* عنوان الحاضرون والعدد ثابت */
+.attendees-details-section .details-section-header {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* قائمة الأشخاص فقط هي التي تتحرك */
+.attendees-details-section .present-leaders-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+:where(body.meeting-details-view) /* بطاقات الأشخاص لا تتمدد بطريقة تكسر الـScroll */
+.attendees-details-section .present-leader-card {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* زر تعديل الاجتماع يبقى بأسفل الشاشة */
+.details-edit-button {
+    position: fixed;
+    z-index: 100;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
+}
+:where(body.meeting-details-view) /* مساحة حتى آخر شخص لا يختبئ خلف الزر */
+.attendees-details-section .present-leaders-list {
+    padding-bottom: 12px;
+}
+:where(body.meeting-details-view) /* =====================================================
+   MEETING DETAILS — FIXED ATTENDEES WINDOW
+===================================================== */
+
+html,
+body:where(.meeting-details-view) {
+    height: 100%;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* الصفحة كلها ثابتة */
+.meeting-details-page,
+:where(body.meeting-details-view) .meetings-page {
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    min-height: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+:where(body.meeting-details-view) /* معلومات الاجتماع ثابتة */
+.meeting-details-page .details-header,
+:where(body.meeting-details-view) .meetings-page .details-header {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* صندوق الحاضرين نفسه */
+.attendees-details-section {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100% - 120px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* عنوان الحاضرين والعدد ثابت */
+.attendees-details-section .details-section-header {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* قائمة الأشخاص فقط تعمل Scroll */
+.attendees-details-section .present-leaders-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 2px 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+:where(body.meeting-details-view) /* البطاقات داخل الـScroll */
+.attendees-details-section .present-leader-card {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* زر تعديل الاجتماع ثابت تحت صندوق الحاضرين */
+.details-edit-button {
+    position: fixed;
+    z-index: 100;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
+    min-height: 50px;
+}
+/* Mobile */
+@media (max-width: 640px) {
+    :where(body.meeting-details-view) .meeting-details-page,:where(body.meeting-details-view) .meetings-page{
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    padding: 14px 12px 76px;
+    overflow: hidden;
+    }:where(body.meeting-details-view) .attendees-details-section{
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    border-radius: 16px;
+    overflow: hidden;
+    }:where(body.meeting-details-view) .attendees-details-section .details-section-header{
+    flex: 0 0 auto;
+    padding: 15px;
+    margin-bottom: 0;
+    }:where(body.meeting-details-view) .attendees-details-section .present-leaders-list{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 15px 12px;
+    }:where(body.meeting-details-view) .details-edit-button{
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
+    min-height: 50px;
+    }
+}
+:where(body.meeting-details-view) /* =========================================================
+   FINAL FIX — MEETING DETAILS
+   يعتمد على HTML الفعلي:
+   .meeting-details-content
+   .meeting-heading
+   .attendees-section
+   .present-leaders-list
+   .details-edit-button
+========================================================= */
+
+html,
+body:where(.meeting-details-view) {
+    height: 100%;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) .meeting-details-page {
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    min-height: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 14px 12px 12px;
+}
+:where(body.meeting-details-view) /* المحتوى الداخلي كله Flex */
+.meeting-details-content {
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* معلومات الاجتماع */
+.meeting-details-content .meeting-heading {
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+}
+:where(body.meeting-details-view) /* صندوق الحاضرين */
+.meeting-details-content .attendees-section {
+    flex: 1 1 auto;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+:where(body.meeting-details-view) /* العنوان + العدد */
+.meeting-details-content .attendees-section h2,
+:where(body.meeting-details-view) .meeting-details-content .attendees-section .attendance-summary {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* الأشخاص فقط يعملون Scroll */
+.meeting-details-content .attendees-section .present-leaders-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+:where(body.meeting-details-view) /* بطاقات الأشخاص لا تتمدد */
+.meeting-details-content .attendees-section .present-leader-card {
+    flex: 0 0 auto;
+}
+:where(body.meeting-details-view) /* =========================================================
+   زر تعديل الاجتماع
+   مهم جداً: إلغاء الـfixed من كل الـCSS القديم
+========================================================= */
+
+.meeting-details-content > .details-edit-button {
+    position: static !important;
+    z-index: auto !important;
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 50px;
+    margin: 12px 0 0 0;
+    box-sizing: border-box;
+}
+/* Mobile */
+@media (max-width: 640px) {
+    :where(body.meeting-details-view) .meeting-details-page{
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    padding: 14px 12px 12px;
+    overflow: hidden;
+    }:where(body.meeting-details-view) .meeting-details-content{
+    height: 100%;
+    min-height: 0;
+    }:where(body.meeting-details-view) .meeting-details-content .meeting-heading{
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+    }:where(body.meeting-details-view) .meeting-details-content .attendees-section{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    }:where(body.meeting-details-view) .meeting-details-content .attendees-section .present-leaders-list{
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 2px 10px;
+    -webkit-overflow-scrolling: touch;
+    }:where(body.meeting-details-view) .meeting-details-content > .details-edit-button{
+    position: static !important;
+    width: 100%;
+    min-height: 50px;
+    margin-top: 12px;
+    margin-bottom: 0;
+    }
+}

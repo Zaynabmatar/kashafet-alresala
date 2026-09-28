@@ -2180,6 +2180,58 @@ body {
     overflow-x: hidden !important;
 }
 
+/* Activity date picker visibility and positioning fixes */
+.custom-date-popover {
+    display: none !important;
+}
+
+.custom-date-popover.open {
+    display: block !important;
+}
+
+.typed-date-wrapper {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+#activityDatePicker.custom-date-popover {
+    display: none !important;
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: 0 !important;
+    padding: 12px !important;
+    background: #ffffff !important;
+    border: 1px solid #dfe5e1 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.09) !important;
+    z-index: 10050 !important;
+}
+
+#activityDatePicker.custom-date-popover.open {
+    display: block !important;
+}
+
+#activityDatePicker .date-picker-selects {
+    display: grid !important;
+    grid-template-columns: 1fr 1.4fr 1fr !important;
+    gap: 8px !important;
+}
+
+#activityDatePicker .date-picker-selects select {
+    width: 100% !important;
+    height: 44px !important;
+    box-sizing: border-box !important;
+    border: 1px solid #d8dfdb !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    padding: 0 8px !important;
+    font-size: 14px !important;
+}
+
 .activities-page {
     height: calc(100vh - 64px) !important;
     max-height: calc(100vh - 64px) !important;

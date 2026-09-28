@@ -158,12 +158,43 @@
     border-color: #145c45;
 }
 
+.is-hidden {
+    display: none;
+}
+
+.phone-value {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: isolate !important;
+}
+
+.birth-date-picker {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.birth-date-fields {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.birth-day,
+.birth-month {
+    flex: 1;
+    cursor: pointer;
+}
+
+.birth-year {
+    flex: 1.2;
+    cursor: pointer;
+}
+
 #phoneInput {
     direction: ltr !important;
     text-align: left !important;
     unicode-bidi: isolate !important;
     writing-mode: horizontal-tb !important;
-    display: block !important;
 }
 
 .edit-actions {

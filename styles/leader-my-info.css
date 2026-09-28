@@ -79,6 +79,26 @@ body {
   z-index: 10;
 }
 
+.large-profile-image {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 9px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eef2ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+}
+
+.large-profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .fixed-profile h1 {
   margin: 0;
   color: #145c45;
@@ -174,4 +194,233 @@ body {
     padding: 14px 16px 13px;
   }
 
-  
+  .large-profile-image {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 7px;
+    font-size: 32px;
+  }
+
+  .fixed-profile h1 {
+    font-size: 19px;
+  }
+
+  .info-scroll {
+    padding: 7px 12px 14px;
+  }
+
+  .info-row {
+    min-height: 56px;
+    padding: 12px 14px;
+  }
+
+  .fixed-actions {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+}
+
+#leaderPhone {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+  white-space: pre;
+}
+
+#editPhone {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Edit Information modal */
+body.modal-open {
+  overflow: hidden;
+}
+
+.edit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.edit-modal.open {
+  display: flex;
+}
+
+.edit-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.edit-modal-box {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 460px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  padding: 20px;
+  direction: rtl;
+}
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.edit-modal-header h2 {
+  margin: 0;
+  font-size: 21px;
+  color: #222;
+}
+
+.close-edit-button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f2f2;
+  color: #555;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.edit-field > span {
+  font-size: 14px;
+  font-weight: 700;
+  color: #444;
+}
+
+.edit-field input,
+.edit-field select {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  border: 1px solid #d9dddd;
+  border-radius: 12px;
+  background: #fafbfb;
+  color: #222;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+  border-color: #777;
+  background: #fff;
+}
+
+.phone-field {
+  display: flex;
+  direction: ltr;
+  align-items: stretch;
+}
+
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  padding: 0 10px;
+  border: 1px solid #d9dddd;
+  border-left: 0;
+  border-radius: 12px 0 0 12px;
+  background: #eee;
+  color: #555;
+  font-weight: 700;
+  direction: ltr;
+}
+
+.phone-field input {
+  border-radius: 0 12px 12px 0;
+  direction: ltr;
+  text-align: left;
+}
+
+.birth-selects {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 8px;
+}
+
+.edit-error {
+  min-height: 20px;
+  margin: -3px 0 0;
+  color: #b42318;
+  font-size: 13px;
+  text-align: center;
+}
+
+.save-edit-button {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 13px;
+  background: #222;
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.save-edit-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+@media (max-width: 420px) {
+  .edit-modal {
+    padding: 12px;
+  }
+
+  .edit-modal-box {
+    max-height: 92vh;
+    border-radius: 19px;
+    padding: 17px;
+  }
+
+  .birth-selects {
+    grid-template-columns: 1fr 1.35fr 1fr;
+    gap: 6px;
+  }
+
+  .edit-field input,
+  .edit-field select {
+    min-height: 44px;
+    font-size: 14px;
+  }
+}
+
+.edit-modal-box {
+  pointer-events: auto;
+}

@@ -2025,3 +2025,208 @@ body {
     touch-action: pan-y !important;
   }
 }
+
+
+/* Extracted Leader Dashboard page styles. */
+/* =========================================
+   MEMBER FORM
+   ========================================= */
+
+#memberModal .form-group,
+#memberModal .form-field,
+#memberModal .input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+#memberModal label {
+  display: block;
+  width: 100%;
+  text-align: right;
+  font-weight: 700;
+}
+
+/* =========================================
+   PHONE
+   ========================================= */
+
+#memberModal .phone-input {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-height: 48px;
+  border: 1px solid #d9e2dc;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  direction: ltr !important;
+}
+
+#memberModal .phone-input .country-code {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 58px;
+  padding: 0 10px;
+  background: #f2f5f3;
+  color: #31543f;
+  font-weight: 700;
+  border-left: 1px solid #d9e2dc;
+  order: 1;
+  direction: ltr !important;
+}
+
+#memberModal .phone-input #memberPhone {
+  flex: 1 !important;
+  width: auto !important;
+  min-width: 0;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  direction: ltr !important;
+  text-align: left !important;
+  padding: 12px 14px !important;
+  order: 0;
+}
+
+/* =========================================
+   BIRTH DATE
+   ========================================= */
+
+/* =========================================
+   UNIFORM RADIO BUTTONS
+   ========================================= */
+
+#memberModal .uniform-options,
+#memberModal .uniform-choice,
+#memberModal .uniform-options-container {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 10px !important;
+  width: 100% !important;
+  flex-wrap: wrap;
+}
+
+/* كل خيار يبقى Radio حقيقي */
+#memberModal .uniform-options label,
+#memberModal .uniform-choice label,
+#memberModal .uniform-options-container label {
+  display: flex !important;
+  flex: 1 1 140px;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px;
+  min-height: 46px;
+  padding: 8px 12px;
+  border: 1px solid #d9e2dc;
+  border-radius: 12px;
+  background: #f8faf9;
+  cursor: pointer;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+/* لا نخفي الـradio */
+#memberModal .uniform-options input[type="radio"],
+#memberModal .uniform-choice input[type="radio"],
+#memberModal .uniform-options-container input[type="radio"] {
+  display: inline-block !important;
+  appearance: auto !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+  position: static !important;
+}
+
+/* لا نضيف icon بالـCSS حتى لا يختفي الـradio */
+#memberModal .uniform-options label::before,
+#memberModal .uniform-choice label::before,
+#memberModal .uniform-options-container label::before {
+  content: none !important;
+}
+
+
+/* MEMBER BIRTH DATE - DAY / MONTH / YEAR */
+
+#memberModal .birth-date-fields {
+  display: flex !important;
+  flex-direction: row !important;
+  direction: ltr !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+#memberModal .birth-date-fields input {
+  height: 48px !important;
+  border: 1px solid #d9e2dc !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+  outline: none !important;
+  min-width: 0 !important;
+  padding: 10px 8px !important;
+}
+
+#memberModal #memberBirthDay,
+#memberModal #memberBirthMonth {
+  flex: 1 1 0 !important;
+}
+
+#memberModal #memberBirthYear {
+  flex: 1.5 1 0 !important;
+}
+
+
+/* MEMBER CARD PHONE ICON - NO DUPLICATE PSEUDO ICON */
+
+#membersSection .member-phone::before,
+#membersSection .member-phone::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* MEMBER PHONE INPUT - SINGLE PREFIX ONLY */
+#memberModal .member-phone-field::before,
+#memberModal .member-phone-field::after,
+#memberModal #memberPhone::before,
+#memberModal #memberPhone::after {
+  content: none !important;
+  display: none !important;
+}
+
+#memberModal .member-phone-field {
+  position: relative !important;
+}
+
+#memberModal #memberPhone {
+  background-image: none !important;
+}
+
+/* MEMBER PHONE - PREVENT BROWSER PHONE/AUTOFILL ICONS */
+#memberModal #memberPhone::-webkit-contacts-auto-fill-button,
+#memberModal #memberPhone::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.member-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: nowrap;
+  width: 100%;
+}

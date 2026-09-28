@@ -35,3 +35,206 @@ body{font-family:Arial,Tahoma,sans-serif;background:#f4f7f5;color:#1f2d25;min-he
   .trash-actions{width:100%}
   .trash-actions button{flex:1;min-height:40px}
 }
+
+.trash-container {
+  padding-top: 12px !important;
+}
+
+.topbar .user-area {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.topbar .menu-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.member-trash-card {
+  padding: 18px 20px;
+}
+
+.member-trash-card .member-main {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(260px, 1.4fr) minmax(240px, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+}
+
+.member-trash-card .member-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+}
+
+.member-trash-card .member-avatar {
+  width: 62px;
+  height: 62px;
+  flex: 0 0 62px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eef4f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+}
+
+.member-trash-card .member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-trash-card .member-identity {
+  min-width: 0;
+}
+
+.member-trash-card .member-name-phone {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.member-trash-card .member-name-phone h3 {
+  margin: 0;
+  color: #1f2d25;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.member-trash-card .member-phone {
+  color: #5e6b64;
+  font-size: 13px;
+}
+
+.member-trash-card .member-info {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.member-trash-card .info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.member-trash-card .info-label {
+  color: #7a867f;
+  font-size: 12px;
+}
+
+.member-trash-card .info-item strong {
+  color: #1f2d25;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.member-trash-card .has-uniform {
+  color: #26734a !important;
+}
+
+.member-trash-card .no-uniform {
+  color: #a34b4b !important;
+}
+
+.member-trash-card .member-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.member-trash-card .deleted-date {
+  margin: 0;
+  color: #929b96;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.member-trash-card .restore-button {
+  min-width: 105px;
+  padding: 11px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 92px;
+}
+
+@media (max-width: 850px) {
+  .member-trash-card .member-main {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+
+  .member-trash-card .member-info {
+    gap: 35px;
+  }
+
+  .member-trash-card .member-card-actions {
+    justify-content: space-between;
+  }
+
+  .member-trash-card .restore-button {
+    min-width: 105px;
+    padding: 11px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .member-trash-card {
+    padding: 16px;
+  }
+
+  .member-trash-card .member-avatar {
+    width: 54px;
+    height: 54px;
+    flex-basis: 54px;
+  }
+
+  .member-trash-card .member-name-phone h3 {
+    font-size: 16px;
+  }
+
+  .member-trash-card .member-info {
+    gap: 28px;
+  }
+
+  .member-trash-card .member-card-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .member-trash-card .deleted-date {
+    white-space: normal;
+  }
+
+  .member-trash-card .restore-button {
+    min-width: 105px;
+    padding: 11px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+  }
+}

@@ -2591,3 +2591,19 @@ body:has(#memberModal.show) {
     flex: 1 1 auto !important;
     min-width: 0 !important;
 }
+
+/* Read-only task field on the leader edit form. */
+.readonly-task {
+    background: #f1f1f1;
+    color: #777;
+    cursor: not-allowed;
+}
+
+#loadingState,
+#errorState {
+    display: none;
+}
+
+#leaderContent {
+    display: block;
+}
