@@ -53,8 +53,10 @@
       }
 
       function normalizeArabicDigits(value) {
-        return String(value || "").replace(/[٠-٩]/g, function (digit) {
-          return "٠١٢٣٤٥٦٧٨٩".indexOf(digit);
+        return String(value || "").replace(/[\u0660-\u0669\u06F0-\u06F9]/g, function (digit) {
+          return String(digit.charCodeAt(0) <= 0x0669
+            ? digit.charCodeAt(0) - 0x0660
+            : digit.charCodeAt(0) - 0x06F0);
         });
       }
 

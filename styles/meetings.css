@@ -1625,3 +1625,23 @@ body:where(.meeting-details-view) {
     margin-bottom: 0;
     }
 }
+
+
+/* Keep the edit meeting modal and save button inside phone viewports. */
+@media (max-width: 640px) {
+  :where(body.meeting-details-view) .meeting-modal {
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+
+  :where(body.meeting-details-view) .meeting-modal-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  :where(body.meeting-details-view) .save-meeting-button {
+    width: 100%;
+    margin: 18px 0 12px;
+    box-sizing: border-box;
+  }
+}
