@@ -164,6 +164,7 @@
       window.getNormalizedLeaderBirthDate = getNormalizedBirthDate;
     }
     Object.assign(window, { setupDateSelectors });
+    setupDateSelectors();
 }
 
 // Leader modal
