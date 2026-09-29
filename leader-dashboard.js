@@ -908,18 +908,21 @@ function editMember(memberId) {
   const yearInput =
     document.getElementById("memberBirthYear");
 
+    const birthDigitStyle =
+    localStorage.getItem(`memberBirthDigitStyle:${member.id}`) || "english";
+
   if (birthParts.length === 3) {
 
     if (yearInput) {
-      yearInput.value = birthParts[0];
+      yearInput.value = formatMemberBirthDigits(birthParts[0], birthDigitStyle);
     }
 
     if (monthInput) {
-      monthInput.value = birthParts[1];
+      monthInput.value = formatMemberBirthDigits(birthParts[1], birthDigitStyle);
     }
 
     if (dayInput) {
-      dayInput.value = birthParts[2];
+      dayInput.value = formatMemberBirthDigits(birthParts[2], birthDigitStyle);
     }
 
   } else {
@@ -979,6 +982,15 @@ function editMember(memberId) {
     modal.style.display = "flex";
   }
 }
+function formatMemberBirthDigits(value, style) {
+  const text = String(value || "");
+
+  if (style !== "arabic") {
+    return text;
+  }
+
+  return text.replace(/\d/g, digit => "٠١٢٣٤٥٦٧٨٩"[Number(digit)]);
+}
 function normalizeArabicDigits(value) {
   return String(value || "")
     .replace(/[٠-٩]/g, function (digit) {
@@ -1035,7 +1047,12 @@ async function saveMember() {
     document.getElementById("memberBirthYear")?.value.trim() || ""
   ];
   const hasBirthDate = birthFields.some(Boolean);
-  const parsedBirthDate = birthDate ? new Date(`${birthDate}T00:00:00`) : null;
+  
+  const birthDigitStyle =
+    /[٠-٩]/.test(birthFields.join(""))
+      ? "arabic"
+      : "english";
+const parsedBirthDate = birthDate ? new Date(`${birthDate}T00:00:00`) : null;
   if (
     hasBirthDate &&
     (!birthDate ||
@@ -1127,10 +1144,18 @@ async function saveMember() {
       modal.classList.remove("active");
       modal.style.display = "none";
     }
+    const savedMemberId =
+      result.data?.id || editingMemberId;
+
+    if (savedMemberId) {
+      localStorage.setItem(
+        `memberBirthDigitStyle:${savedMemberId}`,
+        birthDigitStyle
+      );
+    }
 
     await loadMembers();
-
-  } catch (error) {
+} catch (error) {
 
     console.error("Unexpected member save error:", error);
     alert("حدث خطأ أثناء حفظ معلومات العنصر.");
