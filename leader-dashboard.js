@@ -412,7 +412,7 @@ function renderMembers() {
                 <strong>
                   ${
                     age !== null
-                      ? escapeHtml(new Intl.NumberFormat("ar").format(age)) + " سنة"
+                      ? escapeHtml(new Intl.NumberFormat("ar-u-nu-arab").format(age)) + " سنة"
                       : "غير محدد"
                   }
                 </strong>
@@ -449,7 +449,7 @@ function renderMembers() {
                 </span>
 
                 <strong>
-                  ${attendanceCount} / ${totalActivities}
+                  ${new Intl.NumberFormat("ar-u-nu-arab").format(attendanceCount)} / ${new Intl.NumberFormat("ar-u-nu-arab").format(totalActivities)}
                 </strong>
 
               </div>
@@ -888,7 +888,7 @@ function editMember(memberId) {
       phone
         .replace(/^\+961\s*/i, "")
         .replace(/^961\s*/i, "")
-        .replace(/[^0-9٠-٩۰-۹]/g, "");
+        .replace(/[^0-9\u0660-\u0669\u06F0-\u06F9]/g, "");
 
     phoneInput.value = phone;
   }
@@ -997,7 +997,9 @@ async function saveMember() {
     document.getElementById("memberName")?.value.trim() || "";
 
   const phone =
-    document.getElementById("memberPhone")?.value.trim() || "";
+    normalizeArabicDigits(
+      document.getElementById("memberPhone")?.value.trim() || ""
+    );
 
   const day =
     normalizeArabicDigits(
@@ -1421,7 +1423,7 @@ document.addEventListener("DOMContentLoaded", function () {
     phone.setAttribute("dir", "ltr");
 
     phone.addEventListener("input", function () {
-      this.value = this.value.replace(/[^0-9٠-٩۰-۹]/g, "");
+      this.value = this.value.replace(/[^0-9\u0660-\u0669\u06F0-\u06F9]/g, "");
     });
   }
 

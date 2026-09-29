@@ -2052,7 +2052,7 @@ body {
 #memberModal .birth-date-fields {
   display: flex !important;
   flex-direction: row !important;
-  direction: ltr !important;
+  direction: rtl !important;
   align-items: center !important;
   gap: 8px !important;
   width: 100% !important;
