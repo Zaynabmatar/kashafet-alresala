@@ -1,3 +1,56 @@
+function normalizeBirthDateDigits(value) {
+    return String(value || "").replace(/[٠-٩]/g, digit =>
+        String(digit.charCodeAt(0) - 0x0660)
+    );
+}
+
+function parseBirthDate(value) {
+    if (!value) return null;
+
+    const normalized = normalizeBirthDateDigits(value).slice(0, 10);
+    const match = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(normalized);
+    if (!match) return null;
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const date = new Date(year, month - 1, day);
+
+    if (
+        year < 1900 ||
+        date.getFullYear() !== year ||
+        date.getMonth() !== month - 1 ||
+        date.getDate() !== day
+    ) {
+        return null;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date > today) return null;
+
+    return { year, month, day };
+}
+
+function calculateAgeText(birthDateValue) {
+    const birthDate = parseBirthDate(birthDateValue);
+    if (!birthDate) return "غير محدد";
+
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.year;
+    if (
+        today.getMonth() + 1 < birthDate.month ||
+        (today.getMonth() + 1 === birthDate.month && today.getDate() < birthDate.day)
+    ) {
+        age--;
+    }
+
+    const displayedAge = String(age).replace(/[0-9]/g, digit =>
+        String.fromCharCode(digit.charCodeAt(0) + 0x0660 - 0x0030)
+    );
+    return age >= 0 ? displayedAge + " سنة" : "غير محدد";
+}
+
 // Profile loading
 async function loadMyInfo() {
     const loadingMessage = document.getElementById("loadingMessage");
@@ -27,28 +80,9 @@ async function loadMyInfo() {
         document.getElementById("phoneInfo").textContent =
             profile.phone || "غير محدد";
 
-        let ageText = "غير محدد";
         window.currentProfileBirthDate = profile.birth_date || null;
-
-        if (profile.birth_date) {
-            const birthDate = new Date(profile.birth_date);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDifference = today.getMonth() - birthDate.getMonth();
-
-            if (
-                monthDifference < 0 ||
-                (monthDifference === 0 && today.getDate() < birthDate.getDate())
-            ) {
-                age--;
-            }
-
-            if (age >= 0) {
-                ageText = age + " سنة";
-            }
-        }
-
-        document.getElementById("ageInfo").textContent = ageText;
+        document.getElementById("ageInfo").textContent =
+            calculateAgeText(profile.birth_date);
         loadingMessage.style.display = "none";
         profileContent.dataset.profileId = adminId;
         profileContent.style.display = "block";
@@ -92,15 +126,9 @@ function addProfileEditorMarkup() {
         "beforeend",
         '<div id="birthDatePicker" class="birth-date-picker is-hidden">' +
             '<div class="birth-date-fields">' +
-                '<select id="birthDay" class="edit-input birth-day">' +
-                    '<option value="">Day</option>' +
-                '</select>' +
-                '<select id="birthMonth" class="edit-input birth-month">' +
-                    '<option value="">Month</option>' +
-                '</select>' +
-                '<select id="birthYear" class="edit-input birth-year">' +
-                    '<option value="">Year</option>' +
-                '</select>' +
+                '<input type="text" id="birthDay" class="edit-input birth-day" inputmode="numeric" maxlength="2" placeholder="اليوم" aria-label="اليوم">' +
+                '<input type="text" id="birthMonth" class="edit-input birth-month" inputmode="numeric" maxlength="2" placeholder="الشهر" aria-label="الشهر">' +
+                '<input type="text" id="birthYear" class="edit-input birth-year" inputmode="numeric" maxlength="4" placeholder="السنة" aria-label="السنة">' +
             '</div>' +
         '</div>' +
         '<input type="hidden" id="birthDateInput">'
@@ -132,106 +160,71 @@ function setupProfileEditor() {
     let originalName = "";
     let originalPhone = "";
 
-    function calculateAge(birthDateValue) {
-        if (!birthDateValue) return "غير محدد";
-
-        const birthDate = new Date(birthDateValue);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDifference = today.getMonth() - birthDate.getMonth();
-
-        if (
-            monthDifference < 0 ||
-            (monthDifference === 0 && today.getDate() < birthDate.getDate())
-        ) {
-            age--;
-        }
-
-        return age >= 0 ? age + " سنة" : "غير محدد";
-    }
-
     function setupBirthDatePicker() {
-        const daySelect = document.getElementById("birthDay");
-        const monthSelect = document.getElementById("birthMonth");
-        const yearSelect = document.getElementById("birthYear");
+        const dateInputs = [
+            document.getElementById("birthDay"),
+            document.getElementById("birthMonth"),
+            document.getElementById("birthYear")
+        ];
 
-        if (!daySelect || !monthSelect || !yearSelect) return;
+        dateInputs.forEach(input => {
+            if (!input) return;
 
-        if (yearSelect.options.length === 1) {
-            const currentYear = new Date().getFullYear();
-
-            for (let year = currentYear; year >= 1900; year--) {
-                const option = document.createElement("option");
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-
-            const months = [
-                "January", "February", "March", "April",
-                "May", "June", "July", "August",
-                "September", "October", "November", "December"
-            ];
-
-            months.forEach((month, index) => {
-                const option = document.createElement("option");
-                option.value = String(index + 1).padStart(2, "0");
-                option.textContent = month;
-                monthSelect.appendChild(option);
+            input.addEventListener("beforeinput", function (event) {
+                if (event.data && /[^0-9٠-٩]/.test(event.data)) {
+                    event.preventDefault();
+                }
             });
 
-            for (let day = 1; day <= 31; day++) {
-                const option = document.createElement("option");
-                option.value = String(day).padStart(2, "0");
-                option.textContent = day;
-                daySelect.appendChild(option);
-            }
-        }
+            input.addEventListener("input", function () {
+                input.value = input.value.replace(/[^0-9٠-٩]/g, "");
+                updateBirthDate();
+            });
+        });
 
         function updateBirthDate() {
-            const day = daySelect.value;
-            const month = monthSelect.value;
-            const year = yearSelect.value;
+            const [dayInput, monthInput, yearInput] = dateInputs;
+            if (!dayInput || !monthInput || !yearInput) return;
 
-            if (day && month && year) {
-                const dateValue = year + "-" + month + "-" + day;
-                const selectedDate = new Date(dateValue + "T00:00:00");
-                const today = new Date();
+            const day = normalizeBirthDateDigits(dayInput.value);
+            const month = normalizeBirthDateDigits(monthInput.value);
+            const year = normalizeBirthDateDigits(yearInput.value);
 
-                if (selectedDate > today) {
-                    birthDateInput.value = "";
-                    return;
-                }
-
-                birthDateInput.value = dateValue;
+            if (!day && !month && !year) {
+                birthDateInput.value = "";
+                return;
             }
-        }
 
-        daySelect.addEventListener("change", updateBirthDate);
-        monthSelect.addEventListener("change", updateBirthDate);
-        yearSelect.addEventListener("change", updateBirthDate);
+            if (!day || !month || !year) {
+                birthDateInput.value = "";
+                return;
+            }
+
+            const dateValue = `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+            birthDateInput.value = parseBirthDate(dateValue) ? dateValue : "";
+        }
     }
 
     function loadBirthDateIntoPicker(dateValue) {
-        const daySelect = document.getElementById("birthDay");
-        const monthSelect = document.getElementById("birthMonth");
-        const yearSelect = document.getElementById("birthYear");
+        const dayInput = document.getElementById("birthDay");
+        const monthInput = document.getElementById("birthMonth");
+        const yearInput = document.getElementById("birthYear");
 
-        if (!daySelect || !monthSelect || !yearSelect) return;
+        if (!dayInput || !monthInput || !yearInput) return;
 
         if (!dateValue) {
-            daySelect.value = "";
-            monthSelect.value = "";
-            yearSelect.value = "";
+            dayInput.value = "";
+            monthInput.value = "";
+            yearInput.value = "";
             return;
         }
 
-        const parts = dateValue.substring(0, 10).split("-");
+        const parsedDate = parseBirthDate(dateValue);
 
-        if (parts.length === 3) {
-            yearSelect.value = parts[0];
-            monthSelect.value = parts[1];
-            daySelect.value = parts[2];
+        if (parsedDate) {
+            yearInput.value = String(parsedDate.year);
+            monthInput.value = String(parsedDate.month).padStart(2, "0");
+            dayInput.value = String(parsedDate.day).padStart(2, "0");
         }
     }
 
@@ -307,7 +300,30 @@ function setupProfileEditor() {
             newPhone = "+961 " + newPhone.replace(/^0/, "");
         }
 
-        const newBirthDate = birthDateInput.value || null;
+        const dateInputs = [
+            document.getElementById("birthDay"),
+            document.getElementById("birthMonth"),
+            document.getElementById("birthYear")
+        ];
+        const normalizedParts = dateInputs.map(input =>
+            normalizeBirthDateDigits(input?.value || "").trim()
+        );
+        const hasBirthDatePart = normalizedParts.some(Boolean);
+        let newBirthDate = null;
+
+        if (hasBirthDatePart) {
+            const [day, month, year] = normalizedParts;
+            const parsedDate = day && month && year
+                ? parseBirthDate(`${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`)
+                : null;
+
+            if (!parsedDate) {
+                alert("يرجى إدخال تاريخ ميلاد كامل وصحيح.");
+                return;
+            }
+
+            newBirthDate = `${String(parsedDate.year).padStart(4, "0")}-${String(parsedDate.month).padStart(2, "0")}-${String(parsedDate.day).padStart(2, "0")}`;
+        }
 
         if (!newName) {
             alert("الرجاء إدخال الاسم الكامل.");
@@ -336,7 +352,7 @@ function setupProfileEditor() {
 
             nameValue.textContent = newName || "غير محدد";
             phoneValue.textContent = newPhone || "غير محدد";
-            ageValue.textContent = calculateAge(newBirthDate);
+            ageValue.textContent = calculateAgeText(newBirthDate);
             document.getElementById("fullName").textContent =
                 newName || "غير محدد";
             exitEditMode();
