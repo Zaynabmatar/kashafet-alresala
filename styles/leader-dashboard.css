@@ -1,4 +1,4 @@
-﻿* {
+* {
   box-sizing: border-box;
 }
 
@@ -2133,15 +2133,4 @@ body {
   gap: 24px;
   flex-wrap: nowrap;
   width: 100%;
-}
-
-/* Activity add-date: keep the native picker out of the typing path on mobile */
-@media (max-width: 768px) {
-  .activity-date-inputs {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .activity-date-inputs #activityDatePicker {
-    display: none;
-  }
 }

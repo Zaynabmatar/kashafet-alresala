@@ -797,7 +797,6 @@ function openActivityModal() {
 
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById("activityDate").value = today;
-  document.getElementById("activityDatePicker").value = today;
   document.getElementById("activityDateText").value =
     `${today.slice(8, 10)}/${Number(today.slice(5, 7))}/${today.slice(0, 4)}`;
 
@@ -1429,19 +1428,12 @@ loadTrashCount();
 document.addEventListener("DOMContentLoaded", function () {
 
   const activityText = document.getElementById("activityDateText");
-  const activityPicker = document.getElementById("activityDatePicker");
   const activityValue = document.getElementById("activityDate");
-  if (activityText && activityPicker && activityValue) {
+  if (activityText && activityValue) {
     activityText.addEventListener("input", function () {
       this.value = this.value.replace(/[^0-9\u0660-\u0669\u06F0-\u06F9/]/g, "");
       const parsed = parseActivityDate(this.value);
       activityValue.value = parsed;
-      if (parsed) activityPicker.value = parsed;
-    });
-    activityPicker.addEventListener("change", function () {
-      if (!this.value) return;
-      activityValue.value = this.value;
-      activityText.value = `${this.value.slice(8, 10)}/${Number(this.value.slice(5, 7))}/${this.value.slice(0, 4)}`;
     });
   }
 
