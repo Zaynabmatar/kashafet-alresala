@@ -412,7 +412,7 @@ function renderMembers() {
                 <strong>
                   ${
                     age !== null
-                      ? escapeHtml(age) + " سنة"
+                      ? escapeHtml(new Intl.NumberFormat("ar").format(age)) + " سنة"
                       : "غير محدد"
                   }
                 </strong>
@@ -888,7 +888,7 @@ function editMember(memberId) {
       phone
         .replace(/^\+961\s*/i, "")
         .replace(/^961\s*/i, "")
-        .replace(/\D/g, "");
+        .replace(/[^0-9٠-٩۰-۹]/g, "");
 
     phoneInput.value = phone;
   }
@@ -1018,6 +1018,25 @@ async function saveMember() {
     day && month && year
       ? `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
       : "";
+
+  const birthFields = [
+    document.getElementById("memberBirthDay")?.value.trim() || "",
+    document.getElementById("memberBirthMonth")?.value.trim() || "",
+    document.getElementById("memberBirthYear")?.value.trim() || ""
+  ];
+  const hasBirthDate = birthFields.some(Boolean);
+  const parsedBirthDate = birthDate ? new Date(`${birthDate}T00:00:00`) : null;
+  if (
+    hasBirthDate &&
+    (!birthDate ||
+      Number.isNaN(parsedBirthDate.getTime()) ||
+      parsedBirthDate.getFullYear() !== Number(year) ||
+      parsedBirthDate.getMonth() + 1 !== Number(month) ||
+      parsedBirthDate.getDate() !== Number(day))
+  ) {
+    alert("يرجى إدخال تاريخ ميلاد صحيح بالترتيب: اليوم / الشهر / السنة.");
+    return;
+  }
 
   const uniformInput =
     document.querySelector(
@@ -1402,7 +1421,7 @@ document.addEventListener("DOMContentLoaded", function () {
     phone.setAttribute("dir", "ltr");
 
     phone.addEventListener("input", function () {
-      this.value = this.value.replace(/\D/g, "");
+      this.value = this.value.replace(/[^0-9٠-٩۰-۹]/g, "");
     });
   }
 
