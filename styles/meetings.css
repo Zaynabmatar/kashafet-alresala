@@ -890,10 +890,6 @@ body:has(.meetings-topbar) {
   .meetings-list-section-header .year-section {
     margin-inline-start: auto !important;
   }
-
-  .meetings-list-section-header .year-filter {
-    width: 115px;
-  }
 }
 
 /* =========================================================
@@ -1050,10 +1046,6 @@ body:has(.meetings-topbar) {
   .meetings-year-control .year-filter {
     width: 115px;
     height: 42px;
-  }
-
-  .meetings-list {
-    max-height: calc(100vh - 280px);
   }
 }
 
@@ -1242,7 +1234,6 @@ body:has(.meetings-topbar) {
     height: 100%;
     box-sizing: border-box;
     border: 0;
-    outline: none;
     border-radius: 10px;
     background: transparent;
     padding: 0 13px;
@@ -1423,15 +1414,6 @@ body:where(.meeting-details-view) {
     min-height: 50px;
     }
 }
-:where(body.meeting-details-view) /* =====================================================
-   ATTENDEES — ONLY PEOPLE LIST SCROLLS
-===================================================== */
-
-html,
-body:where(.meeting-details-view) {
-    height: 100%;
-    overflow: hidden;
-}
 :where(body.meeting-details-view) .meetings-page,
 :where(body.meeting-details-view) .meeting-details-page {
     height: calc(100vh - 64px);
@@ -1475,15 +1457,6 @@ body:where(.meeting-details-view) {
 .attendees-details-section .present-leaders-list {
     padding-bottom: 12px;
 }
-:where(body.meeting-details-view) /* =====================================================
-   MEETING DETAILS — FIXED ATTENDEES WINDOW
-===================================================== */
-
-html,
-body:where(.meeting-details-view) {
-    height: 100%;
-    overflow: hidden;
-}
 :where(body.meeting-details-view) /* الصفحة كلها ثابتة */
 .meeting-details-page,
 :where(body.meeting-details-view) .meetings-page {
@@ -1510,10 +1483,6 @@ body:where(.meeting-details-view) {
     flex-direction: column;
     overflow: hidden;
 }
-:where(body.meeting-details-view) /* عنوان الحاضرين والعدد ثابت */
-.attendees-details-section .details-section-header {
-    flex: 0 0 auto;
-}
 :where(body.meeting-details-view) /* قائمة الأشخاص فقط تعمل Scroll */
 .attendees-details-section .present-leaders-list {
     flex: 1 1 auto;
@@ -1523,10 +1492,6 @@ body:where(.meeting-details-view) {
     padding: 0 2px 10px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
-}
-:where(body.meeting-details-view) /* البطاقات داخل الـScroll */
-.attendees-details-section .present-leader-card {
-    flex: 0 0 auto;
 }
 :where(body.meeting-details-view) /* زر تعديل الاجتماع ثابت تحت صندوق الحاضرين */
 .details-edit-button {
@@ -1561,28 +1526,7 @@ body:where(.meeting-details-view) {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 15px 12px;
-    }:where(body.meeting-details-view) .details-edit-button{
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    width: calc(100% - 24px);
-    min-height: 50px;
     }
-}
-:where(body.meeting-details-view) /* =========================================================
-   FINAL FIX — MEETING DETAILS
-   يعتمد على HTML الفعلي:
-   .meeting-details-content
-   .meeting-heading
-   .attendees-section
-   .present-leaders-list
-   .details-edit-button
-========================================================= */
-
-html,
-body:where(.meeting-details-view) {
-    height: 100%;
-    overflow: hidden;
 }
 :where(body.meeting-details-view) .meeting-details-page {
     height: calc(100vh - 64px);
