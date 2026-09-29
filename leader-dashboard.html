@@ -317,13 +317,15 @@
       <label for="activityDateText">تاريخ النشاط</label>
 
       <div class="activity-date-inputs">
-        <textarea
+        <input
           id="activityDateText"
-          rows="1"
+          type="text"
+          inputmode="text"
+          maxlength="10"
           autocomplete="off"
           placeholder="DD/MM/YYYY"
           aria-label="Activity date, day/month/year"
-        ></textarea>
+        >
       </div>
       <input id="activityDate" type="hidden">
 
