@@ -578,13 +578,29 @@ button {
 }
 
 .activity-date-inputs {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  border: 1px solid #dce5e0;
+  border-radius: 11px;
+  overflow: hidden;
+  background: #fff;
 }
 
-.activity-date-inputs input {
+.form-group .activity-date-inputs input.typed-date-input {
+  flex: 1;
   min-width: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0 13px;
+  font-size: 15px;
+  outline: none;
+  background: transparent;
+  direction: rtl;
+  box-sizing: border-box;
 }
 
 .form-group input[type="text"],
