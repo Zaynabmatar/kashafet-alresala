@@ -2596,7 +2596,8 @@ body:has(#memberModal.show) {
     }
 
     #editModal .uniform-options {
-        justify-content: center;
+        direction: rtl;
+        justify-content: flex-start;
         flex-wrap: wrap;
         width: 100%;
         box-sizing: border-box;

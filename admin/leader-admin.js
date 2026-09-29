@@ -535,6 +535,11 @@ function normalizeArabicDigits(value) {
             : digit.charCodeAt(0) - 0x06F0);
     });
 }
+function toArabicIndicDigits(value) {
+    return String(value || "").replace(/[0-9]/g, function(digit) {
+        return String.fromCharCode(digit.charCodeAt(0) + 0x0660 - 0x0030);
+    });
+}
 function openEditModal() {
 
     if (!currentLeader) return;
@@ -560,13 +565,13 @@ function openEditModal() {
         birthDate ? birthDate.split("-") : [];
 
     document.getElementById("editBirthDay").value =
-        birthParts[2] || "";
+        toArabicIndicDigits(birthParts[2]);
 
     document.getElementById("editBirthMonth").value =
-        birthParts[1] || "";
+        toArabicIndicDigits(birthParts[1]);
 
     document.getElementById("editBirthYear").value =
-        birthParts[0] || "";
+        toArabicIndicDigits(birthParts[0]);
 
     const uniformRadio = document.querySelector(
         `input[name="editUniform"][value="${currentLeader.has_uniform ? "true" : "false"}"]`

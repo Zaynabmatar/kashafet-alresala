@@ -150,8 +150,7 @@
       }
 
       function allowNumbersOnly(event) {
-        const value = normalizeArabicDigits(event.target.value);
-        event.target.value = value.replace(/[^0-9]/g, "");
+        event.target.value = event.target.value.replace(/[^0-9\u0660-\u0669\u06F0-\u06F9]/g, "");
         updateBirthDate();
       }
 
