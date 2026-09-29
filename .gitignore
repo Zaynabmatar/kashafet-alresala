@@ -1,0 +1,11 @@
+﻿archive/
+*.bak
+*.bak-*
+*.backup
+*.backup-*
+*.before-*
+*_backup_*
+_backup_*
+project-backup-*
+.DS_Store
+Thumbs.db
