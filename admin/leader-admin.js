@@ -1145,7 +1145,7 @@ document.getElementById("editAssistants").addEventListener("input", function () 
 });
 
 document.getElementById("editPhone").addEventListener("input", function () {
-    this.value = normalizeArabicDigits(this.value).replace(/\D/g, "");
+    this.value = this.value.replace(/[^0-9٠-٩۰-۹]/g, "");
 });
 
 ["editBirthDay", "editBirthMonth", "editBirthYear", "memberBirthDay", "memberBirthMonth", "memberBirthYear"]

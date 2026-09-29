@@ -795,12 +795,11 @@ function openActivityModal() {
     "activityDescription"
   ).value = "";
 
-  document.getElementById(
-    "activityDate"
-  ).value =
-    new Date()
-      .toISOString()
-      .slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("activityDate").value = today;
+  document.getElementById("activityDatePicker").value = today;
+  document.getElementById("activityDateText").value =
+    `${today.slice(8, 10)}/${Number(today.slice(5, 7))}/${today.slice(0, 4)}`;
 
 }
 
@@ -989,6 +988,17 @@ function normalizeArabicDigits(value) {
       return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
     });
 }
+function parseActivityDate(value) {
+  const parts = normalizeArabicDigits(String(value || "").trim()).split("/");
+  if (parts.length !== 3 || !/^\d{1,2}$/.test(parts[0]) ||
+      !/^\d{1,2}$/.test(parts[1]) || !/^\d{4}$/.test(parts[2])) return "";
+  const [day, month, year] = parts.map(Number);
+  const date = new Date(year, month - 1, day);
+  if (year < 1900 || month < 1 || month > 12 || day < 1 ||
+      date.getFullYear() !== year || date.getMonth() !== month - 1 ||
+      date.getDate() !== day) return "";
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
 async function saveMember() {
 
   if (!currentLeader) return;
@@ -997,9 +1007,7 @@ async function saveMember() {
     document.getElementById("memberName")?.value.trim() || "";
 
   const phone =
-    normalizeArabicDigits(
-      document.getElementById("memberPhone")?.value.trim() || ""
-    );
+    document.getElementById("memberPhone")?.value.trim() || "";
 
   const day =
     normalizeArabicDigits(
@@ -1151,10 +1159,9 @@ async function saveActivity() {
       "activityDescription"
     ).value.trim();
 
-  const activityDate =
-    document.getElementById(
-      "activityDate"
-    ).value;
+  const activityText = document.getElementById("activityDateText").value;
+  const activityDate = parseActivityDate(activityText);
+  document.getElementById("activityDate").value = activityDate;
 
 
   if (!title) {
@@ -1395,6 +1402,23 @@ loadTrashCount();
 // Member form field refinements
 
 document.addEventListener("DOMContentLoaded", function () {
+
+  const activityText = document.getElementById("activityDateText");
+  const activityPicker = document.getElementById("activityDatePicker");
+  const activityValue = document.getElementById("activityDate");
+  if (activityText && activityPicker && activityValue) {
+    activityText.addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9\u0660-\u0669\u06F0-\u06F9/]/g, "");
+      const parsed = parseActivityDate(this.value);
+      activityValue.value = parsed;
+      if (parsed) activityPicker.value = parsed;
+    });
+    activityPicker.addEventListener("change", function () {
+      if (!this.value) return;
+      activityValue.value = this.value;
+      activityText.value = `${this.value.slice(8, 10)}/${Number(this.value.slice(5, 7))}/${this.value.slice(0, 4)}`;
+    });
+  }
 
   const modal = document.getElementById("memberModal");
   if (!modal) return;

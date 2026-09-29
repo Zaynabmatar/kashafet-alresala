@@ -357,13 +357,11 @@
       "تشرين الثاني",
       "كانون الأول"
     ];
-
     function toEnglishDigits(value) {
-
-      return String(value)
-        .replace(/[٠-٩]/g, digit =>
-          String("٠١٢٣٤٥٦٧٨٩".indexOf(digit))
-        );
+      return String(value || "").replace(/[\u0660-\u0669\u06F0-\u06F9]/g, digit => {
+        const code = digit.charCodeAt(0);
+        return String(code >= 0x06F0 ? code - 0x06F0 : code - 0x0660);
+      });
     }
 
     function formatTypedArabicDate(dateString) {
@@ -385,6 +383,7 @@
         !Number.isInteger(day) ||
         !Number.isInteger(month) ||
         !Number.isInteger(year) ||
+        !/^\d{4}$/.test(parts[2]) ||
         year < 1900 ||
         month < 1 ||
         month > 12 ||
@@ -408,21 +407,20 @@
 
       let value =
         String(input.value || "")
-          .replace(/[^0-9\u0660-\u0669/]/g, "");
+          .replace(/[^0-9\u0660-\u0669\u06F0-\u06F9/]/g, "");
 
       input.value = value;
 
       const parsed =
         formatTypedArabicDate(value);
 
+      document.getElementById("meetingDate").value = parsed || "";
       if (!parsed) {
         return;
       }
 
-      document.getElementById("meetingDate").value =
-        parsed;
-
       setMeetingDatePicker(parsed);
+      input.value = value;
     }
 
     function toArabicDigits(value) {

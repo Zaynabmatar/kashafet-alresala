@@ -577,6 +577,16 @@ button {
   color: #34584b;
 }
 
+.activity-date-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.activity-date-inputs input {
+  min-width: 0;
+}
+
 .form-group input[type="text"],
 .form-group input[type="tel"],
 .form-group input[type="date"],

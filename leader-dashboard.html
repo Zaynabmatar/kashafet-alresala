@@ -314,12 +314,24 @@
 
     <div class="form-group">
 
-      <label for="activityDate">تاريخ النشاط</label>
+      <label for="activityDateText">تاريخ النشاط</label>
 
-      <input
-        id="activityDate"
-        type="date"
-      >
+      <div class="activity-date-inputs">
+        <input
+          id="activityDateText"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="DD/MM/YYYY"
+          aria-label="Activity date, day/month/year"
+        >
+        <input
+          id="activityDatePicker"
+          type="date"
+          aria-label="Choose activity date"
+        >
+      </div>
+      <input id="activityDate" type="hidden">
 
     </div>
 
