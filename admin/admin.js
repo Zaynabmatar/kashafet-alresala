@@ -144,6 +144,11 @@
           year + "-" + formattedMonth + "-" + formattedDay;
       }
 
+      function getNormalizedBirthDate() {
+        updateBirthDate();
+        return birthDateInput.value || null;
+      }
+
       function allowNumbersOnly(event) {
         const value = normalizeArabicDigits(event.target.value);
         event.target.value = value.replace(/[^0-9]/g, "");
@@ -156,6 +161,7 @@
       dayInput.addEventListener("input", updateBirthDate);
       monthInput.addEventListener("input", updateBirthDate);
       yearInput.addEventListener("input", updateBirthDate);
+      window.getNormalizedLeaderBirthDate = getNormalizedBirthDate;
     }
     Object.assign(window, { setupDateSelectors });
 }
@@ -446,8 +452,9 @@
 
         const phone = document.getElementById("leaderPhone").value.trim();
 
-        const birthDate =
-          document.getElementById("birthDateInput").value || null;
+        const birthDate = window.getNormalizedLeaderBirthDate
+          ? window.getNormalizedLeaderBirthDate()
+          : document.getElementById("birthDateInput").value || null;
 
         const taskInput = document.getElementById("leaderBranch");
 
